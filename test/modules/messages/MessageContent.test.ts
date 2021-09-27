@@ -9,7 +9,7 @@ export class MessageContentTest extends AbstractTest {
         const that = this
 
         describe("MessageContent", function () {
-            let coreLib: Transport
+            let transport: Transport
             let recipient1: AccountController
             let recipient2: AccountController
             let sender: AccountController
@@ -17,13 +17,13 @@ export class MessageContentTest extends AbstractTest {
             this.timeout(40000)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 3, MessageContentTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 3, MessageContentTest.name)
 
                 recipient1 = accounts[0]
                 recipient2 = accounts[1]

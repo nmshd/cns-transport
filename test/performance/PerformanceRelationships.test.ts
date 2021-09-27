@@ -8,7 +8,7 @@ export class PerformanceRelationships extends AbstractTest {
         const that = this
 
         describe("List Relationship Messages", function () {
-            let coreLib: Transport
+            let transport: Transport
             let recipient: AccountController
             let sender1: AccountController
             let sender2: AccountController
@@ -16,12 +16,12 @@ export class PerformanceRelationships extends AbstractTest {
             this.timeout(200000)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 3, PerformanceRelationships.name)
+                const accounts = await TestUtil.provideAccounts(transport, 3, PerformanceRelationships.name)
 
                 recipient = accounts[0]
                 sender1 = accounts[1]

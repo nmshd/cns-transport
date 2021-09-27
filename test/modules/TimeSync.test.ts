@@ -8,7 +8,7 @@ export class TimeSyncTest extends AbstractTest {
         const that = this
 
         describe("TimeSyncTest", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let recipient: AccountController
 
@@ -18,13 +18,13 @@ export class TimeSyncTest extends AbstractTest {
             this.timeout(200000)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
-                await coreLib.init()
+                await transport.init()
 
                 localTime = CoreDate.utc()
-                const accounts = await TestUtil.provideAccounts(coreLib, 1, TimeSyncTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 1, TimeSyncTest.name)
                 recipient = accounts[0]
                 serverTime = recipient.activeDevice.createdAt
             })

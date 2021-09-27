@@ -10,7 +10,7 @@ import {
     ICoreSerializable,
     TransportController
 } from "../../core"
-import { CoreIds } from "../../core/CoreIds"
+import { TransportIds } from "../../core/CoreIds"
 import { CoreUtil } from "../../core/CoreUtil"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
 import { TransportErrors } from "../../core/TransportErrors"
@@ -141,7 +141,7 @@ export class RelationshipsController extends TransportController {
             throw TransportErrors.general.cacheEmpty(RelationshipTemplate, template.id.toString()).logWith(this._log)
         }
 
-        const secretId = await CoreIds.relationshipSecret.generate()
+        const secretId = await TransportIds.relationshipSecret.generate()
 
         const { requestCipher, requestContent } = await this.prepareRequest(secretId, template, parameters.content)
 
@@ -531,7 +531,7 @@ export class RelationshipsController extends TransportController {
             throw TransportErrors.relationships.emptyOrInvalidContent(change).logWith(this._log)
         }
 
-        const secretId = await CoreIds.relationshipSecret.generate()
+        const secretId = await TransportIds.relationshipSecret.generate()
         const requestCipher = await RelationshipCreationChangeRequestCipher.fromBase64(change.request.content)
         await this.secrets.createTemplatorSecrets(secretId, template.cache, requestCipher.publicRequestCrypto)
 

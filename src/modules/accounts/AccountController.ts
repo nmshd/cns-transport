@@ -4,8 +4,8 @@ import { CryptoSecretKey } from "@nmshd/crypto"
 import { ControllerName, CoreAddress, CoreDate, CoreId, IConfig, Transport, TransportErrors } from "../../core"
 import { Authenticator } from "../../core/backbone/Authenticator"
 import { CoreCrypto } from "../../core/CoreCrypto"
-import { CoreLoggerFactory } from "../../core/CoreLoggerFactory"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { TransportLoggerFactory } from "../../core/TransportLoggerFactory"
 import { PasswordGenerator } from "../../util"
 import { CertificateController } from "../certificates/CertificateController"
 import { CertificateIssuer } from "../certificates/CertificateIssuer"
@@ -73,8 +73,8 @@ export class AccountController {
 
     protected _dbClosed = false
 
-    public get core(): Transport {
-        return this._core
+    public get transport(): Transport {
+        return this._transport
     }
 
     protected _activeDevice?: DeviceController
@@ -94,13 +94,13 @@ export class AccountController {
     }
 
     public constructor(
-        private readonly _core: Transport,
+        private readonly _transport: Transport,
         private readonly _realm: Realm,
         private readonly _db: IDatabaseCollectionProvider,
         private readonly _config: IConfig
     ) {
         this._authenticator = new Authenticator(this)
-        this._log = CoreLoggerFactory.getLogger(ControllerName.Account)
+        this._log = TransportLoggerFactory.getLogger(ControllerName.Account)
     }
 
     // TODO: JSSNMSHDD-2487 (last login date)

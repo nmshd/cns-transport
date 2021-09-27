@@ -178,7 +178,7 @@ export class PublicAPITest extends AbstractTest {
             nameof<AnonymousTokenController>((r) => r.loadPeerTokenByTruncated)
         ]
 
-        const coreLib: Transport = new Transport(that.connection, that.config, that.loggerFactory)
+        const transport: Transport = new Transport(that.connection, that.config, that.loggerFactory)
         let account: AccountController
         const controllers: any = {}
 
@@ -201,9 +201,9 @@ export class PublicAPITest extends AbstractTest {
             before(async function () {
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 1, PublicAPITest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 1, PublicAPITest.name)
                 account = accounts[0]
                 controllers[AccountController.name] = account
                 controllers[DeviceController.name] = account.activeDevice
@@ -220,7 +220,7 @@ export class PublicAPITest extends AbstractTest {
                 controllers[SecretController.name] = await new SecretController(account).init()
                 controllers[SyncController.name] = (account as any).synchronization
                 controllers[TokenController.name] = account.tokens
-                controllers[AnonymousTokenController.name] = new AnonymousTokenController(coreLib.config)
+                controllers[AnonymousTokenController.name] = new AnonymousTokenController(transport.config)
             })
 
             for (const controllerName in publicFunctions) {

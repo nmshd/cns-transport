@@ -11,7 +11,7 @@ import {
     CryptoSignatureKeypair,
     CryptoSignaturePrivateKey
 } from "@nmshd/crypto"
-import { CoreCrypto, CoreDate, CoreId, CoreIds, TransportErrors } from "../../core"
+import { CoreCrypto, CoreDate, CoreId, TransportErrors, TransportIds } from "../../core"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
@@ -90,7 +90,7 @@ export class SecretController extends TransportController {
             createdAt: createdAt,
             name: name,
             description: description,
-            id: await CoreIds.secret.generate(),
+            id: await TransportIds.secret.generate(),
             nonce: nonce,
             validFrom: createdAt,
             validTo: validTo,

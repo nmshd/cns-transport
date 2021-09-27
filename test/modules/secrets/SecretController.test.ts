@@ -8,7 +8,7 @@ export class SecretControllerTest extends AbstractTest {
     public run(): void {
         const that = this
 
-        const coreLib: Transport = new Transport(that.connection, that.config, that.loggerFactory)
+        const transport = new Transport(that.connection, that.config, that.loggerFactory)
         let account: AccountController
         let subject: AccountController
         let secretKey: CryptoSecretKey
@@ -22,9 +22,9 @@ export class SecretControllerTest extends AbstractTest {
             before(async function () {
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, SecretControllerTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, SecretControllerTest.name)
                 account = accounts[0]
                 subject = accounts[1]
                 secretController = await new SecretController(account).init()

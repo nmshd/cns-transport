@@ -8,20 +8,20 @@ export class PerformanceOpenRequests extends AbstractTest {
         const that = this
 
         describe("Performant Fetch of Open Requests", function () {
-            let coreLib: Transport
+            let transport: Transport
             let recipient: AccountController
 
             this.timeout(200000)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
                 that.logger.trace("Creating account...")
-                const accounts = await TestUtil.provideAccounts(coreLib, 1, PerformanceOpenRequests.name)
+                const accounts = await TestUtil.provideAccounts(transport, 1, PerformanceOpenRequests.name)
                 that.logger.trace("Account created.")
 
                 recipient = accounts[0]

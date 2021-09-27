@@ -1,4 +1,4 @@
-import { CoreLoggerFactory } from "../CoreLoggerFactory"
+import { TransportLoggerFactory } from "../TransportLoggerFactory"
 
 /**
  * Measures the time needed to execute the given action and logs it using the given logger.
@@ -33,8 +33,8 @@ export async function logExecutionTime<T>(
 
 /**
  * Method decorator which measures the time needed to execute the decorated method.
- * It retrieves a logger from `CoreLoggerFactory` for class owning the method.
- * If `CoreLoggerFactory` is not initialized, `console` is used instead.
+ * It retrieves a logger from `TransportLoggerFactory` for class owning the method.
+ * If `TransportLoggerFactory` is not initialized, `console` is used instead.
  * @param logMessageFormat
  *   Format for the log message. Supports the following placeholders:
  *     $(method) (name of the called method as is)
@@ -48,7 +48,9 @@ export function logExecutionTimeDecorator(logMessageFormat = "$(method)(...) - $
         const originalMethod = descriptor.value
 
         descriptor.value = async function (...args: any[]) {
-            const logger = CoreLoggerFactory.isInitialized() ? CoreLoggerFactory.getLogger(target.constructor) : console
+            const logger = TransportLoggerFactory.isInitialized()
+                ? TransportLoggerFactory.getLogger(target.constructor)
+                : console
 
             const newLogMessageFormat = logMessageFormat
                 .replace("$(method)", propertyKey)

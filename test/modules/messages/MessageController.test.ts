@@ -8,7 +8,7 @@ export class MessageControllerTest extends AbstractTest {
         const that = this
 
         describe("MessageController", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let sender: AccountController
             let recipient: AccountController
@@ -45,13 +45,13 @@ export class MessageControllerTest extends AbstractTest {
             }
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, MessageController.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, MessageController.name)
                 sender = accounts[0]
                 recipient = accounts[1]
                 const rels = await TestUtil.addRelationship(sender, recipient)

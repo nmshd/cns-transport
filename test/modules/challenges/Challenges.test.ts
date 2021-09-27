@@ -19,19 +19,19 @@ export class ChallengesTest extends AbstractTest {
         const that = this
 
         describe("ChallengeTest", function () {
-            let coreLib: Transport
+            let transport: Transport
             this.timeout(200000)
 
             let recipient: AccountController
             let sender: AccountController
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, ChallengesTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, ChallengesTest.name)
 
                 sender = accounts[0]
                 recipient = accounts[1]

@@ -1,11 +1,11 @@
 import { LokiJsConnection } from "@js-soft/docdb-access-loki"
 import { WebLoggerFactory } from "@js-soft/web-logger"
-import { CoreContext, Transport } from "@nmshd/transport"
+import { Transport, TransportContext } from "@nmshd/transport"
 import { BackboneEnvironment, Test } from "./Test"
 
 const config = Test.config
 
-if (Transport.context === CoreContext.Web) {
+if (Transport.context === TransportContext.Web) {
     switch (config.baseUrl) {
         case BackboneEnvironment.Local:
             config.baseUrl = "/svc-local"
@@ -25,9 +25,6 @@ if (Transport.context === CoreContext.Web) {
 }
 
 const loggerFactory = new WebLoggerFactory()
-
-const log = loggerFactory.getLogger("CoreTest")
-log.info("CoreTest starting on web...")
 
 Test.runUnitTests(loggerFactory)
 Test.runIntegrationTests(config, new LokiJsConnection("./db"), loggerFactory)

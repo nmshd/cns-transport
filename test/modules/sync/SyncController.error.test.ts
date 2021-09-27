@@ -49,9 +49,9 @@ export class SyncControllerErrorTest extends AbstractTest {
                 })
 
                 const error = await TestUtil.syncUntilHasError(templatorDevice2)
-                expect(error.code).to.equal("error.core.errorWhileApplyingExternalEvents")
+                expect(error.code).to.equal("error.transport.errorWhileApplyingExternalEvents")
                 expect(error.message).to.match(
-                    /error.core.errorWhileApplyingExternalEvents: 'error.core.recordNotFound'/
+                    /error.transport.errorWhileApplyingExternalEvents: 'error.transport.recordNotFound'/
                 )
             })
         })

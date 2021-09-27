@@ -1,5 +1,5 @@
 import { nameof } from "ts-simple-nameof"
-import { CoreSynchronizable } from "."
+import { CoreSynchronizable } from "./CoreSynchronizable"
 
 export interface ICacheable {
     cache?: any

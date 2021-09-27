@@ -2,7 +2,7 @@ import { DatabaseType, IDatabaseCollection } from "@js-soft/docdb-access-abstrac
 import jsonpatch from "fast-json-patch"
 import _ from "lodash"
 import { nameof } from "ts-simple-nameof"
-import { CoreIds } from "../../core/CoreIds"
+import { TransportIds } from "../../core/CoreIds"
 import { CoreSerializableAsync } from "../../core/CoreSerializableAsync"
 import { CoreSynchronizable, ICoreSynchronizable } from "../../core/CoreSynchronizable"
 import { ICacheable, isCacheable } from "../../core/ICacheable"
@@ -48,7 +48,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
         if (Object.getOwnPropertyNames(technicalModificationPayload).length !== 0) {
             await this.datawalletModifications.create(
                 DatawalletModification.from({
-                    localId: await CoreIds.datawalletModification.generate(),
+                    localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.Create,
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
@@ -61,7 +61,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
         if (Object.getOwnPropertyNames(metadataModificationPayload).length !== 0) {
             await this.datawalletModifications.create(
                 DatawalletModification.from({
-                    localId: await CoreIds.datawalletModification.generate(),
+                    localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.Create,
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
@@ -74,7 +74,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
         if (Object.getOwnPropertyNames(userdataModificationPayload).length !== 0) {
             await this.datawalletModifications.create(
                 DatawalletModification.from({
-                    localId: await CoreIds.datawalletModification.generate(),
+                    localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.Create,
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
@@ -87,7 +87,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
         if (isCacheable(newObject)) {
             await this.datawalletModifications.create(
                 DatawalletModification.from({
-                    localId: await CoreIds.datawalletModification.generate(),
+                    localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.CacheChanged,
                     collection: this.name,
                     objectIdentifier: objectIdentifier
@@ -134,7 +134,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
             const payload = _.pick(newObjectJson, newObject.technicalProperties)
             await this.datawalletModifications.create(
                 DatawalletModification.from({
-                    localId: await CoreIds.datawalletModification.generate(),
+                    localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.Update,
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
@@ -148,7 +148,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
             const payload = _.pick(newObjectJson, newObject.metadataProperties)
             await this.datawalletModifications.create(
                 DatawalletModification.from({
-                    localId: await CoreIds.datawalletModification.generate(),
+                    localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.Update,
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
@@ -162,7 +162,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
             const payload = _.pick(newObjectJson, newObject.userdataProperties)
             await this.datawalletModifications.create(
                 DatawalletModification.from({
-                    localId: await CoreIds.datawalletModification.generate(),
+                    localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.Update,
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
@@ -175,7 +175,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
         if (hasCacheChanged) {
             await this.datawalletModifications.create(
                 DatawalletModification.from({
-                    localId: await CoreIds.datawalletModification.generate(),
+                    localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.CacheChanged,
                     collection: this.name,
                     objectIdentifier: objectIdentifier
@@ -193,7 +193,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
 
         await this.datawalletModifications.create(
             DatawalletModification.from({
-                localId: await CoreIds.datawalletModification.generate(),
+                localId: await TransportIds.datawalletModification.generate(),
                 type: DatawalletModificationType.Delete,
                 collection: this.name,
                 objectIdentifier: object.id

@@ -22,18 +22,18 @@ export class End2EndTest extends AbstractTest {
     public testAccountCreation(): Mocha.Suite {
         const that = this
         return describe("AccountTest", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
-                await coreLib.init()
+                await transport.init()
                 await TestUtil.clearAccounts(that.connection)
             })
 
             // eslint-disable-next-line jest/expect-expect
             it("should close an account", async function () {
-                const account = await TestUtil.createAccount(coreLib, End2EndTest.name)
+                const account = await TestUtil.createAccount(transport, End2EndTest.name)
                 await account.close()
             }).timeout(End2EndTest.maxTimeoutStep)
         })
@@ -43,22 +43,22 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("RelationshipTest: Accept", function () {
-            let coreLib: Transport
+            let transport: Transport
             let from: AccountController
             let to: AccountController
 
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, End2EndTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, End2EndTest.name)
                 from = accounts[0]
                 to = accounts[1]
             })
@@ -187,7 +187,7 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("RelationshipTest: Reject", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let from: AccountController
             let to: AccountController
@@ -195,14 +195,14 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, End2EndTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, End2EndTest.name)
                 from = accounts[0]
                 to = accounts[1]
             })
@@ -330,22 +330,22 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("RelationshipTest: Revoke", function () {
-            let coreLib: Transport
+            let transport: Transport
             let templator: AccountController
             let requestor: AccountController
 
             this.timeout(End2EndTest.maxTimeoutTest)
 
             beforeEach(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, End2EndTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, End2EndTest.name)
                 templator = accounts[0]
                 requestor = accounts[1]
             })
@@ -540,7 +540,7 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("MessageTest", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let from: AccountController
             let to: AccountController
@@ -548,15 +548,15 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, End2EndTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, End2EndTest.name)
 
                 from = accounts[0]
                 to = accounts[1]
@@ -583,22 +583,22 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("TokenTest", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let from: AccountController
 
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 1, End2EndTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 1, End2EndTest.name)
                 from = accounts[0]
             })
 
@@ -624,7 +624,7 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         describe("FileTest", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let from: AccountController
             let to: AccountController
@@ -632,15 +632,15 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, End2EndTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, End2EndTest.name)
 
                 from = accounts[0]
                 to = accounts[1]

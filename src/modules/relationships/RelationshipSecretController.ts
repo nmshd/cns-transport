@@ -12,7 +12,7 @@ import {
     CryptoSignaturePublicKey
 } from "@nmshd/crypto"
 import { ControllerName, CoreCrypto, CoreId } from "../../core"
-import { CoreIds } from "../../core/CoreIds"
+import { TransportIds } from "../../core/CoreIds"
 import { CoreUtil } from "../../core/CoreUtil"
 import { TransportErrors } from "../../core/TransportErrors"
 import { AccountController } from "../accounts/AccountController"
@@ -189,7 +189,7 @@ export class RelationshipSecretController extends SecretController {
     }
 
     public async createTemplateKey(): Promise<RelationshipTemplatePublicKey> {
-        const templateKeyId = await CoreIds.relationshipTemplateKey.generate()
+        const templateKeyId = await TransportIds.relationshipTemplateKey.generate()
         const key = await this.createExchangeKey(`${templateKeyId.toString()}`)
         const publicKey = key[0]
         return new RelationshipTemplatePublicKey(templateKeyId, publicKey.algorithm, publicKey.publicKey)

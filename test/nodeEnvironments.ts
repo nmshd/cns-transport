@@ -40,7 +40,7 @@ const loggerFactory = new NodeLoggerFactory({
     }
 })
 
-const log = loggerFactory.getLogger("CoreTest")
+const log = loggerFactory.getLogger("Test")
 
 export function runUnitTests(): void {
     Test.runUnitTests(loggerFactory)

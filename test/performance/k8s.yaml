@@ -13,6 +13,6 @@ spec:
     spec:
       containers:
         - name: perf-test
-          image: cns-core-library-perf-tests
+          image: cns-transport-library-perf-tests
           imagePullPolicy: Never
   replicas: 5

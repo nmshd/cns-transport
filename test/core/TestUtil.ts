@@ -12,7 +12,6 @@ import {
     CoreAddress,
     CoreDate,
     CoreId,
-    CoreLoggerFactory,
     DeviceSharedSecret,
     File,
     ISendFileParameters,
@@ -23,7 +22,8 @@ import {
     RelationshipTemplate,
     RequestError,
     TokenContentRelationshipTemplate,
-    Transport
+    Transport,
+    TransportLoggerFactory
 } from "@nmshd/transport"
 import { expect } from "chai"
 import * as fs from "fs"
@@ -34,11 +34,11 @@ export class TestUtil {
     private static oldLogger: ILoggerFactory
 
     public static useFatalLoggerFactory(): void {
-        this.oldLogger = (CoreLoggerFactory as any).instance
-        CoreLoggerFactory.init(this.fatalLogger)
+        this.oldLogger = (TransportLoggerFactory as any).instance
+        TransportLoggerFactory.init(this.fatalLogger)
     }
     public static useTestLoggerFactory(): void {
-        CoreLoggerFactory.init(this.oldLogger)
+        TransportLoggerFactory.init(this.oldLogger)
     }
 
     public static expectThrows(method: Function | Promise<any>, errorMessageRegexp: RegExp | string): void {
@@ -190,37 +190,41 @@ export class TestUtil {
         }
     }
 
-    public static async provideAccounts(core: Transport, count: number, prefix: string): Promise<AccountController[]> {
+    public static async provideAccounts(
+        transport: Transport,
+        count: number,
+        prefix: string
+    ): Promise<AccountController[]> {
         const accounts: AccountController[] = []
 
         for (let i = 0; i < count; i++) {
-            accounts.push(await this.createAccount(core, prefix))
+            accounts.push(await this.createAccount(transport, prefix))
         }
 
         return accounts
     }
 
-    public static async createAccount(core: Transport, prefix: string): Promise<AccountController> {
+    public static async createAccount(transport: Transport, prefix: string): Promise<AccountController> {
         const randomId = Math.random().toString(36).substring(7)
-        const db: IDatabaseCollectionProvider = await core.createDatabase(`${prefix}-${randomId}`)
+        const db: IDatabaseCollectionProvider = await transport.createDatabase(`${prefix}-${randomId}`)
 
-        const accountController: AccountController = new AccountController(core, Realm.Prod, db, core.config)
+        const accountController: AccountController = new AccountController(transport, Realm.Prod, db, transport.config)
         await accountController.init()
 
         return accountController
     }
 
     public static async onboardDevice(
-        core: Transport,
+        transport: Transport,
         deviceSharedSecret: DeviceSharedSecret
     ): Promise<AccountController> {
         const randomId = Math.random().toString(36).substring(7)
-        const db: IDatabaseCollectionProvider = await core.createDatabase(`acc-${randomId}`)
+        const db: IDatabaseCollectionProvider = await transport.createDatabase(`acc-${randomId}`)
         const accountController: AccountController = new AccountController(
-            core,
+            transport,
             deviceSharedSecret.identity.realm,
             db,
-            core.config
+            transport.config
         )
         await accountController.init(deviceSharedSecret)
 

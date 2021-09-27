@@ -9,7 +9,7 @@ export class AttachmentTest extends AbstractTest {
         const that = this
         describe("AttachmentTest", function () {
             this.timeout(200000)
-            let coreLib: Transport
+            let transport: Transport
             let recipient1: AccountController
             let recipient2: AccountController
             let sender: AccountController
@@ -23,13 +23,13 @@ export class AttachmentTest extends AbstractTest {
             let content2: CoreBuffer
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 3, AttachmentTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 3, AttachmentTest.name)
 
                 content = CoreBuffer.fromUtf8("abcd")
                 content2 = CoreBuffer.fromUtf8("dcbadcba")

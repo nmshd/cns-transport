@@ -45,7 +45,7 @@ export class PasswordGeneratorTest extends AbstractUnitTest {
                     for (let i = 1; i < 20; i++) {
                         await TestUtil.expectThrowsAsync(
                             PasswordGenerator.createStrongPassword(2, 20),
-                            "error.core.passwordMinLengthTooShort"
+                            "error.transport.passwordMinLengthTooShort"
                         )
                     }
                 })

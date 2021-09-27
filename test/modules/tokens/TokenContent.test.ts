@@ -18,22 +18,22 @@ export class TokenContentTest extends AbstractTest {
     public run(): void {
         const that = this
         describe("TokenContent", function () {
-            let coreLib: Transport
+            let transport: Transport
             let account: AccountController
 
             this.timeout(20000)
 
             before(async function () {
-                coreLib = new Transport(
+                transport = new Transport(
                     that.connection,
                     { ...that.config, datawalletEnabled: true },
                     that.loggerFactory
                 )
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 3, TokenContentTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 3, TokenContentTest.name)
 
                 account = accounts[0]
             })
@@ -171,7 +171,7 @@ export class TokenContentTest extends AbstractTest {
                     expect(deserialized).instanceOf(SerializableAsync)
                     expect(deserialized).instanceOf(TokenContentDeviceSharedSecret)
                     expect(deserialized.sharedSecret).instanceOf(DeviceSharedSecret)
-                    await TestUtil.onboardDevice(coreLib, deserialized.sharedSecret)
+                    await TestUtil.onboardDevice(transport, deserialized.sharedSecret)
                 })
 
                 it("should serialize and deserialize correctly (no type information)", async function () {
@@ -194,7 +194,7 @@ export class TokenContentTest extends AbstractTest {
                     expect(deserialized).instanceOf(SerializableAsync)
                     expect(deserialized).instanceOf(TokenContentDeviceSharedSecret)
                     expect(deserialized.sharedSecret).instanceOf(DeviceSharedSecret)
-                    await TestUtil.onboardDevice(coreLib, deserialized.sharedSecret)
+                    await TestUtil.onboardDevice(transport, deserialized.sharedSecret)
                 })
 
                 it("should serialize and deserialize correctly (from unknown type)", async function () {
@@ -224,7 +224,7 @@ export class TokenContentTest extends AbstractTest {
                     expect(deserialized).instanceOf(SerializableAsync)
                     expect(deserialized).instanceOf(TokenContentDeviceSharedSecret)
                     expect(deserialized.sharedSecret).instanceOf(DeviceSharedSecret)
-                    await TestUtil.onboardDevice(coreLib, deserialized.sharedSecret)
+                    await TestUtil.onboardDevice(transport, deserialized.sharedSecret)
                 })
             })
 

@@ -39,7 +39,7 @@ export class AuthClient extends RESTClient {
                 "post",
                 path,
                 undefined,
-                "error.core.request.noAuthPossible",
+                "error.transport.request.noAuthPossible",
                 `Authentication was not possible. Is the service up and running?${
                     e.message ? ` Root cause: '${e.message}'` : ""
                 }`,
@@ -63,7 +63,7 @@ export class AuthClient extends RESTClient {
                     "post",
                     path,
                     platformParameters,
-                    "error.core.request.noAuthGrant",
+                    "error.transport.request.noAuthGrant",
                     "Backbone did not grant authentication. Are the credentials correct?",
                     "",
                     response.status

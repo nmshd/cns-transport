@@ -1,10 +1,10 @@
 import { CoreIdHelper } from "./CoreIdHelper"
 
-export class CoreIds {
+export class TransportIds {
     public static readonly generic = new CoreIdHelper("")
-    public static readonly secret = new CoreIdHelper("CORSEC")
-    public static readonly relationshipSecret = new CoreIdHelper("CORRSE")
-    public static readonly relationshipTemplateKey = new CoreIdHelper("CORRTK")
-    public static readonly datawalletModification = new CoreIdHelper("CORDWM")
-    public static readonly fileReference = new CoreIdHelper("CORFRF")
+    public static readonly secret = new CoreIdHelper("TRPSEC")
+    public static readonly relationshipSecret = new CoreIdHelper("TRPRSE")
+    public static readonly relationshipTemplateKey = new CoreIdHelper("TRPRTK")
+    public static readonly datawalletModification = new CoreIdHelper("TRPDWM")
+    public static readonly fileReference = new CoreIdHelper("TRPFRF")
 }

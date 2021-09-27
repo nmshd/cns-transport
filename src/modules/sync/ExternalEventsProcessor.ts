@@ -1,5 +1,5 @@
 import { ILogger } from "@js-soft/logging-abstractions"
-import { CoreId, CoreLoggerFactory } from "../../core"
+import { CoreId, TransportLoggerFactory } from "../../core"
 import { MessageController } from "../messages/MessageController"
 import { RelationshipsController } from "../relationships/RelationshipsController"
 import { BackboneExternalEvent } from "./backbone/BackboneExternalEvent"
@@ -16,7 +16,7 @@ export class ExternalEventsProcessor {
         private readonly relationshipsController: RelationshipsController,
         private readonly externalEvents: BackboneExternalEvent[]
     ) {
-        this.log = CoreLoggerFactory.getLogger(ExternalEventsProcessor)
+        this.log = TransportLoggerFactory.getLogger(ExternalEventsProcessor)
     }
 
     public async execute(): Promise<void> {

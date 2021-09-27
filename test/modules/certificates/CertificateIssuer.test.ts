@@ -16,7 +16,7 @@ export class CertificateIssuerTest extends AbstractTest {
         const that = this
 
         describe("CertificateIssuer", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let issuer: AccountController
             let subject: AccountController
@@ -24,13 +24,13 @@ export class CertificateIssuerTest extends AbstractTest {
             this.timeout(30000)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, CertificateIssuerTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, CertificateIssuerTest.name)
                 issuer = accounts[0]
                 subject = accounts[1]
             })

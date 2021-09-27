@@ -71,7 +71,7 @@ export class RequestError extends ApplicationError {
                     method,
                     path,
                     platformParameters,
-                    "error.core.request.unknown",
+                    "error.transport.request.unknown",
                     axiosError.message
                 )
 
@@ -80,24 +80,24 @@ export class RequestError extends ApplicationError {
             }
 
             if (!axiosError.response) {
-                let code = "error.core.request.unknown"
+                let code = "error.transport.request.unknown"
                 let status = 500
                 let reason = axiosError.message
                 switch (axiosError.code) {
                     case "ERR_FR_MAX_BODY_LENGTH_EXCEEDED":
-                        code = "error.core.request.bodyLengthExceeded"
+                        code = "error.transport.request.bodyLengthExceeded"
                         status = 413
                         break
                     case "ECONNABORTED":
-                        code = "error.core.request.aborted"
+                        code = "error.transport.request.aborted"
                         break
                     default:
                         if (axiosError.message === "Network Error") {
-                            code = "error.core.request.network"
+                            code = "error.transport.request.network"
                             reason =
                                 "It seems the platform was available but another network error happened. It could also be a CORS problem."
                         } else if (axiosError.message.includes("ENOTFOUND")) {
-                            code = "error.core.request.addressNotFound"
+                            code = "error.transport.request.addressNotFound"
                         }
                         break
                 }

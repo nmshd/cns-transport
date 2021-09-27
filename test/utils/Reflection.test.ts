@@ -69,7 +69,7 @@ export class ReflectionTest extends AbstractUnitTest {
         "CryptoSerializableAsync"
     ]
 
-    public static coreClassNames: string[] = [
+    public static transportClassNames: string[] = [
         Device.name,
         Identity.name,
         FileMetadata.name,
@@ -100,7 +100,7 @@ export class ReflectionTest extends AbstractUnitTest {
     public run(): void {
         const that = this
         describe("ReflectionTest", function () {
-            it("should find all CoreCrypto classes", function () {
+            it("should find all Crypto classes", function () {
                 const reflectionKeys = Reflect.getMetadataKeys(Serializable, "types")
                 const notFoundClasses: string[] = []
                 for (const className of ReflectionTest.cryptoClassNames) {
@@ -115,11 +115,11 @@ export class ReflectionTest extends AbstractUnitTest {
                 )
             })
 
-            it("should find all CoreLib classes", function () {
+            it("should find all TransportLib classes", function () {
                 const reflectionKeys = Reflect.getMetadataKeys(Serializable, "types")
                 const notFoundClasses: string[] = []
 
-                for (const className of ReflectionTest.coreClassNames) {
+                for (const className of ReflectionTest.transportClassNames) {
                     if (!reflectionKeys.includes(className)) {
                         notFoundClasses.push(className)
                         that.logger.error(`Class ${className} not registered`)

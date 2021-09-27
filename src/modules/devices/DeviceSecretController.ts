@@ -12,7 +12,7 @@ import {
     ICryptoCipher
 } from "@nmshd/crypto"
 import { CoreCrypto, CoreDate, TransportErrors } from "../../core"
-import { CoreIds } from "../../core/CoreIds"
+import { TransportIds } from "../../core/CoreIds"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { ISecretContainerCipher, SecretContainerCipher } from "../secrets/data/SecretContainerCipher"
@@ -81,7 +81,7 @@ export class DeviceSecretController extends TransportController {
             cipher: cipher,
             createdAt: date,
             name: name,
-            id: await CoreIds.secret.generate(),
+            id: await TransportIds.secret.generate(),
             validFrom: date,
             active: true
         }

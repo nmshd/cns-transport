@@ -1,4 +1,4 @@
-import { CoreId, CoreIds } from "../../core"
+import { CoreId, TransportIds } from "../../core"
 import { BackboneDatawalletModification } from "./backbone/BackboneDatawalletModification"
 import { CreateDatawalletModificationsRequestItem } from "./backbone/CreateDatawalletModifications"
 import {
@@ -53,7 +53,7 @@ export class DatawalletModificationMapper {
         }
 
         return DatawalletModification.from({
-            localId: await CoreIds.datawalletModification.generate(),
+            localId: await TransportIds.datawalletModification.generate(),
             objectIdentifier: CoreId.from(backboneDatawalletModification.objectIdentifier),
             payloadCategory: payloadCategory,
             collection: backboneDatawalletModification.collection,

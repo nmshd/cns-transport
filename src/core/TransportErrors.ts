@@ -4,7 +4,7 @@ import { BackboneGetRelationshipsChangesResponse } from "../modules/relationship
 import { RelationshipChange } from "../modules/relationships/transmission/changes/RelationshipChange"
 import { RelationshipChangeStatus } from "../modules/relationships/transmission/changes/RelationshipChangeStatus"
 import { CoreError } from "./CoreError"
-import { CoreVersion } from "./types/CoreVersion"
+import { TransportVersion } from "./types/TransportVersion"
 
 class Controller {
     public alreadyInitialized(controllerName: string) {
@@ -23,7 +23,7 @@ class Controller {
 }
 
 class Crypto {
-    public invalidVersion(version: CoreVersion) {
+    public invalidVersion(version: TransportVersion) {
         return new CoreError("error.transport.crypto.invalidVersion", `The version ${version} is not supported.`)
     }
 
@@ -415,7 +415,7 @@ class General {
 
     public notAllowedCombinationOfDeviceSharedSecretAndAccount() {
         return new CoreError(
-            "core.error.account",
+            "error.transport.account",
             "The combination of deviceSharedSecret, existing identity or device is not allowed."
         )
     }

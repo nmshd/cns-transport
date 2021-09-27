@@ -1,5 +1,5 @@
 import { CryptoEncryption, CryptoSecretKey } from "@nmshd/crypto"
-import { CoreId, CoreIds, CoreSerializableAsync, FileReference } from "@nmshd/transport"
+import { CoreId, CoreSerializableAsync, FileReference, TransportIds } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
 
@@ -11,7 +11,7 @@ export class FileReferenceTest extends AbstractTest {
             it("should serialize and deserialize correctly (verbose)", async function () {
                 const reference = await FileReference.from({
                     key: await CryptoEncryption.generateKey(),
-                    id: await CoreIds.fileReference.generate()
+                    id: await TransportIds.fileReference.generate()
                 })
                 expect(reference).instanceOf(CoreSerializableAsync)
                 expect(reference).instanceOf(FileReference)
@@ -36,7 +36,7 @@ export class FileReferenceTest extends AbstractTest {
             it("should serialize and deserialize correctly (no type information)", async function () {
                 const reference = await FileReference.from({
                     key: await CryptoEncryption.generateKey(),
-                    id: await CoreIds.fileReference.generate()
+                    id: await TransportIds.fileReference.generate()
                 })
                 expect(reference).instanceOf(CoreSerializableAsync)
                 expect(reference).instanceOf(FileReference)
@@ -56,7 +56,7 @@ export class FileReferenceTest extends AbstractTest {
             it("should serialize and deserialize correctly (from unknown type)", async function () {
                 const reference = await FileReference.from({
                     key: await CryptoEncryption.generateKey(),
-                    id: await CoreIds.fileReference.generate()
+                    id: await TransportIds.fileReference.generate()
                 })
                 expect(reference).instanceOf(CoreSerializableAsync)
                 expect(reference).instanceOf(FileReference)
@@ -81,7 +81,7 @@ export class FileReferenceTest extends AbstractTest {
             it("should truncate and read in correctly", async function () {
                 const reference = await FileReference.from({
                     key: await CryptoEncryption.generateKey(),
-                    id: await CoreIds.fileReference.generate()
+                    id: await TransportIds.fileReference.generate()
                 })
                 const truncated = reference.truncate()
                 expect(truncated.length).lessThan(115).above(80)

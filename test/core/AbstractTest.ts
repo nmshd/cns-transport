@@ -23,9 +23,9 @@ export abstract class AbstractTest {
         accountPrefix: string
     ): Promise<{ device1: AccountController; device2: AccountController }> {
         // Create Device1 Controller
-        const coreLibDevice1: Transport = new Transport(this.connection, this.config, this.loggerFactory)
-        await coreLibDevice1.init()
-        const device1Account = await TestUtil.createAccount(coreLibDevice1, accountPrefix)
+        const transport: Transport = new Transport(this.connection, this.config, this.loggerFactory)
+        await transport.init()
+        const device1Account = await TestUtil.createAccount(transport, accountPrefix)
 
         // Prepare Device2
         const device2 = await device1Account.devices.sendDevice({ name: "Device2" })
@@ -33,9 +33,7 @@ export abstract class AbstractTest {
         await device1Account.syncDatawallet()
 
         // Create Device2 Controller
-        const coreLibDevice2: Transport = new Transport(this.connection, this.config, this.loggerFactory)
-        await coreLibDevice2.init()
-        const device2Account = await TestUtil.onboardDevice(coreLibDevice2, sharedSecret)
+        const device2Account = await TestUtil.onboardDevice(transport, sharedSecret)
 
         await device1Account.syncEverything()
         await device2Account.syncEverything()
@@ -44,9 +42,9 @@ export abstract class AbstractTest {
     }
 
     protected async createIdentityWithOneDevice(accountPrefix: string): Promise<AccountController> {
-        const coreLib: Transport = new Transport(this.connection, this.config, this.loggerFactory)
-        await coreLib.init()
-        const deviceAccount = await TestUtil.createAccount(coreLib, accountPrefix)
+        const transport: Transport = new Transport(this.connection, this.config, this.loggerFactory)
+        await transport.init()
+        const deviceAccount = await TestUtil.createAccount(transport, accountPrefix)
         return deviceAccount
     }
 }

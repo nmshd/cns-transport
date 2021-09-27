@@ -11,7 +11,7 @@ export class AuthenticationTest extends AbstractTest {
         const that = this
 
         describe("AuthenticationTest", function () {
-            let coreLib: Transport
+            let transport: Transport
             let oldGetCredentials: Function
             let oldBaseUrl: string
             let oldLogger: ILogger
@@ -54,13 +54,13 @@ export class AuthenticationTest extends AbstractTest {
             }
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 1, AuthenticationTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 1, AuthenticationTest.name)
                 testAccount = accounts[0]
                 interceptor = new RequestInterceptor((testAccount.authenticator as any).authClient)
             })
@@ -106,7 +106,7 @@ export class AuthenticationTest extends AbstractTest {
 
                 await TestUtil.expectThrowsRequestErrorAsync(
                     testAccount.syncEverything(),
-                    "error.core.request.noAuthGrant",
+                    "error.transport.request.noAuthGrant",
                     400
                 )
                 stopWrongAuth(testAccount.messages)
@@ -116,7 +116,7 @@ export class AuthenticationTest extends AbstractTest {
                 startWrongAuth(testAccount.messages, { baseUrl: "bad-protocol://localhost/" })
                 await TestUtil.expectThrowsRequestErrorAsync(
                     testAccount.syncEverything(),
-                    "error.core.request.noAuthPossible",
+                    "error.transport.request.noAuthPossible",
                     500
                 )
                 stopWrongAuth(testAccount.messages)

@@ -22,7 +22,7 @@ import {
 } from "@nmshd/crypto"
 import { PasswordGenerator } from "../util"
 import { TransportErrors } from "./TransportErrors"
-import { CoreVersion } from "./types/CoreVersion"
+import { TransportVersion } from "./types/TransportVersion"
 
 export abstract class CoreCrypto {
     /**
@@ -34,10 +34,10 @@ export abstract class CoreCrypto {
      * @returns A Promise object resolving into a new CryptoKeypair
      */
     public static async generateSignatureKeypair(
-        version: CoreVersion = CoreVersion.Latest
+        version: TransportVersion = TransportVersion.Latest
     ): Promise<CryptoSignatureKeypair> {
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 return await CryptoSignatures.generateKeypair(CryptoSignatureAlgorithm.ECDSA_ED25519)
             default:
                 throw TransportErrors.util.crypto.invalidVersion(version)
@@ -54,10 +54,10 @@ export abstract class CoreCrypto {
      * @returns A Promise object resolving into a new CryptoKeypair
      */
     public static async generateExchangeKeypair(
-        version: CoreVersion = CoreVersion.Latest
+        version: TransportVersion = TransportVersion.Latest
     ): Promise<CryptoExchangeKeypair> {
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 return await CryptoExchange.generateKeypair(CryptoExchangeAlgorithm.ECDH_X25519)
             default:
                 throw TransportErrors.util.crypto.invalidVersion(version)
@@ -72,9 +72,11 @@ export abstract class CoreCrypto {
      * @param version The version which should be used, "latest" is the default.
      * @returns A Promise object resolving into a new CryptoSecretKey
      */
-    public static async generateSecretKey(version: CoreVersion = CoreVersion.Latest): Promise<CryptoSecretKey> {
+    public static async generateSecretKey(
+        version: TransportVersion = TransportVersion.Latest
+    ): Promise<CryptoSecretKey> {
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 return await CryptoEncryption.generateKey(CryptoEncryptionAlgorithm.XCHACHA20_POLY1305)
             default:
                 throw TransportErrors.util.crypto.invalidVersion(version)
@@ -100,12 +102,12 @@ export abstract class CoreCrypto {
         master: string,
         salt = "enmeshed",
         keyAlgorithm: CryptoEncryptionAlgorithm = CryptoEncryptionAlgorithm.XCHACHA20_POLY1305,
-        version: CoreVersion = CoreVersion.Latest
+        version: TransportVersion = TransportVersion.Latest
     ): Promise<CryptoSecretKey> {
         const masterBuffer: CoreBuffer = CoreBuffer.fromString(master, Encoding.Utf8)
         const saltBuffer: CoreBuffer = CoreBuffer.fromString(salt, Encoding.Utf8)
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 return await CryptoDerivation.deriveKeyFromMaster(masterBuffer, 150000, keyAlgorithm, saltBuffer)
             default:
                 throw TransportErrors.util.crypto.invalidVersion(version)
@@ -133,10 +135,10 @@ export abstract class CoreCrypto {
         client: CryptoExchangeKeypair,
         serverPublicKey: CryptoExchangePublicKey,
         keyAlgorithm: CryptoEncryptionAlgorithm = CryptoEncryptionAlgorithm.XCHACHA20_POLY1305,
-        version: CoreVersion = CoreVersion.Latest
+        version: TransportVersion = TransportVersion.Latest
     ): Promise<CryptoExchangeSecrets> {
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 const base: CryptoExchangeSecrets = await CryptoExchange.deriveTemplator(
                     client,
                     serverPublicKey,
@@ -152,10 +154,10 @@ export abstract class CoreCrypto {
         server: CryptoExchangeKeypair,
         clientPublicKey: CryptoExchangePublicKey,
         keyAlgorithm: CryptoEncryptionAlgorithm = CryptoEncryptionAlgorithm.XCHACHA20_POLY1305,
-        version: CoreVersion = CoreVersion.Latest
+        version: TransportVersion = TransportVersion.Latest
     ): Promise<CryptoExchangeSecrets> {
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 const base: CryptoExchangeSecrets = await CryptoExchange.deriveRequestor(
                     server,
                     clientPublicKey,
@@ -180,10 +182,10 @@ export abstract class CoreCrypto {
     public static async sign(
         content: CoreBuffer,
         privateKey: CryptoSignaturePrivateKey,
-        version: CoreVersion = CoreVersion.Latest
+        version: TransportVersion = TransportVersion.Latest
     ): Promise<CryptoSignature> {
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 return await CryptoSignatures.sign(content, privateKey, CryptoHashAlgorithm.SHA512)
             default:
                 throw TransportErrors.util.crypto.invalidVersion(version)
@@ -205,10 +207,10 @@ export abstract class CoreCrypto {
         content: CoreBuffer,
         signature: CryptoSignature,
         publicKey: CryptoSignaturePublicKey,
-        version: CoreVersion = CoreVersion.Latest
+        version: TransportVersion = TransportVersion.Latest
     ): Promise<boolean> {
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 return await CryptoSignatures.verify(content, signature, publicKey)
             default:
                 throw TransportErrors.util.crypto.invalidVersion(version)
@@ -230,10 +232,10 @@ export abstract class CoreCrypto {
     public static async encrypt(
         content: CoreBuffer,
         secretKey: CryptoSecretKey,
-        version: CoreVersion = CoreVersion.Latest
+        version: TransportVersion = TransportVersion.Latest
     ): Promise<CryptoCipher> {
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 return await CryptoEncryption.encrypt(content, secretKey)
             default:
                 throw TransportErrors.util.crypto.invalidVersion(version)
@@ -255,10 +257,10 @@ export abstract class CoreCrypto {
     public static async decrypt(
         cipher: CryptoCipher,
         secretKey: CryptoSecretKey,
-        version: CoreVersion = CoreVersion.Latest
+        version: TransportVersion = TransportVersion.Latest
     ): Promise<CoreBuffer> {
         switch (version) {
-            case CoreVersion.V1:
+            case TransportVersion.V1:
                 return await CryptoEncryption.decrypt(cipher, secretKey)
             default:
                 throw TransportErrors.util.crypto.invalidVersion(version)

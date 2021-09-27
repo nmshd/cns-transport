@@ -6,9 +6,9 @@ import { AgentOptions } from "http"
 import { AgentOptions as HTTPSAgentOptions } from "https"
 import _ from "lodash"
 import { Realm } from "../modules/accounts/data/Identity"
-import { CoreContext } from "./CoreContext"
-import { CoreLoggerFactory } from "./CoreLoggerFactory"
+import { TransportContext } from "./TransportContext"
 import { TransportErrors } from "./TransportErrors"
+import { TransportLoggerFactory } from "./TransportLoggerFactory"
 
 let log: ILogger
 
@@ -83,8 +83,8 @@ export class Transport {
         this.databaseConnection = databaseConnection
         this._config = _.defaultsDeep({}, customConfig, this.defaultConfig)
 
-        CoreLoggerFactory.init(loggerFactory)
-        log = CoreLoggerFactory.getLogger(Transport)
+        TransportLoggerFactory.init(loggerFactory)
+        log = TransportLoggerFactory.getLogger(Transport)
 
         if (!this._config.platformClientId) {
             throw TransportErrors.general.platformClientIdNotSet().logWith(log)
@@ -104,7 +104,7 @@ export class Transport {
         await SodiumWrapper.ready()
         log.trace("Libsodium initialized")
 
-        log.info("Core initialized")
+        log.info("Transport initialized")
 
         return this
     }
@@ -113,7 +113,7 @@ export class Transport {
         return await this.databaseConnection.getDatabase(name)
     }
 
-    public static get context(): CoreContext {
-        return CoreContext.currentContext()
+    public static get context(): TransportContext {
+        return TransportContext.currentContext()
     }
 }

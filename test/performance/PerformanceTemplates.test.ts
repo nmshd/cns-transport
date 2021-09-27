@@ -19,20 +19,20 @@ export class PerformanceTemplates extends AbstractTest {
         const that = this
 
         describe("Performant Creation of Templates", function () {
-            let coreLib: Transport
+            let transport: Transport
             let recipient: AccountController
 
             this.timeout(200000)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
                 that.logger.trace("Creating account...")
-                const accounts = await TestUtil.provideAccounts(coreLib, 1, PerformanceTemplates.name)
+                const accounts = await TestUtil.provideAccounts(transport, 1, PerformanceTemplates.name)
                 that.logger.trace("Account created.")
 
                 recipient = accounts[0]

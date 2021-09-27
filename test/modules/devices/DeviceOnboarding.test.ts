@@ -210,7 +210,7 @@ export class DeviceOnboardingTest extends AbstractTest {
 
                 await TestUtil.expectThrowsAsync(async () => {
                     await device3.onboardDevice(sharedSecret)
-                }, "error.core.request.noAuthGrant")
+                }, "error.transport.request.noAuthGrant")
             })
 
             // eslint-disable-next-line jest/expect-expect

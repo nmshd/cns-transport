@@ -7,20 +7,20 @@ export class RESTClientTest extends AbstractTest {
         const that = this
 
         describe("RESTClientTest", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let testAccount: AccountController
 
             this.timeout(150000)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 1, RESTClientTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 1, RESTClientTest.name)
                 testAccount = accounts[0]
             })
 

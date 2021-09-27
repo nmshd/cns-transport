@@ -34,8 +34,8 @@ export class CoreError extends Error {
     }
 
     public constructor(
-        code = "core.error.unknown",
-        reason = "Core operation failed unexpectedly.",
+        code = "error.unknown",
+        reason = "Operation failed unexpectedly.",
         data: any = null,
         time: Date = new Date(),
         rootError?: Error,

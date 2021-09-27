@@ -7,7 +7,7 @@ import { Agent as HTTPSAgent } from "https"
 import _ from "lodash"
 import qs from "qs"
 import { IConfig } from "../../core"
-import { CoreLoggerFactory } from "../CoreLoggerFactory"
+import { TransportLoggerFactory } from "../TransportLoggerFactory"
 import { CoreId } from "../types"
 import { ClientResult } from "./ClientResult"
 import { IPaginationDataSource, Paginator } from "./Paginator"
@@ -103,7 +103,7 @@ export class RESTClient {
 
         this.requestConfig = _.defaultsDeep(this.requestConfig, defaults)
 
-        this._logger = CoreLoggerFactory.getLogger(RESTClient)
+        this._logger = TransportLoggerFactory.getLogger(RESTClient)
     }
 
     protected createAxios(): AxiosInstance {
@@ -233,7 +233,7 @@ export class RESTClient {
                 method,
                 path,
                 platformParameters,
-                "error.core.request.notFound",
+                "error.transport.request.notFound",
                 "The requested entity was not found. Make sure the ID exists and the record is not expired.",
                 "",
                 404
@@ -247,7 +247,7 @@ export class RESTClient {
                 method,
                 path,
                 platformParameters,
-                "error.core.request.badRequest",
+                "error.transport.request.badRequest",
                 "The platform responded with a Bad Request without giving any specific reason.",
                 "",
                 response.status
@@ -266,7 +266,7 @@ export class RESTClient {
                 method,
                 path,
                 platformParameters,
-                "error.core.request.resultUndefined",
+                "error.transport.request.resultUndefined",
                 "The Platform responded without a result."
             ).setObject(response.data)
             this._logger.debug(error)
@@ -324,7 +324,7 @@ export class RESTClient {
                 "GET",
                 path,
                 platformParameters,
-                "error.core.request.badRequest",
+                "error.transport.request.badRequest",
                 "The platform responded with a Bad Request without giving any specific reason.",
                 "",
                 response.status
@@ -338,7 +338,7 @@ export class RESTClient {
                 "GET",
                 path,
                 platformParameters,
-                "error.core.request.resultUndefined",
+                "error.transport.request.resultUndefined",
                 "The Platform responded without a result."
             ).setObject(response.data)
             this._logger.debug(error)

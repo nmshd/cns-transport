@@ -15,7 +15,7 @@ export class SyncControllerTest extends AbstractTest {
         const that = this
 
         describe("SyncController", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let sender: AccountController
             let recipient: AccountController
@@ -23,13 +23,13 @@ export class SyncControllerTest extends AbstractTest {
             this.timeout(150000)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, SyncControllerTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, SyncControllerTest.name)
                 ;[sender, recipient] = accounts
 
                 await TestUtil.addRelationship(sender, recipient)

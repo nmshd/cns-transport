@@ -9,7 +9,7 @@ export class RelationshipsCustomContentTest extends AbstractTest {
         const that = this
 
         describe("Relationships Custom Content", function () {
-            let coreLib: Transport
+            let transport: Transport
 
             let sender: AccountController
             let recipient: AccountController
@@ -17,13 +17,13 @@ export class RelationshipsCustomContentTest extends AbstractTest {
             this.timeout(150000)
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, RelationshipsCustomContentTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, RelationshipsCustomContentTest.name)
                 sender = accounts[0]
                 recipient = accounts[1]
             })

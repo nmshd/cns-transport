@@ -9,7 +9,7 @@ export class FileControllerTest extends AbstractTest {
         const that = this
 
         describe("FileController", function () {
-            let coreLib: Transport
+            let transport: Transport
             let sender: AccountController
             let recipient: AccountController
             let tempId1: CoreId
@@ -46,13 +46,13 @@ export class FileControllerTest extends AbstractTest {
             }
 
             before(async function () {
-                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
-                await coreLib.init()
+                await transport.init()
 
-                const accounts = await TestUtil.provideAccounts(coreLib, 2, FileControllerTest.name)
+                const accounts = await TestUtil.provideAccounts(transport, 2, FileControllerTest.name)
                 sender = accounts[0]
                 recipient = accounts[1]
             })
