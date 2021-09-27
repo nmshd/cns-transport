@@ -6,15 +6,11 @@ on:
       - main
 
 jobs:
-  checks:
+  run-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: npm ci
-      - run: npm run lint:prettier
-      - run: npm run lint:eslint
-      - run: npx license-check --ignoreRegex ^@nmshd
-      - run: npm audit
+      - run: bash .ci/runChecks.sh
 
   publish-npm:
     runs-on: ubuntu-latest
