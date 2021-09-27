@@ -28,7 +28,7 @@ jobs:
         uses: supercharge/mongodb-github-action@1.6.0
       - run: npm run test:node:mongodb
         env:
-          CONNECTION_STRING: mongodb://127.0.0.1:27017/?readPreference=primary&appname=Core&ssl=false
+          CONNECTION_STRING: mongodb://127.0.0.1:27017/?readPreference=primary&appname=transport&ssl=false
 
   test-web:
     runs-on: ubuntu-latest
