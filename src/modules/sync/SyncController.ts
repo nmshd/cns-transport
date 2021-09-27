@@ -86,7 +86,7 @@ export class SyncController extends TransportController {
 
         if (result.results.some((r) => r.errorCode !== undefined)) {
             throw new CoreError(
-                "error.core.errorWhileApplyingExternalEvents",
+                "error.transport.errorWhileApplyingExternalEvents",
                 result.results
                     .filter((r) => r.errorCode !== undefined)
                     .map((r) => r.errorCode)
