@@ -9,7 +9,6 @@ import { CoreBuffer } from "@nmshd/crypto"
 import {
     AccountController,
     ChangedItems,
-    Core,
     CoreAddress,
     CoreDate,
     CoreId,
@@ -23,7 +22,8 @@ import {
     RelationshipStatus,
     RelationshipTemplate,
     RequestError,
-    TokenContentRelationshipTemplate
+    TokenContentRelationshipTemplate,
+    Transport
 } from "@nmshd/transport"
 import { expect } from "chai"
 import * as fs from "fs"
@@ -190,7 +190,7 @@ export class TestUtil {
         }
     }
 
-    public static async provideAccounts(core: Core, count: number, prefix: string): Promise<AccountController[]> {
+    public static async provideAccounts(core: Transport, count: number, prefix: string): Promise<AccountController[]> {
         const accounts: AccountController[] = []
 
         for (let i = 0; i < count; i++) {
@@ -200,7 +200,7 @@ export class TestUtil {
         return accounts
     }
 
-    public static async createAccount(core: Core, prefix: string): Promise<AccountController> {
+    public static async createAccount(core: Transport, prefix: string): Promise<AccountController> {
         const randomId = Math.random().toString(36).substring(7)
         const db: IDatabaseCollectionProvider = await core.createDatabase(`${prefix}-${randomId}`)
 
@@ -210,7 +210,10 @@ export class TestUtil {
         return accountController
     }
 
-    public static async onboardDevice(core: Core, deviceSharedSecret: DeviceSharedSecret): Promise<AccountController> {
+    public static async onboardDevice(
+        core: Transport,
+        deviceSharedSecret: DeviceSharedSecret
+    ): Promise<AccountController> {
         const randomId = Math.random().toString(36).substring(7)
         const db: IDatabaseCollectionProvider = await core.createDatabase(`acc-${randomId}`)
         const accountController: AccountController = new AccountController(

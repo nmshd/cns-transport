@@ -1,11 +1,11 @@
 import { LokiJsConnection } from "@js-soft/docdb-access-loki"
 import { WebLoggerFactory } from "@js-soft/web-logger"
-import { Core, CoreContext } from "@nmshd/transport"
+import { CoreContext, Transport } from "@nmshd/transport"
 import { BackboneEnvironment, Test } from "./Test"
 
 const config = Test.config
 
-if (Core.context === CoreContext.Web) {
+if (Transport.context === CoreContext.Web) {
     switch (config.baseUrl) {
         case BackboneEnvironment.Local:
             config.baseUrl = "/svc-local"

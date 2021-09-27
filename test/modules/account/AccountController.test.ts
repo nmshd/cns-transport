@@ -1,4 +1,4 @@
-import { AccountController, Core } from "@nmshd/transport"
+import { AccountController, Transport } from "@nmshd/transport"
 import { AbstractTest } from "../../core/AbstractTest"
 import { TestUtil } from "../../core/TestUtil"
 
@@ -7,13 +7,13 @@ export class AccountControllerTest extends AbstractTest {
         const that = this
 
         describe("AccountController", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let account: AccountController
             this.timeout(15000)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
                 await TestUtil.clearAccounts(that.connection)
 
                 await coreLib.init()

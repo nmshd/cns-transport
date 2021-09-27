@@ -1,5 +1,5 @@
 import { ILogger } from "@js-soft/logging-abstractions"
-import { AccountController, Core, CoreController, CoreDate } from "@nmshd/transport"
+import { AccountController, CoreDate, Transport, TransportController } from "@nmshd/transport"
 import { expect } from "chai"
 import { mock } from "ts-mockito"
 import { AbstractTest } from "../AbstractTest"
@@ -11,7 +11,7 @@ export class AuthenticationTest extends AbstractTest {
         const that = this
 
         describe("AuthenticationTest", function () {
-            let coreLib: Core
+            let coreLib: Transport
             let oldGetCredentials: Function
             let oldBaseUrl: string
             let oldLogger: ILogger
@@ -20,7 +20,7 @@ export class AuthenticationTest extends AbstractTest {
 
             this.timeout(150000)
 
-            function startWrongAuth(controller: CoreController, config: any = {}) {
+            function startWrongAuth(controller: TransportController, config: any = {}) {
                 const anyC = controller as any
                 oldLogger = anyC.client._logger
                 anyC.client._logger = mock<ILogger>()
@@ -38,7 +38,7 @@ export class AuthenticationTest extends AbstractTest {
                 }
             }
 
-            function stopWrongAuth(controller: CoreController) {
+            function stopWrongAuth(controller: TransportController) {
                 const anyC = controller as any
                 anyC.parent.activeDevice.getCredentials = oldGetCredentials
                 if (oldBaseUrl) {
@@ -54,7 +54,7 @@ export class AuthenticationTest extends AbstractTest {
             }
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 

@@ -1,4 +1,4 @@
-import { AccountController, Core, CoreDate, RelationshipTemplate } from "@nmshd/transport"
+import { AccountController, CoreDate, RelationshipTemplate, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../core/AbstractTest"
 import { TestUtil } from "../core/TestUtil"
@@ -19,13 +19,13 @@ export class PerformanceTemplates extends AbstractTest {
         const that = this
 
         describe("Performant Creation of Templates", function () {
-            let coreLib: Core
+            let coreLib: Transport
             let recipient: AccountController
 
             this.timeout(200000)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 

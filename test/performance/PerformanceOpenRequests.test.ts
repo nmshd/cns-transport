@@ -1,4 +1,4 @@
-import { AccountController, Core, Relationship } from "@nmshd/transport"
+import { AccountController, Relationship, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../core/AbstractTest"
 import { TestUtil } from "../core/TestUtil"
@@ -8,13 +8,13 @@ export class PerformanceOpenRequests extends AbstractTest {
         const that = this
 
         describe("Performant Fetch of Open Requests", function () {
-            let coreLib: Core
+            let coreLib: Transport
             let recipient: AccountController
 
             this.timeout(200000)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 

@@ -5,10 +5,10 @@ import {
     Challenge,
     ChallengeSigned,
     ChallengeType,
-    Core,
     CoreAddress,
     CoreDate,
-    CoreId
+    CoreId,
+    Transport
 } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
@@ -19,14 +19,14 @@ export class ChallengesTest extends AbstractTest {
         const that = this
 
         describe("ChallengeTest", function () {
-            let coreLib: Core
+            let coreLib: Transport
             this.timeout(200000)
 
             let recipient: AccountController
             let sender: AccountController
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
                 await TestUtil.clearAccounts(that.connection)
 
                 await coreLib.init()

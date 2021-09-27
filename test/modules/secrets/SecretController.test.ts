@@ -1,5 +1,5 @@
 import { CryptoExchangeKeypair, CryptoSecretKey, CryptoSignatureKeypair } from "@nmshd/crypto"
-import { AccountController, Core, CoreCrypto, SecretContainerPlain, SecretController } from "@nmshd/transport"
+import { AccountController, CoreCrypto, SecretContainerPlain, SecretController, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
 import { TestUtil } from "../../core/TestUtil"
@@ -8,7 +8,7 @@ export class SecretControllerTest extends AbstractTest {
     public run(): void {
         const that = this
 
-        const coreLib: Core = new Core(that.connection, that.config, that.loggerFactory)
+        const coreLib: Transport = new Transport(that.connection, that.config, that.loggerFactory)
         let account: AccountController
         let subject: AccountController
         let secretKey: CryptoSecretKey

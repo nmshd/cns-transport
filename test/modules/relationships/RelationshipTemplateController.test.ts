@@ -1,4 +1,4 @@
-import { AccountController, Core, CoreDate, CoreId, RelationshipTemplate } from "@nmshd/transport"
+import { AccountController, CoreDate, CoreId, RelationshipTemplate, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
 import { TestUtil } from "../../core/TestUtil"
@@ -8,7 +8,7 @@ export class RelationshipTemplateControllerTest extends AbstractTest {
         const that = this
 
         describe("RelationshipTemplateController", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let sender: AccountController
             let recipient: AccountController
@@ -42,7 +42,7 @@ export class RelationshipTemplateControllerTest extends AbstractTest {
             }
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
                 await TestUtil.clearAccounts(that.connection)
 
                 await coreLib.init()

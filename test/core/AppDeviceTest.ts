@@ -1,19 +1,19 @@
 import { ILogger } from "@js-soft/logging-abstractions"
-import { AccountController, Core, DeviceSharedSecret } from "@nmshd/transport"
+import { AccountController, DeviceSharedSecret, Transport } from "@nmshd/transport"
 import { DeviceTestParameters } from "./DeviceTestParameters"
 import { TestUtil } from "./TestUtil"
 
 export class AppDeviceTest {
     protected parameters: DeviceTestParameters
 
-    protected core: Core
+    protected core: Transport
     protected logger: ILogger
 
     private readonly createdAccounts: AccountController[] = []
 
     public constructor(parameters: DeviceTestParameters) {
         this.parameters = parameters
-        this.core = new Core(this.parameters.connection, this.parameters.config, this.parameters.loggerFactory)
+        this.core = new Transport(this.parameters.connection, this.parameters.config, this.parameters.loggerFactory)
     }
 
     public async init(): Promise<void> {

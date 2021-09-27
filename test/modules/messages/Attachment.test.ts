@@ -1,5 +1,5 @@
 import { CoreBuffer } from "@nmshd/crypto"
-import { AccountController, Core, File, Message } from "@nmshd/transport"
+import { AccountController, File, Message, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
 import { TestUtil } from "../../core/TestUtil"
@@ -9,7 +9,7 @@ export class AttachmentTest extends AbstractTest {
         const that = this
         describe("AttachmentTest", function () {
             this.timeout(200000)
-            let coreLib: Core
+            let coreLib: Transport
             let recipient1: AccountController
             let recipient2: AccountController
             let sender: AccountController
@@ -23,7 +23,7 @@ export class AttachmentTest extends AbstractTest {
             let content2: CoreBuffer
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 

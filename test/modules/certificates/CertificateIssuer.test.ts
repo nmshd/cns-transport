@@ -3,9 +3,9 @@ import {
     Certificate,
     CertificatePublicAttributeItem,
     CertificateTimeConstraint,
-    Core,
     CoreDate,
-    ICertificateContent
+    ICertificateContent,
+    Transport
 } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
@@ -16,7 +16,7 @@ export class CertificateIssuerTest extends AbstractTest {
         const that = this
 
         describe("CertificateIssuer", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let issuer: AccountController
             let subject: AccountController
@@ -24,7 +24,7 @@ export class CertificateIssuerTest extends AbstractTest {
             this.timeout(30000)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 

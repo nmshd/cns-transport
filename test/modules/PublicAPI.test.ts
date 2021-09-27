@@ -3,7 +3,6 @@ import {
     AnonymousTokenController,
     CertificateIssuer,
     ChallengeController,
-    Core,
     DeviceController,
     DevicesController,
     DeviceSecretController,
@@ -15,7 +14,8 @@ import {
     RelationshipTemplateController,
     SecretController,
     SyncController,
-    TokenController
+    TokenController,
+    Transport
 } from "@nmshd/transport"
 import { expect } from "chai"
 import { nameof } from "ts-simple-nameof"
@@ -178,7 +178,7 @@ export class PublicAPITest extends AbstractTest {
             nameof<AnonymousTokenController>((r) => r.loadPeerTokenByTruncated)
         ]
 
-        const coreLib: Core = new Core(that.connection, that.config, that.loggerFactory)
+        const coreLib: Transport = new Transport(that.connection, that.config, that.loggerFactory)
         let account: AccountController
         const controllers: any = {}
 

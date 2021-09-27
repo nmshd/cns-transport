@@ -1,7 +1,7 @@
 import { IDatabaseConnection } from "@js-soft/docdb-access-abstractions"
 import { ILoggerFactory } from "@js-soft/logging-abstractions"
 import { sleep } from "@js-soft/ts-utils"
-import { AccountController, Core, IConfigOverwrite } from "@nmshd/transport"
+import { AccountController, IConfigOverwrite, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
 import { TestUtil } from "../../core/TestUtil"
@@ -15,7 +15,7 @@ export class SyncControllerTest extends AbstractTest {
         const that = this
 
         describe("SyncController", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let sender: AccountController
             let recipient: AccountController
@@ -23,7 +23,7 @@ export class SyncControllerTest extends AbstractTest {
             this.timeout(150000)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 

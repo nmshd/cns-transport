@@ -1,6 +1,6 @@
 import { IDatabaseConnection } from "@js-soft/docdb-access-abstractions"
 import { ILogger, ILoggerFactory } from "@js-soft/logging-abstractions"
-import { AccountController, Core, IConfigOverwrite } from "@nmshd/transport"
+import { AccountController, IConfigOverwrite, Transport } from "@nmshd/transport"
 import { DurationLike } from "luxon"
 import { TestUtil } from "./TestUtil"
 
@@ -23,7 +23,7 @@ export abstract class AbstractTest {
         accountPrefix: string
     ): Promise<{ device1: AccountController; device2: AccountController }> {
         // Create Device1 Controller
-        const coreLibDevice1: Core = new Core(this.connection, this.config, this.loggerFactory)
+        const coreLibDevice1: Transport = new Transport(this.connection, this.config, this.loggerFactory)
         await coreLibDevice1.init()
         const device1Account = await TestUtil.createAccount(coreLibDevice1, accountPrefix)
 
@@ -33,7 +33,7 @@ export abstract class AbstractTest {
         await device1Account.syncDatawallet()
 
         // Create Device2 Controller
-        const coreLibDevice2: Core = new Core(this.connection, this.config, this.loggerFactory)
+        const coreLibDevice2: Transport = new Transport(this.connection, this.config, this.loggerFactory)
         await coreLibDevice2.init()
         const device2Account = await TestUtil.onboardDevice(coreLibDevice2, sharedSecret)
 
@@ -44,7 +44,7 @@ export abstract class AbstractTest {
     }
 
     protected async createIdentityWithOneDevice(accountPrefix: string): Promise<AccountController> {
-        const coreLib: Core = new Core(this.connection, this.config, this.loggerFactory)
+        const coreLib: Transport = new Transport(this.connection, this.config, this.loggerFactory)
         await coreLib.init()
         const deviceAccount = await TestUtil.createAccount(coreLib, accountPrefix)
         return deviceAccount

@@ -1,5 +1,5 @@
 import { CoreBuffer } from "@nmshd/crypto"
-import { AccountController, Core, FileClient, IPaginationDataSource, Paginator } from "@nmshd/transport"
+import { AccountController, FileClient, IPaginationDataSource, Paginator, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../AbstractTest"
 import { TestUtil } from "../TestUtil"
@@ -18,7 +18,7 @@ export class PaginatorTest extends AbstractTest {
 
         describe("Paginator", function () {
             describe("End2End", function () {
-                let coreLib: Core
+                let coreLib: Transport
 
                 const fileCount = 10
 
@@ -27,7 +27,7 @@ export class PaginatorTest extends AbstractTest {
                 this.timeout(150000)
 
                 before(async function () {
-                    coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                    coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                     await TestUtil.clearAccounts(that.connection)
 

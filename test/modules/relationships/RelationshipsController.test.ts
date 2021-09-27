@@ -1,7 +1,6 @@
 import {
     AccountController,
     CachedRelationship,
-    Core,
     CoreDate,
     CoreId,
     Identity,
@@ -11,7 +10,8 @@ import {
     RelationshipChangeStatus,
     RelationshipChangeType,
     RelationshipStatus,
-    RelationshipTemplate
+    RelationshipTemplate,
+    Transport
 } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
@@ -22,7 +22,7 @@ export class RelationshipsControllerTest extends AbstractTest {
         const that = this
 
         describe("RelationshipsController", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let sender: AccountController
             let recipient1: AccountController
@@ -82,7 +82,7 @@ export class RelationshipsControllerTest extends AbstractTest {
             }
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 

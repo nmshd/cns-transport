@@ -2,14 +2,14 @@ import { JSONWrapperAsync, SerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer } from "@nmshd/crypto"
 import {
     AccountController,
-    Core,
     CoreDate,
     File,
     FileReference,
     RelationshipChangeStatus,
     RelationshipChangeType,
     RelationshipStatus,
-    TokenContentRelationshipTemplate
+    TokenContentRelationshipTemplate,
+    Transport
 } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../core/AbstractTest"
@@ -22,10 +22,10 @@ export class End2EndTest extends AbstractTest {
     public testAccountCreation(): Mocha.Suite {
         const that = this
         return describe("AccountTest", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
                 await coreLib.init()
                 await TestUtil.clearAccounts(that.connection)
@@ -43,14 +43,14 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("RelationshipTest: Accept", function () {
-            let coreLib: Core
+            let coreLib: Transport
             let from: AccountController
             let to: AccountController
 
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
@@ -187,7 +187,7 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("RelationshipTest: Reject", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let from: AccountController
             let to: AccountController
@@ -195,7 +195,7 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
                 await TestUtil.clearAccounts(that.connection)
@@ -330,14 +330,14 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("RelationshipTest: Revoke", function () {
-            let coreLib: Core
+            let coreLib: Transport
             let templator: AccountController
             let requestor: AccountController
 
             this.timeout(End2EndTest.maxTimeoutTest)
 
             beforeEach(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
@@ -540,7 +540,7 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("MessageTest", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let from: AccountController
             let to: AccountController
@@ -548,7 +548,7 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
@@ -583,14 +583,14 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         return describe("TokenTest", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let from: AccountController
 
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
@@ -624,7 +624,7 @@ export class End2EndTest extends AbstractTest {
         const that = this
 
         describe("FileTest", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let from: AccountController
             let to: AccountController
@@ -632,7 +632,7 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 

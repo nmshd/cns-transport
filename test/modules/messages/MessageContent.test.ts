@@ -1,5 +1,5 @@
 import { ISerializableAsync, JSONWrapperAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { AccountController, Core, CoreAddress, ICoreAddress } from "@nmshd/transport"
+import { AccountController, CoreAddress, ICoreAddress, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { TestUtil } from "../../core"
 import { AbstractTest } from "../../core/AbstractTest"
@@ -9,7 +9,7 @@ export class MessageContentTest extends AbstractTest {
         const that = this
 
         describe("MessageContent", function () {
-            let coreLib: Core
+            let coreLib: Transport
             let recipient1: AccountController
             let recipient2: AccountController
             let sender: AccountController
@@ -17,7 +17,7 @@ export class MessageContentTest extends AbstractTest {
             this.timeout(40000)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 

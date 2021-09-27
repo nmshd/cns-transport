@@ -2,12 +2,12 @@ import { JSONWrapperAsync, SerializableAsync } from "@js-soft/ts-serval"
 import { CryptoEncryption, CryptoSecretKey } from "@nmshd/crypto"
 import {
     AccountController,
-    Core,
     CoreDate,
     CoreId,
     Token,
     TokenContentFile,
-    TokenContentRelationshipTemplate
+    TokenContentRelationshipTemplate,
+    Transport
 } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
@@ -18,7 +18,7 @@ export class TokenControllerTest extends AbstractTest {
         const that = this
 
         describe("TokenController", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let sender: AccountController
             let recipient: AccountController
@@ -46,7 +46,7 @@ export class TokenControllerTest extends AbstractTest {
             }
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
                 await TestUtil.clearAccounts(that.connection)
 
                 await coreLib.init()

@@ -1,5 +1,5 @@
 import { JSONWrapperAsync, SerializableAsync } from "@js-soft/ts-serval"
-import { AccountController, Core, RelationshipChangeRequest } from "@nmshd/transport"
+import { AccountController, RelationshipChangeRequest, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
 import { TestUtil } from "../../core/TestUtil"
@@ -9,7 +9,7 @@ export class RelationshipsCustomContentTest extends AbstractTest {
         const that = this
 
         describe("Relationships Custom Content", function () {
-            let coreLib: Core
+            let coreLib: Transport
 
             let sender: AccountController
             let recipient: AccountController
@@ -17,7 +17,7 @@ export class RelationshipsCustomContentTest extends AbstractTest {
             this.timeout(150000)
 
             before(async function () {
-                coreLib = new Core(that.connection, that.config, that.loggerFactory)
+                coreLib = new Transport(that.connection, that.config, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 

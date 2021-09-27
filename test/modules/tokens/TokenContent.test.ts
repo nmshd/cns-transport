@@ -2,13 +2,13 @@ import { JSONWrapperAsync, SerializableAsync } from "@js-soft/ts-serval"
 import { CryptoEncryption, CryptoSecretKey } from "@nmshd/crypto"
 import {
     AccountController,
-    Core,
     CoreDate,
     CoreId,
     DeviceSharedSecret,
     TokenContentDeviceSharedSecret,
     TokenContentFile,
-    TokenContentRelationshipTemplate
+    TokenContentRelationshipTemplate,
+    Transport
 } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../core/AbstractTest"
@@ -18,13 +18,17 @@ export class TokenContentTest extends AbstractTest {
     public run(): void {
         const that = this
         describe("TokenContent", function () {
-            let coreLib: Core
+            let coreLib: Transport
             let account: AccountController
 
             this.timeout(20000)
 
             before(async function () {
-                coreLib = new Core(that.connection, { ...that.config, datawalletEnabled: true }, that.loggerFactory)
+                coreLib = new Transport(
+                    that.connection,
+                    { ...that.config, datawalletEnabled: true },
+                    that.loggerFactory
+                )
                 await TestUtil.clearAccounts(that.connection)
 
                 await coreLib.init()
