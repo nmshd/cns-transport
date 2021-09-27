@@ -1,6 +1,6 @@
 # Transport Library
 
-[![GitHub Actions CI](https://github.com/nmshd/cns-transport/workflows/CI/badge.svg)](https://github.com/nmshd/cns-transport/actions?query=workflow%3Apublish)
+[![GitHub Actions CI](https://github.com/nmshd/cns-transport/workflows/Publish/badge.svg)](https://github.com/nmshd/cns-transport/actions?query=workflow%3APublish)
 [![npm version](https://badge.fury.io/js/@nmshd%2ftransport.svg)](https://www.npmjs.com/package/@nmshd/transport)
 
 The transport library handles backbone communication and content encryption.
