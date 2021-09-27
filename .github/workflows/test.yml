@@ -6,14 +6,34 @@ on:
       - main
 
 jobs:
-  test:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm ci
+      - run: npm run lint:prettier
+      - run: npm run lint:eslint
+      - run: npx license-check --ignoreRegex ^@nmshd
+      - run: npm audit
+
+  test-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - run: npm ci
+      - run: export CONNECTION_STRING="mongodb://127.0.0.1:27017/?readPreference=primary&appname=Core&ssl=false"
+      - run: npm run test:node:mongodb
+    services:
+      mongo:
+        image: mongo
+
+  test-web:
     runs-on: ubuntu-latest
     container: jssoft/node_browsertests
     steps:
       - uses: actions/checkout@v2
-      - run: apt-get update && apt-get install jq -y
-      - run: bash .ci/build.sh
-      - run: bash .ci/test.sh
-    services:
-      mongo:
-        image: mongo
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:web:min
