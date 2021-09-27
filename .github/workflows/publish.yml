@@ -8,15 +8,14 @@ on:
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
-    container: jssoft/node_browsertests
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          registry-url: https://registry.npmjs.org/
       - run: apt-get update && apt-get install jq -y
       - run: bash .ci/build.sh
-      - run: bash .ci/test.sh
-      - run: bash .ci/publish.sh
+      - run: npm publish
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-    services:
-      mongo:
-        image: mongo
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
