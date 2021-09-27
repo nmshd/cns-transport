@@ -24,12 +24,11 @@ jobs:
         with:
           node-version: 14
       - run: npm ci
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
       - run: npm run test:node:mongodb
         env:
           CONNECTION_STRING: mongodb://127.0.0.1:27017/?readPreference=primary&appname=Core&ssl=false
-    services:
-      mongo:
-        image: mongo
 
   test-web:
     runs-on: ubuntu-latest
