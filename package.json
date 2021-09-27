@@ -32,6 +32,7 @@
         "bundle:test": "webpack --stats-all --config webpack.test.config.js",
         "cdep": "tsc && madge --circular dist",
         "test": "npm run test:node && npm run test:web && npm run test:web:min",
+        "test:ci": "npm run test:node && npm run test:web:min",
         "test:local": "npm run build && npm run test:local:node && npm run test:web",
         "test:local:node": ". ./scripts/testSetup.sh && npm run test:node",
         "test:local:node:mongodb": ". ./scripts/testSetup.sh && npm run test:node:mongodb",
