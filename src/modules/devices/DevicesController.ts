@@ -1,4 +1,4 @@
-import { CoreDate, CoreErrors, CoreId } from "../../core"
+import { CoreDate, CoreId, TransportErrors } from "../../core"
 import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
 import { PasswordGenerator } from "../../util"
@@ -89,14 +89,14 @@ export class DevicesController extends CoreController {
     public async getSharedSecret(id: CoreId): Promise<DeviceSharedSecret> {
         const deviceDoc = await this.devices.read(id.toString())
         if (!deviceDoc) {
-            throw CoreErrors.general.recordNotFound(Device, id.toString())
+            throw TransportErrors.general.recordNotFound(Device, id.toString())
         }
 
         const count = await this.devices.count()
         const device = await Device.from(deviceDoc)
 
         if (!device.initialPassword || device.publicKey || device.lastLoginAt) {
-            throw CoreErrors.device.alreadyOnboarded()
+            throw TransportErrors.device.alreadyOnboarded()
         }
 
         const isAdmin = device.isAdmin === true
@@ -108,7 +108,7 @@ export class DevicesController extends CoreController {
     public async update(device: Device): Promise<void> {
         const deviceDoc = await this.devices.read(device.id.toString())
         if (!deviceDoc) {
-            throw CoreErrors.general.recordNotFound(Device, device.id.toString())
+            throw TransportErrors.general.recordNotFound(Device, device.id.toString())
         }
         await this.devices.update(deviceDoc, device)
     }

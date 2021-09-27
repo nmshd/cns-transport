@@ -1,5 +1,5 @@
 import { CoreBuffer, CryptoSignature, CryptoSignaturePrivateKey, CryptoSignaturePublicKey } from "@nmshd/crypto"
-import { ControllerName, CoreAddress, CoreController, CoreCrypto, CoreDate, CoreErrors } from "../../core"
+import { ControllerName, CoreAddress, CoreController, CoreCrypto, CoreDate, TransportErrors } from "../../core"
 import { AccountController } from "../accounts/AccountController"
 import { DeviceSecretType } from "../devices/DeviceSecretController"
 import { Identity, IdentityType, Realm } from "./data/Identity"
@@ -46,7 +46,7 @@ export class IdentityController extends CoreController {
         await super.init()
 
         if (!identity) {
-            throw CoreErrors.identity.identityNotSet().logWith(this._log)
+            throw TransportErrors.identity.identityNotSet().logWith(this._log)
         }
         this._identity = identity
 
@@ -68,7 +68,7 @@ export class IdentityController extends CoreController {
             DeviceSecretType.IdentitySignature
         )
         if (!privateKeyContainer || !(privateKeyContainer.secret instanceof CryptoSignaturePrivateKey)) {
-            throw CoreErrors.secrets.secretNotFound(DeviceSecretType.IdentitySignature).logWith(this._log)
+            throw TransportErrors.secrets.secretNotFound(DeviceSecretType.IdentitySignature).logWith(this._log)
         }
         const privateKey = privateKeyContainer.secret
 

@@ -1,6 +1,6 @@
 import { CryptoRandom, ICoreBuffer } from "@nmshd/crypto"
 import { v4 as uuidv4 } from "uuid"
-import { CoreErrors } from "../core/CoreErrors"
+import { TransportErrors } from "../core/TransportErrors"
 
 export enum RandomCharacterRange {
     Digit = "0123456789",
@@ -47,7 +47,7 @@ export class Random implements IRandom {
     }
     public static async int(length: number): Promise<number> {
         if (length > 21 || length <= 0) {
-            throw CoreErrors.util.random.intLength()
+            throw TransportErrors.util.random.intLength()
         }
         return parseInt(await this.string(length, RandomCharacterRange.Digit))
     }
@@ -73,12 +73,12 @@ export class Random implements IRandom {
 
     public static async intBetween(min: number, max: number): Promise<number> {
         if (max <= min) {
-            throw CoreErrors.util.random.mnBiggerThatMax()
+            throw TransportErrors.util.random.mnBiggerThatMax()
         }
         const diff = max - min + 1
         const bitLength = Math.abs(Math.ceil(Math.log2(diff)))
         if (bitLength > 32) {
-            throw CoreErrors.util.random.rangeTooBig()
+            throw TransportErrors.util.random.rangeTooBig()
         }
         const byteLength = Math.ceil(bitLength / 8)
         const bitMask = Math.pow(2, bitLength) - 1
@@ -99,7 +99,7 @@ export class Random implements IRandom {
 
     public static async intRandomLength(minLength: number, maxLength: number): Promise<number> {
         if (maxLength > 21) {
-            CoreErrors.util.random.maxTooHigh()
+            TransportErrors.util.random.maxTooHigh()
         }
         return parseInt(await this.stringRandomLength(minLength, maxLength, RandomCharacterRange.Digit))
     }
@@ -123,7 +123,7 @@ export class Random implements IRandom {
     ): Promise<string> {
         if (length <= 0) return ""
         if (allowedChars.length > 256) {
-            throw CoreErrors.util.random.inputTooLong()
+            throw TransportErrors.util.random.inputTooLong()
         }
         const ar = []
         const inputLength = allowedChars.length
@@ -150,10 +150,10 @@ export class Random implements IRandom {
         allowedChars?: string | string[]
     ): Promise<string> {
         if (minLength > maxLength) {
-            throw CoreErrors.util.random.mnBiggerThatMax()
+            throw TransportErrors.util.random.mnBiggerThatMax()
         }
         if (minLength < 0) {
-            throw CoreErrors.util.random.minLessThanZero()
+            throw TransportErrors.util.random.minLessThanZero()
         }
 
         const length = maxLength > minLength ? await this.intBetween(minLength, maxLength) : maxLength

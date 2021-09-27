@@ -1,6 +1,6 @@
 import { ISerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoSecretKey, ICryptoSecretKey } from "@nmshd/crypto"
-import { CoreErrors, CoreId, CoreSerializableAsync } from "../../../core"
+import { CoreId, CoreSerializableAsync, TransportErrors } from "../../../core"
 
 export interface IFileReference extends ISerializableAsync {
     id: CoreId
@@ -29,7 +29,7 @@ export class FileReference extends CoreSerializableAsync implements IFileReferen
         const splitted = truncatedBuffer.toUtf8().split("|")
 
         if (splitted.length !== 3) {
-            throw CoreErrors.files.invalidTruncatedReference()
+            throw TransportErrors.files.invalidTruncatedReference()
         }
 
         try {
@@ -46,7 +46,7 @@ export class FileReference extends CoreSerializableAsync implements IFileReferen
                 key: secretKey
             })
         } catch (e) {
-            throw CoreErrors.files.invalidTruncatedReference()
+            throw TransportErrors.files.invalidTruncatedReference()
         }
     }
 

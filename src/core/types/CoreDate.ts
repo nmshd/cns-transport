@@ -1,7 +1,7 @@
 import { serialize, serializeOnly, validate } from "@js-soft/ts-serval"
 import { DateTime, DateTimeUnit, Duration, DurationLike, Interval } from "luxon"
-import { CoreErrors } from "../CoreErrors"
 import { CoreSerializable, ICoreSerializable } from "../CoreSerializable"
+import { TransportErrors } from "../TransportErrors"
 
 export interface ICoreDate extends ICoreSerializable {
     date: string
@@ -159,13 +159,13 @@ export class CoreDate extends CoreSerializable implements ICoreDate {
 
     public static from(value: ICoreDate | string | number): CoreDate {
         if (typeof value === "undefined") {
-            throw CoreErrors.util.date.undefined()
+            throw TransportErrors.util.date.undefined()
         }
 
         if (typeof value === "object") {
             if (typeof value.date === "undefined") {
                 if (typeof (value as any).toISOString !== "function") {
-                    throw CoreErrors.util.date.noIsoStringMethod()
+                    throw TransportErrors.util.date.noIsoStringMethod()
                 }
 
                 const iso = (value as any).toISOString()

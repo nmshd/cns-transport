@@ -1,7 +1,7 @@
 import { serialize, serializeOnly, validate } from "@js-soft/ts-serval"
 import { Random, RandomCharacterRange } from "../../util/Random"
-import { CoreErrors } from "../CoreErrors"
 import { CoreSerializable, ICoreSerializable } from "../CoreSerializable"
+import { TransportErrors } from "../TransportErrors"
 
 export interface ICoreId extends ICoreSerializable {
     id: string
@@ -26,7 +26,7 @@ export class CoreId extends CoreSerializable implements ICoreId {
 
     public static async generate(prefix = ""): Promise<CoreId> {
         if (prefix.length > 6) {
-            throw CoreErrors.util.tooLongCoreIdPrefix(prefix)
+            throw TransportErrors.util.tooLongCoreIdPrefix(prefix)
         }
 
         const random = await Random.string(20 - prefix.length, RandomCharacterRange.Alphanumeric)

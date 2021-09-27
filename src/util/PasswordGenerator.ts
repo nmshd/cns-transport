@@ -1,4 +1,4 @@
-import { CoreErrors } from "../core/CoreErrors"
+import { TransportErrors } from "../core/TransportErrors"
 import { Random, RandomCharacterRange } from "./Random"
 
 const defaultPasswordRange = RandomCharacterRange.AlphanumericEase + RandomCharacterRange.SpecialCharacters
@@ -145,7 +145,7 @@ export class PasswordGenerator implements IPasswordGenerator {
     public static async createStrongPassword(minLength = 8, maxLength = 12): Promise<string> {
         if (minLength > maxLength) maxLength = minLength
         if (minLength < 8) {
-            throw CoreErrors.util.passwordMinLengthTooShort()
+            throw TransportErrors.util.passwordMinLengthTooShort()
         }
 
         const specialCharacterBucket = {

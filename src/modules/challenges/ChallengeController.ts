@@ -1,5 +1,5 @@
 import { CoreBuffer, CryptoSignatureKeypair } from "@nmshd/crypto"
-import { CoreAddress, CoreCrypto, CoreDate, CoreErrors, CoreId } from "../../core"
+import { CoreAddress, CoreCrypto, CoreDate, CoreId, TransportErrors } from "../../core"
 import { ControllerName, CoreController } from "../../core/CoreController"
 import { AccountController } from "../accounts/AccountController"
 import { Relationship } from "../relationships/local/Relationship"
@@ -33,7 +33,7 @@ export class ChallengeController extends CoreController {
         }
         const relationship = await this.parent.relationships.getActiveRelationshipToIdentity(challenge.createdBy)
         if (!relationship) {
-            throw CoreErrors.general.recordNotFound(Relationship, challenge.createdBy.toString())
+            throw TransportErrors.general.recordNotFound(Relationship, challenge.createdBy.toString())
         }
         const challengeBuffer = CoreBuffer.fromUtf8(signedChallenge.challenge)
         let verified = false
@@ -46,7 +46,7 @@ export class ChallengeController extends CoreController {
                 )
                 break
             case ChallengeType.Device:
-                throw CoreErrors.general.notImplemented().logWith(this._log)
+                throw TransportErrors.general.notImplemented().logWith(this._log)
             case ChallengeType.Relationship:
                 verified = await this.parent.relationships.verify(
                     relationship,
@@ -115,7 +115,7 @@ export class ChallengeController extends CoreController {
         relationship?: Relationship
     ): Promise<ChallengeSigned> {
         if (type === ChallengeType.Relationship && !relationship) {
-            throw CoreErrors.challenges.challengeTypeRequiredRelationship().logWith(this._log)
+            throw TransportErrors.challenges.challengeTypeRequiredRelationship().logWith(this._log)
         }
         const backboneResponse = (await this.authClient.createChallenge()).value
         const challenge = await Challenge.from({
@@ -140,7 +140,7 @@ export class ChallengeController extends CoreController {
                 break
             case ChallengeType.Relationship:
                 if (!relationship) {
-                    throw CoreErrors.challenges.challengeTypeRequiredRelationship().logWith(this._log)
+                    throw TransportErrors.challenges.challengeTypeRequiredRelationship().logWith(this._log)
                 }
                 signature = await this.parent.relationships.sign(relationship, challengeBuffer)
                 break

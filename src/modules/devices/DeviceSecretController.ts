@@ -11,7 +11,7 @@ import {
     ICoreBuffer,
     ICryptoCipher
 } from "@nmshd/crypto"
-import { CoreCrypto, CoreDate, CoreErrors } from "../../core"
+import { CoreCrypto, CoreDate, TransportErrors } from "../../core"
 import { ControllerName, CoreController } from "../../core/CoreController"
 import { CoreIds } from "../../core/CoreIds"
 import { AccountController } from "../accounts/AccountController"
@@ -146,19 +146,19 @@ export class DeviceSecretController extends CoreController {
     ): Promise<DeviceSharedSecret> {
         const synchronizationKey = await this.loadSecret(DeviceSecretType.IdentitySynchronizationMaster)
         if (!synchronizationKey || !(synchronizationKey.secret instanceof CryptoSecretKey)) {
-            throw CoreErrors.secrets.secretNotFound("SynchronizationKey").logWith(this._log)
+            throw TransportErrors.secrets.secretNotFound("SynchronizationKey").logWith(this._log)
         }
 
         const baseKey = await this.loadSecret(DeviceSecretType.SharedSecretBaseKey)
         if (!baseKey || !(baseKey.secret instanceof CryptoSecretKey)) {
-            throw CoreErrors.secrets.secretNotFound("baseKey").logWith(this._log)
+            throw TransportErrors.secrets.secretNotFound("baseKey").logWith(this._log)
         }
 
         let identityPrivateKey
         if (includeIdentityPrivateKey) {
             identityPrivateKey = await this.loadSecret(DeviceSecretType.IdentitySignature)
             if (!identityPrivateKey || !(identityPrivateKey.secret instanceof CryptoSignaturePrivateKey)) {
-                throw CoreErrors.secrets.secretNotFound("IdentityKey").logWith(this._log)
+                throw TransportErrors.secrets.secretNotFound("IdentityKey").logWith(this._log)
             }
         }
 
@@ -192,7 +192,9 @@ export class DeviceSecretController extends CoreController {
         const serializedEvent = CoreBuffer.fromUtf8(JSON.stringify(event.payload))
         const privSync = await this.loadSecret(DeviceSecretType.IdentitySynchronizationMaster)
         if (!privSync || !(privSync.secret instanceof CryptoSecretKey)) {
-            throw CoreErrors.secrets.secretNotFound(DeviceSecretType.IdentitySynchronizationMaster).logWith(this._log)
+            throw TransportErrors.secrets
+                .secretNotFound(DeviceSecretType.IdentitySynchronizationMaster)
+                .logWith(this._log)
         }
 
         const encryptionKey = await CoreCrypto.deriveKeyFromBase(privSync.secret, index, "DataSync")
@@ -214,7 +216,9 @@ export class DeviceSecretController extends CoreController {
 
         const privSync = await this.loadSecret(DeviceSecretType.IdentitySynchronizationMaster)
         if (!privSync || !(privSync.secret instanceof CryptoSecretKey)) {
-            throw CoreErrors.secrets.secretNotFound(DeviceSecretType.IdentitySynchronizationMaster).logWith(this._log)
+            throw TransportErrors.secrets
+                .secretNotFound(DeviceSecretType.IdentitySynchronizationMaster)
+                .logWith(this._log)
         }
 
         const decryptionKey = await CoreCrypto.deriveKeyFromBase(privSync.secret, index, "DataSync")
@@ -229,7 +233,7 @@ export class DeviceSecretController extends CoreController {
 
     private getBaseKey(): CryptoSecretKey {
         if (!this.baseKey) {
-            throw CoreErrors.general
+            throw TransportErrors.general
                 .recordNotFound(CryptoSecretKey, DeviceSecretType.SharedSecretBaseKey)
                 .logWith(this._log)
         }

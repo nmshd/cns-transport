@@ -1,6 +1,6 @@
 import { ISerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, CryptoSignature } from "@nmshd/crypto"
-import { CoreAddress, CoreCrypto, CoreDate, CoreErrors, CoreId } from "../../core"
+import { CoreAddress, CoreCrypto, CoreDate, CoreId, TransportErrors } from "../../core"
 import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
 import { AccountController } from "../accounts/AccountController"
@@ -119,7 +119,7 @@ export class RelationshipTemplateController extends CoreController {
     private async updateCacheOfExistingTemplateInDb(id: string, response?: BackboneGetRelationshipTemplatesResponse) {
         const templateDoc = await this.templates.read(id)
         if (!templateDoc) {
-            throw CoreErrors.general.recordNotFound(RelationshipTemplate, id).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(RelationshipTemplate, id).logWith(this._log)
         }
 
         const template = await RelationshipTemplate.from(templateDoc)
@@ -150,7 +150,7 @@ export class RelationshipTemplateController extends CoreController {
         )
 
         if (!templateSignatureValid) {
-            throw CoreErrors.general.signatureNotValid("template").logWith(this._log)
+            throw TransportErrors.general.signatureNotValid("template").logWith(this._log)
         }
 
         const cachedTemplate = await CachedRelationshipTemplate.from({
@@ -184,7 +184,7 @@ export class RelationshipTemplateController extends CoreController {
         const id = idOrTemplate instanceof CoreId ? idOrTemplate.toString() : idOrTemplate.id.toString()
         const templateDoc = await this.templates.read(id)
         if (!templateDoc) {
-            throw CoreErrors.general.recordNotFound(RelationshipTemplate, id.toString()).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(RelationshipTemplate, id.toString()).logWith(this._log)
         }
 
         const template = await RelationshipTemplate.from(templateDoc)

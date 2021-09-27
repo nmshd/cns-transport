@@ -11,7 +11,7 @@ import {
     CryptoSignatureKeypair,
     CryptoSignaturePrivateKey
 } from "@nmshd/crypto"
-import { CoreCrypto, CoreDate, CoreErrors, CoreId, CoreIds } from "../../core"
+import { CoreCrypto, CoreDate, CoreId, CoreIds, TransportErrors } from "../../core"
 import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
 import { AccountController } from "../accounts/AccountController"
@@ -233,7 +233,7 @@ export class SecretController extends CoreController {
         if (baseKey) {
             this.baseKey = baseKey.secret as CryptoSecretKey
         } else {
-            throw CoreErrors.general
+            throw TransportErrors.general
                 .recordNotFound(CryptoSecretKey, DeviceSecretType.SharedSecretBaseKey)
                 .logWith(this._log)
         }

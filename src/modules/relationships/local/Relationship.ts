@@ -1,6 +1,6 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { nameof } from "ts-simple-nameof"
-import { CoreDate, CoreErrors, CoreId, CoreSynchronizable, ICoreId, ICoreSynchronizable } from "../../../core"
+import { CoreDate, CoreId, CoreSynchronizable, ICoreId, ICoreSynchronizable, TransportErrors } from "../../../core"
 import { Identity, IIdentity } from "../../accounts/data/Identity"
 import { IRelationshipTemplate } from "../../relationshipTemplates/local/RelationshipTemplate"
 import { BackboneGetRelationshipsResponse } from "../backbone/BackboneGetRelationships"
@@ -108,7 +108,7 @@ export class Relationship extends CoreSynchronizable implements IRelationship {
 
     public toActive(response: RelationshipChangeResponse): void {
         if (!this.cache) {
-            throw CoreErrors.general.cacheEmpty(Relationship, this.id.toString())
+            throw TransportErrors.general.cacheEmpty(Relationship, this.id.toString())
         }
 
         this.cache.changes[0].response = response
@@ -117,7 +117,7 @@ export class Relationship extends CoreSynchronizable implements IRelationship {
 
     public toRejected(response: RelationshipChangeResponse): void {
         if (!this.cache) {
-            throw CoreErrors.general.cacheEmpty(Relationship, this.id.toString())
+            throw TransportErrors.general.cacheEmpty(Relationship, this.id.toString())
         }
 
         this.cache.changes[0].response = response
@@ -126,7 +126,7 @@ export class Relationship extends CoreSynchronizable implements IRelationship {
 
     public toRevoked(response: RelationshipChangeResponse): void {
         if (!this.cache) {
-            throw CoreErrors.general.cacheEmpty(Relationship, this.id.toString())
+            throw TransportErrors.general.cacheEmpty(Relationship, this.id.toString())
         }
 
         this.cache.changes[0].response = response

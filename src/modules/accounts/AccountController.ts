@@ -1,7 +1,7 @@
 import { IDatabaseCollection, IDatabaseCollectionProvider, IDatabaseMap } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
 import { CryptoSecretKey } from "@nmshd/crypto"
-import { ControllerName, Core, CoreAddress, CoreDate, CoreErrors, CoreId, IConfig } from "../../core"
+import { ControllerName, Core, CoreAddress, CoreDate, CoreId, IConfig, TransportErrors } from "../../core"
 import { Authenticator } from "../../core/backbone/Authenticator"
 import { CoreCrypto } from "../../core/CoreCrypto"
 import { CoreLoggerFactory } from "../../core/CoreLoggerFactory"
@@ -144,7 +144,7 @@ export class AccountController {
         } else if (!deviceSharedSecret && availableIdentityDoc && availableDeviceDoc) {
             // Login
             if (!availableBaseKeyDoc) {
-                throw CoreErrors.secrets.secretNotFound("BaseKey")
+                throw TransportErrors.secrets.secretNotFound("BaseKey")
             }
             const [availableIdentity, availableDevice, availableBaseKey] = await Promise.all([
                 Identity.from(availableIdentityDoc),
@@ -157,7 +157,7 @@ export class AccountController {
             ])
             this.deviceAuthClient = new DeviceAuthClient(this.config, this.authenticator)
         } else {
-            throw CoreErrors.general.notAllowedCombinationOfDeviceSharedSecretAndAccount().logWith(this._log)
+            throw TransportErrors.general.notAllowedCombinationOfDeviceSharedSecretAndAccount().logWith(this._log)
         }
 
         this._log.trace(`Using device ${this.activeDevice.id} for identity ${this.identity.address}.`)
@@ -277,7 +277,7 @@ export class AccountController {
         if (deviceResponseResult.isError) {
             const error = deviceResponseResult.error
             if (error.code === "error.platform.unauthorized") {
-                throw CoreErrors.general.platformClientInvalid().logWith(this._log)
+                throw TransportErrors.general.platformClientInvalid().logWith(this._log)
             }
         }
 
@@ -288,11 +288,11 @@ export class AccountController {
         )
 
         if (!deviceResponse.address) {
-            throw CoreErrors.identity.noAddressReceived().logWith(this._log)
+            throw TransportErrors.identity.noAddressReceived().logWith(this._log)
         }
 
         if (localAddress.toString() !== deviceResponse.address) {
-            throw CoreErrors.identity.addressMismatch().logWith(this._log)
+            throw TransportErrors.identity.addressMismatch().logWith(this._log)
         }
 
         const identity = await Identity.from({

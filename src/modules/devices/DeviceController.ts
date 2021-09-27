@@ -5,7 +5,15 @@ import {
     CryptoSignaturePrivateKey,
     CryptoSignaturePublicKey
 } from "@nmshd/crypto"
-import { ControllerName, CoreController, CoreCrypto, CoreDate, CoreErrors, CoreId, CredentialsBasic } from "../../core"
+import {
+    ControllerName,
+    CoreController,
+    CoreCrypto,
+    CoreDate,
+    CoreId,
+    CredentialsBasic,
+    TransportErrors
+} from "../../core"
 import { AccountController } from "../accounts/AccountController"
 import { DeviceSecretController, DeviceSecretType } from "./DeviceSecretController"
 import { Device, DeviceType } from "./local/Device"
@@ -51,7 +59,7 @@ export class DeviceController extends CoreController {
 
     private _device?: Device
     public get device(): Device {
-        if (!this._device) throw CoreErrors.device.deviceNotSet()
+        if (!this._device) throw TransportErrors.device.deviceNotSet()
         return this._device
     }
     public get deviceOrUndefined(): Device | undefined {
@@ -66,10 +74,10 @@ export class DeviceController extends CoreController {
         await super.init()
 
         if (!device) {
-            throw CoreErrors.device.deviceNotSet().logWith(this._log)
+            throw TransportErrors.device.deviceNotSet().logWith(this._log)
         }
         if (!baseKey) {
-            throw CoreErrors.secrets.secretNotFound("BaseKey").logWith(this._log)
+            throw TransportErrors.secrets.secretNotFound("BaseKey").logWith(this._log)
         }
         this._device = device
 
@@ -112,7 +120,7 @@ export class DeviceController extends CoreController {
     public async sign(content: CoreBuffer): Promise<CryptoSignature> {
         const privateKeyContainer = await this.secrets.loadSecret(DeviceSecretType.DeviceSignature)
         if (!privateKeyContainer || !(privateKeyContainer.secret instanceof CryptoSignaturePrivateKey)) {
-            throw CoreErrors.secrets.secretNotFound(DeviceSecretType.DeviceSignature).logWith(this._log)
+            throw TransportErrors.secrets.secretNotFound(DeviceSecretType.DeviceSignature).logWith(this._log)
         }
         const privateKey = privateKeyContainer.secret
         const signature = await CoreCrypto.sign(content, privateKey)
@@ -123,7 +131,7 @@ export class DeviceController extends CoreController {
 
     public async verify(content: CoreBuffer, signature: CryptoSignature): Promise<boolean> {
         if (!this.publicKey) {
-            throw CoreErrors.device.notOnboardedYet().logWith(this._log)
+            throw TransportErrors.device.notOnboardedYet().logWith(this._log)
         }
         return await CoreCrypto.verify(content, signature, this.publicKey)
     }
@@ -132,16 +140,16 @@ export class DeviceController extends CoreController {
         const credentialContainer = await this.secrets.loadSecret(DeviceSecretType.DeviceCredentials)
 
         if (!credentialContainer) {
-            throw CoreErrors.secrets.secretNotFound(DeviceSecretType.DeviceCredentials).logWith(this._log)
+            throw TransportErrors.secrets.secretNotFound(DeviceSecretType.DeviceCredentials).logWith(this._log)
         }
 
         if (!(credentialContainer.secret instanceof DeviceSecretCredentials)) {
-            throw CoreErrors.secrets.wrongSecretType(DeviceSecretType.DeviceCredentials).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(DeviceSecretType.DeviceCredentials).logWith(this._log)
         }
 
         const credentials = credentialContainer.secret
         if (!credentials.username || !credentials.password) {
-            throw CoreErrors.secrets.wrongSecretType(DeviceSecretType.DeviceCredentials).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(DeviceSecretType.DeviceCredentials).logWith(this._log)
         }
 
         return {

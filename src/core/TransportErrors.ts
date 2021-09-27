@@ -9,14 +9,14 @@ import { CoreVersion } from "./types/CoreVersion"
 class Controller {
     public alreadyInitialized(controllerName: string) {
         return new CoreError(
-            "error.core.controller.alreadyInitialized",
+            "error.transport.controller.alreadyInitialized",
             `The controller ${controllerName} was already initialized.`
         )
     }
 
     public contentPropertyUndefined(contentProperty: string) {
         return new CoreError(
-            "error.core.controller.contentPropertyUndefined",
+            "error.transport.controller.contentPropertyUndefined",
             `The property ${contentProperty} is undefined.`
         )
     }
@@ -24,11 +24,11 @@ class Controller {
 
 class Crypto {
     public invalidVersion(version: CoreVersion) {
-        return new CoreError("error.core.crypto.invalidVersion", `The version ${version} is not supported.`)
+        return new CoreError("error.transport.crypto.invalidVersion", `The version ${version} is not supported.`)
     }
 
     public invalidSecretType() {
-        return new CoreError("error.core.crypto.invalidSecretType", "The secret type is invalid.")
+        return new CoreError("error.transport.crypto.invalidSecretType", "The secret type is invalid.")
     }
 }
 
@@ -36,47 +36,47 @@ class RelationshipTemplates {}
 
 class Relationships {
     public responseCryptoIsMissing() {
-        return new CoreError("error.core.relationships.responseCryptoIsMissing", "The response crypto is missing.")
+        return new CoreError("error.transport.relationships.responseCryptoIsMissing", "The response crypto is missing.")
     }
 
     public requestContainsWrongTemplateId() {
         return new CoreError(
-            "error.core.relationships.requestContainsWrongTemplateId",
+            "error.transport.relationships.requestContainsWrongTemplateId",
             "The relationship request contains a wrong template id."
         )
     }
 
     public responseContainsWrongRequestId() {
         return new CoreError(
-            "error.core.relationships.requestContainsWrongRequestId",
+            "error.transport.relationships.requestContainsWrongRequestId",
             "The relationship response contains a wrong request id."
         )
     }
 
     public wrongChangeStatus(status: RelationshipChangeStatus) {
         return new CoreError(
-            "error.core.relationships.wrongChangeStatus",
+            "error.transport.relationships.wrongChangeStatus",
             `The relationship change has the wrong status (${status}) to run this operation`
         )
     }
 
     public wrongChangeType(type: RelationshipChangeType) {
         return new CoreError(
-            "error.core.relationships.wrongChangeType",
+            "error.transport.relationships.wrongChangeType",
             `The relationship change has the wrong type (${type}) to run this operation`
         )
     }
 
     public changeResponseMissing(changeId: string) {
         return new CoreError(
-            "error.core.relationships.changeResponseMissing",
+            "error.transport.relationships.changeResponseMissing",
             `The response of the relationship change (${changeId}) is missing`
         )
     }
 
     public emptyOrInvalidContent(change?: RelationshipChange | BackboneGetRelationshipsChangesResponse) {
         return new CoreError(
-            "error.core.relationships.wrongOrEmptyContent",
+            "error.transport.relationships.wrongOrEmptyContent",
             `The relationship change ${change?.id} requires a content property or its content property is invalid`
         )
     }
@@ -84,18 +84,24 @@ class Relationships {
 
 class Logging {
     public loggerNotInitialized() {
-        return new CoreError("error.core.logging.loggerNotInitialized", "The logger factory is not yet initialized")
+        return new CoreError(
+            "error.transport.logging.loggerNotInitialized",
+            "The logger factory is not yet initialized"
+        )
     }
 }
 
 class CoreDateErrors {
     public noIsoStringMethod() {
-        return new CoreError("error.core.date.noIsoMethod", "The provided object doesn't have an iso string method")
+        return new CoreError(
+            "error.transport.date.noIsoMethod",
+            "The provided object doesn't have an iso string method"
+        )
     }
 
     public undefined() {
         return new CoreError(
-            "error.core.date.undefined",
+            "error.transport.date.undefined",
             "The provided object is undefined and cannot be deserialized."
         )
     }
@@ -103,15 +109,15 @@ class CoreDateErrors {
 
 class Random {
     public minLessThanZero() {
-        return new CoreError("error.core.util.random.minLessThanZero", "minlength must not be less than zero")
+        return new CoreError("error.transport.util.random.minLessThanZero", "minlength must not be less than zero")
     }
 
     public inputTooLong() {
-        return new CoreError("error.core.util.random.inputTooLong", "Input exceeds maximum length of 256!")
+        return new CoreError("error.transport.util.random.inputTooLong", "Input exceeds maximum length of 256!")
     }
 
     public maxTooHigh() {
-        return new CoreError("error.core.util.random.maxTooHigh", "Max must be below 22.")
+        return new CoreError("error.transport.util.random.maxTooHigh", "Max must be below 22.")
     }
 
     public mnBiggerThatMax() {
@@ -120,30 +126,33 @@ class Random {
 
     public rangeTooBig() {
         return new CoreError(
-            "error.core.util.random.rangeTooBig",
+            "error.transport.util.random.rangeTooBig",
             "The range between the numbers is too big, 32 bit is the maximum -> 4294967296"
         )
     }
 
     public intLength() {
-        return new CoreError("error.core.util.random.length", "Length must be between 1 and 21.")
+        return new CoreError("error.transport.util.random.length", "Length must be between 1 and 21.")
     }
 }
 
 class Util {
     public passwordMinLengthTooShort() {
         return new CoreError(
-            "error.core.passwordMinLengthTooShort",
+            "error.transport.passwordMinLengthTooShort",
             "Minimum password length for a strong password should be 8 characters."
         )
     }
 
     public wrongContentForBuffer() {
-        return new CoreError("error.core.wrongContentForBuffer", "The given content cannot be transformed to buffer.")
+        return new CoreError(
+            "error.transport.wrongContentForBuffer",
+            "The given content cannot be transformed to buffer."
+        )
     }
 
     public tooLongCoreIdPrefix(prefix: string) {
-        return new CoreError("error.core.coreid.tooLongPrefix", `The prefix "${prefix}" is too long`)
+        return new CoreError("error.transport.coreid.tooLongPrefix", `The prefix "${prefix}" is too long`)
     }
 
     public readonly date = new CoreDateErrors()
@@ -154,56 +163,56 @@ class Util {
 
 class Device {
     public deviceNotSet() {
-        return new CoreError("error.core.device.deviceNotSet", "The device must be set")
+        return new CoreError("error.transport.device.deviceNotSet", "The device must be set")
     }
 
     public notOnboardedYet() {
         return new CoreError(
-            "error.core.devices.notOnboardedYet",
+            "error.transport.devices.notOnboardedYet",
             "The device is not onboarded yet and has no public key."
         )
     }
 
     public alreadyOnboarded() {
-        return new CoreError("error.core.devices.alreadyOnboarded", "The device has already been onboarded.")
+        return new CoreError("error.transport.devices.alreadyOnboarded", "The device has already been onboarded.")
     }
 }
 
 class Messages {
     public plaintextMismatch(ownAddress: string) {
         return new CoreError(
-            "error.core.messages.plaintextMismatch",
+            "error.transport.messages.plaintextMismatch",
             `The own address ${ownAddress} was not named as a recipient within the signed MessagePlaintext. A replay attack might be the cause of this.`
         )
     }
 
     public signatureListMismatch(address: string) {
         return new CoreError(
-            "error.core.messages.signatureListMismatch",
+            "error.transport.messages.signatureListMismatch",
             `The signature list didn't contain an entry for address ${address}.`
         )
     }
 
     public signatureNotValid() {
         return new CoreError(
-            "error.core.messages.signatureNotValid",
+            "error.transport.messages.signatureNotValid",
             "The digital signature on this message for peer key is invalid. An impersonination attack might be the cause of this."
         )
     }
     public noRecipientsSet() {
-        return new CoreError("error.core.messages.noRecipientsSet", "No recipients set.")
+        return new CoreError("error.transport.messages.noRecipientsSet", "No recipients set.")
     }
 
     public ownAddressNotInList(messageId: string) {
         return new CoreError(
-            "error.core.messages.ownAddressNotInList",
+            "error.transport.messages.ownAddressNotInList",
             `The recipients list of message ${messageId} didn't contain an entry for the own address. This message should not have been received.`
         )
     }
 
     public noMatchingRelationship(senderAddress: string) {
         return new CoreError(
-            "error.core.messages.noMatchingRelationship",
+            "error.transport.messages.noMatchingRelationship",
             `A relationship with sender ${senderAddress} does not exist. This might be spam.`
         )
     }
@@ -218,23 +227,23 @@ class Messages {
 
 class Identity {
     public realmLength() {
-        return new CoreError("error.core.identity.realmLength", "Realm must be of length 3.")
+        return new CoreError("error.transport.identity.realmLength", "Realm must be of length 3.")
     }
 
     public identityNotSet() {
-        return new CoreError("error.core.identity.identityNotSet", "The identity must be set")
+        return new CoreError("error.transport.identity.identityNotSet", "The identity must be set")
     }
 
     public noAddressReceived() {
         return new CoreError(
-            "error.core.identity.noAddressReceived",
+            "error.transport.identity.noAddressReceived",
             "The backbone did not create an address for the created device."
         )
     }
 
     public addressMismatch() {
         return new CoreError(
-            "error.core.identity.addressMismatch",
+            "error.transport.identity.addressMismatch",
             "The backbone address does not match the local address."
         )
     }
@@ -243,33 +252,33 @@ class Identity {
 class Secrets {
     public lengthMismatch() {
         return new CoreError(
-            "error.core.secrets.lengthMismatch",
+            "error.transport.secrets.lengthMismatch",
             "Length mismatch between old number of secrets and new ones."
         )
     }
 
     public wrongBaseKeyType(baseKeyType: string) {
         return new CoreError(
-            "error.core.secrets.wrongBaseKeyType",
+            "error.transport.secrets.wrongBaseKeyType",
             `Given BaseKey type "${baseKeyType}" is not supported!`
         )
     }
 
     public wrongSecretType(secretId?: string) {
-        return new CoreError("error.core.secrets.wrongBaseKeyType", "Given Secret type is not supported!", {
+        return new CoreError("error.transport.secrets.wrongBaseKeyType", "Given Secret type is not supported!", {
             secretId: secretId
         })
     }
 
     public secretNotFound(type: string) {
-        return new CoreError("error.core.secrets.secretNotFound", `secret "${type}" not found`)
+        return new CoreError("error.transport.secrets.secretNotFound", `secret "${type}" not found`)
     }
 }
 
 class Challenges {
     public challengeTypeRequiredRelationship() {
         return new CoreError(
-            "error.core.challenges.challengeTypeRequiredRelationship",
+            "error.transport.challenges.challengeTypeRequiredRelationship",
             "The challenge type ist relationship but the relationship is undefined"
         )
     }
@@ -278,7 +287,7 @@ class Challenges {
 class Datawallet {
     public encryptedPayloadIsNoCipher() {
         return new CoreError(
-            "error.core.datawallet.encryptedPayloadIsNoCipher",
+            "error.transport.datawallet.encryptedPayloadIsNoCipher",
             "The given encrypted payload is no cipher."
         )
     }
@@ -287,33 +296,33 @@ class Datawallet {
 class Files {
     public plaintextHashMismatch() {
         return new CoreError(
-            "error.core.files.plaintextHashMismatch",
+            "error.transport.files.plaintextHashMismatch",
             "The actual hash of the plaintext does not match the given plaintextHash. Something went wrong while encrypting/decrypting the file."
         )
     }
 
     public cipherMismatch() {
         return new CoreError(
-            "error.core.files.cipherMismatch",
+            "error.transport.files.cipherMismatch",
             "The actual hash of the cipher does not match the given cipherHash. Something went wrong while storing/transmitting the file."
         )
     }
 
     public invalidMetadata(id: string) {
-        return new CoreError("error.core.files.invalidMetadata", `The metadata of file id "${id}" is invalid.`)
+        return new CoreError("error.transport.files.invalidMetadata", `The metadata of file id "${id}" is invalid.`)
     }
 
     public invalidTruncatedReference() {
-        return new CoreError("error.core.files.invalidTruncatedReference", "invalid truncated reference")
+        return new CoreError("error.transport.files.invalidTruncatedReference", "invalid truncated reference")
     }
 
     public fileContentUndefined() {
-        return new CoreError("error.core.files.fileContentUndefined", "The given file content is undefined.")
+        return new CoreError("error.transport.files.fileContentUndefined", "The given file content is undefined.")
     }
 
     public maxFileSizeExceeded(fileSize: number, platformMaxFileSize: number) {
         return new CoreError(
-            "error.core.files.maxFileSizeExceeded",
+            "error.transport.files.maxFileSizeExceeded",
             `The given file content size (${fileSize}) exceeds the max file size the backbone accepts (${platformMaxFileSize}).`
         )
     }
@@ -321,12 +330,12 @@ class Files {
 
 class Tokens {
     public invalidTruncatedReference() {
-        return new CoreError("error.core.tokens.invalidTruncatedReference", "invalid truncated reference")
+        return new CoreError("error.transport.tokens.invalidTruncatedReference", "invalid truncated reference")
     }
 
     public invalidTokenContent(id: string) {
         return new CoreError(
-            "error.core.tokens.invalidTokenContent",
+            "error.transport.tokens.invalidTokenContent",
             `The content of token ${id} is not of type TokenContent`
         )
     }
@@ -334,69 +343,72 @@ class Tokens {
 
 class General {
     public baseUrlNotSet() {
-        return new CoreError("error.core.general.baseUrlNotSet", "The baseUrl was not set.")
+        return new CoreError("error.transport.general.baseUrlNotSet", "The baseUrl was not set.")
     }
 
     public platformClientIdNotSet() {
-        return new CoreError("error.core.general.platformClientNotSet", "The platform clientSecret was not set.")
+        return new CoreError("error.transport.general.platformClientNotSet", "The platform clientSecret was not set.")
     }
 
     public platformClientSecretNotSet() {
-        return new CoreError("error.core.general.platformClientNotSet", "The platform clientId was not set.")
+        return new CoreError("error.transport.general.platformClientNotSet", "The platform clientId was not set.")
     }
 
     public platformClientInvalid() {
         return new CoreError(
-            "error.core.general.platformClientInvalid",
+            "error.transport.general.platformClientInvalid",
             "The combination of platform clientId and clientSecret is invalid."
         )
     }
 
     public cacheEmpty(entityName: string | Function, id: string) {
         return new CoreError(
-            "error.core.general.cacheEmpty",
+            "error.transport.general.cacheEmpty",
             `The cache of ${entityName instanceof Function ? entityName.name : entityName} with id "${id}" is empty.`,
             id
         )
     }
 
     public incompatibleBackbone() {
-        return new CoreError("error.core.incompatibleBackbone", "The backbone sent an invalid payload.")
+        return new CoreError("error.transport.incompatibleBackbone", "The backbone sent an invalid payload.")
     }
 
     public signatureNotValid(type?: string) {
-        return new CoreError("error.core.signatureNotValid", `The ${type ? `${type}-` : ""}signature is not valid.`)
+        return new CoreError(
+            "error.transport.signatureNotValid",
+            `The ${type ? `${type}-` : ""}signature is not valid.`
+        )
     }
 
     public recordNotFound(entityName: string | Function, entityId: string) {
         return new CoreError(
-            "error.core.recordNotFound",
+            "error.transport.recordNotFound",
             `'${entityName instanceof Function ? entityName.name : entityName}' not found.`,
             entityId
         )
     }
 
     public notImplemented() {
-        return new CoreError("error.core.notImplemented", "The method is not yet implemented.")
+        return new CoreError("error.transport.notImplemented", "The method is not yet implemented.")
     }
 
     public typeNotInReflection(type: string) {
         return new CoreError(
-            "error.core.typeNotInReflectionClass",
+            "error.transport.typeNotInReflectionClass",
             `The type ${type} was not in the reflection classes. You might have to install a module first.`
         )
     }
 
     public datawalletNotAvailable() {
         return new CoreError(
-            "error.core.datawalletNotAvailable",
+            "error.transport.datawalletNotAvailable",
             "The datawallet is not available (yet?) and was requested."
         )
     }
 
     public unsupportedDatabaseTypeForQuery(databaseType: DatabaseType, query: Function) {
         return new CoreError(
-            "error.core.unsupportedDatabaseTypeForQuery",
+            "error.transport.unsupportedDatabaseTypeForQuery",
             `The query '${query.name}' does not (yet?) support the database type '${databaseType}'.`
         )
     }
@@ -409,7 +421,7 @@ class General {
     }
 }
 
-export class CoreErrors {
+export class TransportErrors {
     public static readonly controller = new Controller()
     public static readonly relationships = new Relationships()
     public static readonly util = new Util()

@@ -2,10 +2,10 @@ import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
 import { AccountController } from "../modules/accounts/AccountController"
 import { Core, IConfig } from "./Core"
-import { CoreErrors } from "./CoreErrors"
 import { CoreLoggerFactory } from "./CoreLoggerFactory"
 import { CoreSerializable } from "./CoreSerializable"
 import { CoreSerializableAsync } from "./CoreSerializableAsync"
+import { TransportErrors } from "./TransportErrors"
 
 export enum ControllerName {
     Account = "Account",
@@ -86,7 +86,7 @@ export class CoreController {
 
     public init(): Promise<CoreController> {
         if (this._initialized) {
-            throw CoreErrors.controller.alreadyInitialized(this.controllerName).logWith(this._log)
+            throw TransportErrors.controller.alreadyInitialized(this.controllerName).logWith(this._log)
         }
         this._initialized = true
         return Promise.resolve(this)
@@ -111,7 +111,7 @@ export class CoreController {
                 if (item[contentProperty]) {
                     parsePromises.push(this.parseObject(item[contentProperty], type))
                 } else {
-                    throw CoreErrors.controller.contentPropertyUndefined(contentProperty).logWith(this._log)
+                    throw TransportErrors.controller.contentPropertyUndefined(contentProperty).logWith(this._log)
                 }
             } else {
                 parsePromises.push(this.parseObject(value[i], type))

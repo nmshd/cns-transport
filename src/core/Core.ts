@@ -7,8 +7,8 @@ import { AgentOptions as HTTPSAgentOptions } from "https"
 import _ from "lodash"
 import { Realm } from "../modules/accounts/data/Identity"
 import { CoreContext } from "./CoreContext"
-import { CoreErrors } from "./CoreErrors"
 import { CoreLoggerFactory } from "./CoreLoggerFactory"
+import { TransportErrors } from "./TransportErrors"
 
 let log: ILogger
 
@@ -90,15 +90,15 @@ export class Core {
         log = CoreLoggerFactory.getLogger(Core)
 
         if (!this._config.platformClientId) {
-            throw CoreErrors.general.platformClientIdNotSet().logWith(log)
+            throw TransportErrors.general.platformClientIdNotSet().logWith(log)
         }
 
         if (!this._config.platformClientSecret) {
-            throw CoreErrors.general.platformClientSecretNotSet().logWith(log)
+            throw TransportErrors.general.platformClientSecretNotSet().logWith(log)
         }
 
         if (!this._config.baseUrl) {
-            throw CoreErrors.general.baseUrlNotSet().logWith(log)
+            throw TransportErrors.general.baseUrlNotSet().logWith(log)
         }
     }
 

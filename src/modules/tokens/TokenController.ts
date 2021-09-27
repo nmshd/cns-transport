@@ -1,6 +1,6 @@
 import { ISerializableAsync, SerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey } from "@nmshd/crypto"
-import { CoreAddress, CoreCrypto, CoreDate, CoreErrors, CoreId, CoreSerializableAsync } from "../../core"
+import { CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializableAsync, TransportErrors } from "../../core"
 import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
 import { AccountController } from "../accounts/AccountController"
@@ -76,7 +76,7 @@ export class TokenController extends CoreController {
         const id = idOrToken instanceof CoreId ? idOrToken.toString() : idOrToken.id.toString()
         const tokenDoc = await this.tokens.read(id)
         if (!tokenDoc) {
-            throw CoreErrors.general.recordNotFound(Token, id.toString()).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(Token, id.toString()).logWith(this._log)
         }
 
         const token = await Token.from(tokenDoc)
@@ -103,7 +103,7 @@ export class TokenController extends CoreController {
     private async updateCacheOfExistingTokenInDb(id: string, response?: BackboneGetTokensResponse) {
         const tokenDoc = await this.tokens.read(id)
         if (!tokenDoc) {
-            throw CoreErrors.general.recordNotFound(Token, id).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(Token, id).logWith(this._log)
         }
 
         const token = await Token.from(tokenDoc)
@@ -125,7 +125,7 @@ export class TokenController extends CoreController {
         const plaintextTokenContent = await CoreSerializableAsync.deserializeUnknown(plaintextTokenBuffer.toUtf8())
 
         if (!(plaintextTokenContent instanceof SerializableAsync)) {
-            throw CoreErrors.tokens.invalidTokenContent(tokenId).logWith(this._log)
+            throw TransportErrors.tokens.invalidTokenContent(tokenId).logWith(this._log)
         }
 
         const cachedToken = await CachedToken.from({

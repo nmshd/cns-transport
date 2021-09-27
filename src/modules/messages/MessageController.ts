@@ -1,7 +1,7 @@
 import { ISerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, ICryptoSignature } from "@nmshd/crypto"
 import { nameof } from "ts-simple-nameof"
-import { CoreAddress, CoreCrypto, CoreDate, CoreErrors, CoreId, ICoreAddress } from "../../core"
+import { CoreAddress, CoreCrypto, CoreDate, CoreId, ICoreAddress, TransportErrors } from "../../core"
 import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
 import { AccountController } from "../accounts/AccountController"
@@ -63,7 +63,7 @@ export class MessageController extends CoreController {
     public async getMessagesByAddress(address: CoreAddress): Promise<Message[]> {
         const relationship = await this.parent.relationships.getActiveRelationshipToIdentity(address)
         if (!relationship) {
-            throw CoreErrors.messages.noMatchingRelationship(address.toString()).logWith(this._log)
+            throw TransportErrors.messages.noMatchingRelationship(address.toString()).logWith(this._log)
         }
         return await this.getMessagesByRelationshipId(relationship.id)
     }
@@ -91,7 +91,7 @@ export class MessageController extends CoreController {
     private async updateCacheOfExistingMessageInDb(id: string, response?: BackboneGetMessagesResponse) {
         const messageDoc = await this.messages.read(id)
         if (!messageDoc) {
-            throw CoreErrors.general.recordNotFound(Message, id).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(Message, id).logWith(this._log)
         }
 
         const message = await Message.from(messageDoc)
@@ -122,7 +122,7 @@ export class MessageController extends CoreController {
         const [cachedMessage, messageKey, relationship] = await this.decryptSealedEnvelope(envelope)
 
         if (!relationship) {
-            throw CoreErrors.general.recordNotFound(Relationship, envelope.id.toString()).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(Relationship, envelope.id.toString()).logWith(this._log)
         }
 
         const message = await Message.from({
@@ -167,7 +167,7 @@ export class MessageController extends CoreController {
         const id = idOrMessage instanceof CoreId ? idOrMessage.toString() : idOrMessage.id.toString()
         const messageDoc = await this.messages.read(id)
         if (!messageDoc) {
-            throw CoreErrors.general.recordNotFound(Message, id.toString()).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(Message, id.toString()).logWith(this._log)
         }
 
         const message = await Message.from(messageDoc)
@@ -188,7 +188,7 @@ export class MessageController extends CoreController {
         for (const recipient of parameters.recipients) {
             const relationship = await this.relationships.getActiveRelationshipToIdentity(CoreAddress.from(recipient))
             if (!relationship) {
-                throw CoreErrors.general.recordNotFound(Relationship, recipient.toString()).logWith(this._log)
+                throw TransportErrors.general.recordNotFound(Relationship, recipient.toString()).logWith(this._log)
             }
 
             const cipherForRecipient: CryptoCipher = await this.secrets.encrypt(
@@ -227,7 +227,7 @@ export class MessageController extends CoreController {
         for (const recipient of parameters.recipients) {
             const relationship = await this.relationships.getActiveRelationshipToIdentity(CoreAddress.from(recipient))
             if (!relationship) {
-                throw CoreErrors.general.recordNotFound(Relationship, recipient.toString()).logWith(this._log)
+                throw TransportErrors.general.recordNotFound(Relationship, recipient.toString()).logWith(this._log)
             }
 
             const signature: ICryptoSignature = await this.secrets.sign(
@@ -311,7 +311,7 @@ export class MessageController extends CoreController {
         const ownKeyCipher = envelope.recipients.find((r) => this.parent.identity.isMe(r.address))?.encryptedKey
 
         if (!ownKeyCipher) {
-            throw CoreErrors.messages.ownAddressNotInList(envelope.id.toString()).logWith(this._log)
+            throw TransportErrors.messages.ownAddressNotInList(envelope.id.toString()).logWith(this._log)
         }
 
         const plaintextKeyBuffer = await this.secrets.decryptPeer(relationship.relationshipSecretId, ownKeyCipher, true)
@@ -323,7 +323,7 @@ export class MessageController extends CoreController {
         const signature = signedMessage.signatures.find((s) => this.parent.identity.isMe(s.recipient))?.signature
 
         if (!signature) {
-            throw CoreErrors.messages.signatureListMismatch(envelope.id.toString()).logWith(this._log)
+            throw TransportErrors.messages.signatureListMismatch(envelope.id.toString()).logWith(this._log)
         }
 
         const messagePlain = await MessagePlain.from(JSON.parse(signedMessage.message))
@@ -338,7 +338,7 @@ export class MessageController extends CoreController {
             signature
         )
         if (!validSignature) {
-            throw CoreErrors.messages.signatureNotValid().logWith(this._log)
+            throw TransportErrors.messages.signatureNotValid().logWith(this._log)
         }
 
         if (messagePlain.recipients.length !== envelope.recipients.length) {
@@ -356,7 +356,7 @@ export class MessageController extends CoreController {
         const recipientFound: boolean = messagePlain.recipients.some((r) => this.parent.identity.isMe(r))
 
         if (!recipientFound) {
-            throw CoreErrors.messages.plaintextMismatch(envelope.id.toString()).logWith(this._log)
+            throw TransportErrors.messages.plaintextMismatch(envelope.id.toString()).logWith(this._log)
         }
 
         return [messagePlain, plaintextKey]
@@ -373,7 +373,7 @@ export class MessageController extends CoreController {
         let relationship
         if (this.parent.identity.isMe(envelope.createdBy)) {
             if (!secretKey) {
-                throw CoreErrors.messages.noSecretKeyForOwnMessage(envelope.id.toString()).logWith(this._log)
+                throw TransportErrors.messages.noSecretKeyForOwnMessage(envelope.id.toString()).logWith(this._log)
             }
             messageKey = secretKey
             plainMessage = await this.decryptOwnEnvelope(envelope, secretKey)
@@ -381,7 +381,7 @@ export class MessageController extends CoreController {
             relationship = await this.relationships.getActiveRelationshipToIdentity(envelope.createdBy)
 
             if (!relationship) {
-                throw CoreErrors.messages.noMatchingRelationship(envelope.createdBy.toString()).logWith(this._log)
+                throw TransportErrors.messages.noMatchingRelationship(envelope.createdBy.toString()).logWith(this._log)
             }
 
             const [peerMessage, peerKey] = await this.decryptPeerEnvelope(envelope, relationship)

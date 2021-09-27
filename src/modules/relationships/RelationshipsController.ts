@@ -10,10 +10,10 @@ import {
     CoreId,
     ICoreSerializable
 } from "../../core"
-import { CoreErrors } from "../../core/CoreErrors"
 import { CoreIds } from "../../core/CoreIds"
 import { CoreUtil } from "../../core/CoreUtil"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { TransportErrors } from "../../core/TransportErrors"
 import { AccountController } from "../accounts/AccountController"
 import { Identity } from "../accounts/data/Identity"
 import { RelationshipTemplate } from "../relationshipTemplates/local/RelationshipTemplate"
@@ -76,7 +76,7 @@ export class RelationshipsController extends CoreController {
     private async updateCacheOfExistingRelationshipInDb(id: string, response?: BackboneGetRelationshipsResponse) {
         const relationshipDoc = await this.relationships.read(id)
         if (!relationshipDoc) {
-            throw CoreErrors.general.recordNotFound(Relationship, id).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(Relationship, id).logWith(this._log)
         }
 
         const relationship = await Relationship.from(relationshipDoc)
@@ -138,7 +138,7 @@ export class RelationshipsController extends CoreController {
         parameters = await SendRelationshipParameters.from(parameters)
         const template = (parameters as SendRelationshipParameters).template
         if (!template.cache) {
-            throw CoreErrors.general.cacheEmpty(RelationshipTemplate, template.id.toString()).logWith(this._log)
+            throw TransportErrors.general.cacheEmpty(RelationshipTemplate, template.id.toString()).logWith(this._log)
         }
 
         const secretId = await CoreIds.relationshipSecret.generate()
@@ -171,7 +171,7 @@ export class RelationshipsController extends CoreController {
         const id = idOrRelationship instanceof CoreId ? idOrRelationship.toString() : idOrRelationship.id.toString()
         const relationshipDoc = await this.relationships.read(id)
         if (!relationshipDoc) {
-            throw CoreErrors.general.recordNotFound(Relationship, id.toString()).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(Relationship, id.toString()).logWith(this._log)
         }
 
         const relationship = await Relationship.from(relationshipDoc)
@@ -183,7 +183,7 @@ export class RelationshipsController extends CoreController {
     }
 
     public requestTermination(): void {
-        throw CoreErrors.general.notImplemented()
+        throw TransportErrors.general.notImplemented()
     }
 
     public async acceptChange(change: RelationshipChange, content?: ICoreSerializable): Promise<Relationship> {
@@ -208,7 +208,7 @@ export class RelationshipsController extends CoreController {
         this._log.trace(`Parsing relationship template ${templateId} for ${relationship.id}...`)
         const template = await this.parent.relationshipTemplates.getRelationshipTemplate(templateId)
         if (!template) {
-            throw CoreErrors.general.recordNotFound(RelationshipTemplate, templateId.toString())
+            throw TransportErrors.general.recordNotFound(RelationshipTemplate, templateId.toString())
         }
 
         this._log.trace(`Parsing relationship changes of ${relationship.id}...`)
@@ -241,7 +241,7 @@ export class RelationshipsController extends CoreController {
         requestContent: RelationshipCreationChangeRequestContent
     }> {
         if (!template.cache) {
-            throw CoreErrors.general.cacheEmpty(RelationshipTemplate, template.id.toString()).logWith(this._log)
+            throw TransportErrors.general.cacheEmpty(RelationshipTemplate, template.id.toString()).logWith(this._log)
         }
 
         const requestPublic = await this.secrets.createRequestorSecrets(template.cache, relationshipSecretId)
@@ -289,7 +289,7 @@ export class RelationshipsController extends CoreController {
             case RelationshipChangeType.TerminationCancellation:
                 return await this.applyTerminationCancellationChange(change)
             default:
-                throw CoreErrors.general.incompatibleBackbone().logWith(this._log)
+                throw TransportErrors.general.incompatibleBackbone().logWith(this._log)
         }
     }
 
@@ -325,7 +325,7 @@ export class RelationshipsController extends CoreController {
         templateId: CoreId
     ) {
         if (change.type !== RelationshipChangeType.Creation) {
-            throw CoreErrors.relationships.wrongChangeType(change.type).logWith(this._log)
+            throw TransportErrors.relationships.wrongChangeType(change.type).logWith(this._log)
         }
 
         const promises: any[] = []
@@ -353,7 +353,7 @@ export class RelationshipsController extends CoreController {
         templateId: CoreId
     ): Promise<RelationshipCreationChangeRequestContent> {
         if (!change.content) {
-            throw CoreErrors.relationships.emptyOrInvalidContent().logWith(this._log)
+            throw TransportErrors.relationships.emptyOrInvalidContent().logWith(this._log)
         }
 
         const isOwnChange = this.parent.identity.isMe(CoreAddress.from(change.createdBy))
@@ -378,14 +378,14 @@ export class RelationshipsController extends CoreController {
         }
 
         if (!relationshipSignatureValid) {
-            throw CoreErrors.general.signatureNotValid("relationshipRequest").logWith(this._log)
+            throw TransportErrors.general.signatureNotValid("relationshipRequest").logWith(this._log)
         }
 
         const requestContent = await RelationshipCreationChangeRequestContent.deserialize(
             signedRequest.serializedRequest
         )
         if (requestContent.templateId.toString() !== templateId.toString()) {
-            throw CoreErrors.relationships.requestContainsWrongTemplateId().logWith(this._log)
+            throw TransportErrors.relationships.requestContainsWrongTemplateId().logWith(this._log)
         }
 
         return requestContent
@@ -396,15 +396,15 @@ export class RelationshipsController extends CoreController {
         relationship: Relationship
     ): Promise<RelationshipCreationChangeResponseContent> {
         if (!change.response) {
-            throw CoreErrors.relationships.changeResponseMissing(change.id).logWith(this._log)
+            throw TransportErrors.relationships.changeResponseMissing(change.id).logWith(this._log)
         }
 
         if (change.type !== RelationshipChangeType.Creation) {
-            throw CoreErrors.relationships.wrongChangeType(change.type).logWith(this._log)
+            throw TransportErrors.relationships.wrongChangeType(change.type).logWith(this._log)
         }
 
         if (!change.response.content) {
-            throw CoreErrors.relationships.emptyOrInvalidContent(change).logWith(this._log)
+            throw TransportErrors.relationships.emptyOrInvalidContent(change).logWith(this._log)
         }
         const isOwnChange = this.parent.identity.isMe(CoreAddress.from(change.response.createdBy))
 
@@ -441,7 +441,7 @@ export class RelationshipsController extends CoreController {
         }
 
         if (!relationshipSignatureValid) {
-            throw CoreErrors.general.signatureNotValid("relationshipResponse").logWith(this._log)
+            throw TransportErrors.general.signatureNotValid("relationshipResponse").logWith(this._log)
         }
 
         const responseContent = await RelationshipCreationChangeResponseContent.deserialize(
@@ -449,7 +449,7 @@ export class RelationshipsController extends CoreController {
         )
 
         if (responseContent.relationshipId.toString() !== relationship.id.toString()) {
-            throw CoreErrors.relationships.responseContainsWrongRequestId().logWith(this._log)
+            throw TransportErrors.relationships.responseContainsWrongRequestId().logWith(this._log)
         }
         return responseContent
     }
@@ -470,18 +470,18 @@ export class RelationshipsController extends CoreController {
         }
 
         if (!change.response) {
-            throw CoreErrors.relationships.changeResponseMissing(change.id).logWith(this._log)
+            throw TransportErrors.relationships.changeResponseMissing(change.id).logWith(this._log)
         }
 
         if (!change.response.content) {
-            throw CoreErrors.relationships.emptyOrInvalidContent(change).logWith(this._log)
+            throw TransportErrors.relationships.emptyOrInvalidContent(change).logWith(this._log)
         }
 
         const cipher = await RelationshipCreationChangeResponseCipher.fromBase64(change.response.content)
 
         if (change.status !== RelationshipChangeStatus.Revoked) {
             if (!cipher.publicResponseCrypto) {
-                throw CoreErrors.relationships.responseCryptoIsMissing().logWith(this._log)
+                throw TransportErrors.relationships.responseCryptoIsMissing().logWith(this._log)
             }
             await this.secrets.convertSecrets(relationship.relationshipSecretId, cipher.publicResponseCrypto)
         }
@@ -491,7 +491,7 @@ export class RelationshipsController extends CoreController {
         const response = await RelationshipChangeResponse.fromBackbone(change.response, responseContent.content)
 
         if (!relationship.cache) {
-            throw CoreErrors.general.cacheEmpty(Relationship, relationship.id.toString())
+            throw TransportErrors.general.cacheEmpty(Relationship, relationship.id.toString())
         }
         relationship.cache.changes[0].status = change.status
         switch (change.status) {
@@ -505,7 +505,7 @@ export class RelationshipsController extends CoreController {
                 relationship.toRevoked(response)
                 break
             default:
-                throw CoreErrors.general.incompatibleBackbone().logWith(this._log)
+                throw TransportErrors.general.incompatibleBackbone().logWith(this._log)
         }
 
         await this.relationships.update(relationshipDoc, relationship)
@@ -520,15 +520,15 @@ export class RelationshipsController extends CoreController {
         const templateId = CoreId.from(backboneRelationship.relationshipTemplateId)
         const template = await this.parent.relationshipTemplates.getRelationshipTemplate(templateId)
         if (!template) {
-            throw CoreErrors.general.recordNotFound(RelationshipTemplate, templateId.toString()).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(RelationshipTemplate, templateId.toString()).logWith(this._log)
         }
 
         if (!template.cache) {
-            throw CoreErrors.general.cacheEmpty(RelationshipTemplate, template.id.toString()).logWith(this._log)
+            throw TransportErrors.general.cacheEmpty(RelationshipTemplate, template.id.toString()).logWith(this._log)
         }
 
         if (!change.request.content) {
-            throw CoreErrors.relationships.emptyOrInvalidContent(change).logWith(this._log)
+            throw TransportErrors.relationships.emptyOrInvalidContent(change).logWith(this._log)
         }
 
         const secretId = await CoreIds.relationshipSecret.generate()
@@ -555,13 +555,13 @@ export class RelationshipsController extends CoreController {
     }
 
     private applyTerminationChange(_change: BackboneGetRelationshipsChangesResponse): Promise<Relationship> {
-        throw CoreErrors.general.notImplemented()
+        throw TransportErrors.general.notImplemented()
     }
 
     private applyTerminationCancellationChange(
         _change: BackboneGetRelationshipsChangesResponse
     ): Promise<Relationship> {
-        throw CoreErrors.general.notImplemented()
+        throw TransportErrors.general.notImplemented()
     }
 
     private async completeChange(
@@ -571,7 +571,9 @@ export class RelationshipsController extends CoreController {
     ) {
         const relationshipDoc = await this.relationships.read(change.relationshipId.toString())
         if (!relationshipDoc) {
-            throw CoreErrors.general.recordNotFound(Relationship, change.relationshipId.toString()).logWith(this._log)
+            throw TransportErrors.general
+                .recordNotFound(Relationship, change.relationshipId.toString())
+                .logWith(this._log)
         }
 
         const relationship = await Relationship.from(relationshipDoc)
@@ -581,16 +583,16 @@ export class RelationshipsController extends CoreController {
         }
 
         if (!relationship.cache) {
-            throw CoreErrors.general.cacheEmpty(Relationship, relationship.id.toString())
+            throw TransportErrors.general.cacheEmpty(Relationship, relationship.id.toString())
         }
 
         const queriedChange = relationship.cache.changes.find((r) => r.id.toString() === change.id.toString())
         if (!queriedChange) {
-            throw CoreErrors.general.recordNotFound(RelationshipChange, change.id.toString()).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(RelationshipChange, change.id.toString()).logWith(this._log)
         }
 
         if (queriedChange.status !== RelationshipChangeStatus.Pending) {
-            throw CoreErrors.relationships.wrongChangeStatus(queriedChange.status).logWith(this._log)
+            throw TransportErrors.relationships.wrongChangeStatus(queriedChange.status).logWith(this._log)
         }
 
         let encryptedContent

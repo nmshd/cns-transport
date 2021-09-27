@@ -21,7 +21,7 @@ import {
     Encoding
 } from "@nmshd/crypto"
 import { PasswordGenerator } from "../util"
-import { CoreErrors } from "./CoreErrors"
+import { TransportErrors } from "./TransportErrors"
 import { CoreVersion } from "./types/CoreVersion"
 
 export abstract class CoreCrypto {
@@ -40,7 +40,7 @@ export abstract class CoreCrypto {
             case CoreVersion.V1:
                 return await CryptoSignatures.generateKeypair(CryptoSignatureAlgorithm.ECDSA_ED25519)
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 
@@ -60,7 +60,7 @@ export abstract class CoreCrypto {
             case CoreVersion.V1:
                 return await CryptoExchange.generateKeypair(CryptoExchangeAlgorithm.ECDH_X25519)
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 
@@ -77,7 +77,7 @@ export abstract class CoreCrypto {
             case CoreVersion.V1:
                 return await CryptoEncryption.generateKey(CryptoEncryptionAlgorithm.XCHACHA20_POLY1305)
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 
@@ -108,7 +108,7 @@ export abstract class CoreCrypto {
             case CoreVersion.V1:
                 return await CryptoDerivation.deriveKeyFromMaster(masterBuffer, 150000, keyAlgorithm, saltBuffer)
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 
@@ -124,7 +124,7 @@ export abstract class CoreCrypto {
         } else if (secret instanceof CoreBuffer) {
             buffer = secret
         } else {
-            throw CoreErrors.util.crypto.invalidSecretType()
+            throw TransportErrors.util.crypto.invalidSecretType()
         }
         return await CryptoDerivation.deriveKeyFromBase(buffer, keyId, context, keyAlgorithm)
     }
@@ -144,7 +144,7 @@ export abstract class CoreCrypto {
                 )
                 return base
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 
@@ -163,7 +163,7 @@ export abstract class CoreCrypto {
                 )
                 return base
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 
@@ -186,7 +186,7 @@ export abstract class CoreCrypto {
             case CoreVersion.V1:
                 return await CryptoSignatures.sign(content, privateKey, CryptoHashAlgorithm.SHA512)
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 
@@ -211,7 +211,7 @@ export abstract class CoreCrypto {
             case CoreVersion.V1:
                 return await CryptoSignatures.verify(content, signature, publicKey)
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 
@@ -236,7 +236,7 @@ export abstract class CoreCrypto {
             case CoreVersion.V1:
                 return await CryptoEncryption.encrypt(content, secretKey)
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 
@@ -261,7 +261,7 @@ export abstract class CoreCrypto {
             case CoreVersion.V1:
                 return await CryptoEncryption.decrypt(cipher, secretKey)
             default:
-                throw CoreErrors.util.crypto.invalidVersion(version)
+                throw TransportErrors.util.crypto.invalidVersion(version)
         }
     }
 

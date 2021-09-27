@@ -1,6 +1,6 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoSecretKey, ICryptoSecretKey } from "@nmshd/crypto"
-import { CoreErrors, CoreId, CoreSerializableAsync, ICoreId, ICoreSerializableAsync } from "../../../core"
+import { CoreId, CoreSerializableAsync, ICoreId, ICoreSerializableAsync, TransportErrors } from "../../../core"
 
 export interface ITokenReference extends ICoreSerializableAsync {
     id: ICoreId
@@ -29,7 +29,7 @@ export class TokenReference extends CoreSerializableAsync implements ITokenRefer
         const splitted = truncatedBuffer.toUtf8().split("|")
 
         if (splitted.length !== 3) {
-            throw CoreErrors.tokens.invalidTruncatedReference()
+            throw TransportErrors.tokens.invalidTruncatedReference()
         }
         try {
             const id = CoreId.from(splitted[0])
@@ -45,7 +45,7 @@ export class TokenReference extends CoreSerializableAsync implements ITokenRefer
                 key: secretKey
             })
         } catch (e) {
-            throw CoreErrors.tokens.invalidTruncatedReference()
+            throw TransportErrors.tokens.invalidTruncatedReference()
         }
     }
 

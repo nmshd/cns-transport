@@ -8,7 +8,7 @@ import {
     CryptoSignature,
     Encoding
 } from "@nmshd/crypto"
-import { CoreAddress, CoreCrypto, CoreDate, CoreErrors, CoreHash, CoreId } from "../../core"
+import { CoreAddress, CoreCrypto, CoreDate, CoreHash, CoreId, TransportErrors } from "../../core"
 import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
 import { AccountController } from "../accounts/AccountController"
@@ -61,7 +61,7 @@ export class FileController extends CoreController {
     private async updateCacheOfExistingFileInDb(id: string, response?: BackboneGetFilesResponse) {
         const fileDoc = await this.files.read(id)
         if (!fileDoc) {
-            throw CoreErrors.general.recordNotFound(File, id).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(File, id).logWith(this._log)
         }
 
         const file = await File.from(fileDoc)
@@ -82,7 +82,7 @@ export class FileController extends CoreController {
         const plaintextMetadata: FileMetadata = await FileMetadata.deserialize(plaintextMetadataBuffer.toUtf8())
 
         if (!(plaintextMetadata instanceof FileMetadata)) {
-            throw CoreErrors.files.invalidMetadata(fileId).logWith(this._log)
+            throw TransportErrors.files.invalidMetadata(fileId).logWith(this._log)
         }
 
         // TODO: JSSNMSHDD-2486 (check signature)
@@ -123,7 +123,7 @@ export class FileController extends CoreController {
         const id = idOrFile instanceof CoreId ? idOrFile.toString() : idOrFile.id.toString()
         const fileDoc = await this.files.read(id)
         if (!fileDoc) {
-            throw CoreErrors.general.recordNotFound(File, id.toString()).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(File, id.toString()).logWith(this._log)
         }
 
         const file = await File.from(fileDoc)
@@ -139,7 +139,7 @@ export class FileController extends CoreController {
         const fileSize = content.length
 
         if (fileSize > this.config.platformMaxUnencryptedFileSize) {
-            throw CoreErrors.files.maxFileSizeExceeded(fileSize, this.config.platformMaxUnencryptedFileSize)
+            throw TransportErrors.files.maxFileSizeExceeded(fileSize, this.config.platformMaxUnencryptedFileSize)
         }
 
         const plaintextHashBuffer: CoreBuffer = await CryptoHash.hash(content, CryptoHashAlgorithm.SHA512)
@@ -217,11 +217,11 @@ export class FileController extends CoreController {
     public async downloadFileContent(idOrFile: CoreId | File): Promise<CoreBuffer> {
         const file = idOrFile instanceof File ? idOrFile : await this.getFile(idOrFile)
         if (!file) {
-            throw CoreErrors.general.recordNotFound(File, idOrFile.toString()).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(File, idOrFile.toString()).logWith(this._log)
         }
 
         if (!file.cache) {
-            throw CoreErrors.general.cacheEmpty(File, file.id.toString()).logWith(this._log)
+            throw TransportErrors.general.cacheEmpty(File, file.id.toString()).logWith(this._log)
         }
 
         const downloadResponse = (await this.client.downloadFile(file.id.toString())).value
@@ -231,7 +231,7 @@ export class FileController extends CoreController {
         const hashb64 = hash.toBase64URL()
 
         if (hashb64 !== file.cache.cipherHash.hash) {
-            throw CoreErrors.files.cipherMismatch().logWith(this._log)
+            throw TransportErrors.files.cipherMismatch().logWith(this._log)
         }
         /*
         // TODO: JSSNMSHDD-2486 (verify owner signature)
@@ -246,7 +246,7 @@ export class FileController extends CoreController {
         const plaintextHashesMatch = await file.cache.plaintextHash.verify(decrypt, CryptoHashAlgorithm.SHA512)
 
         if (!plaintextHashesMatch) {
-            throw CoreErrors.files.plaintextHashMismatch().logWith(this._log)
+            throw TransportErrors.files.plaintextHashMismatch().logWith(this._log)
         }
 
         return decrypt

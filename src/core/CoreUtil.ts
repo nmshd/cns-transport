@@ -1,6 +1,6 @@
 import { Serializable, SerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer } from "@nmshd/crypto"
-import { CoreErrors } from "./CoreErrors"
+import { TransportErrors } from "./TransportErrors"
 
 export class CoreUtil {
     public static toBuffer(
@@ -17,7 +17,7 @@ export class CoreUtil {
         } else if (content instanceof ArrayBuffer || content instanceof Uint8Array) {
             buffer = new CoreBuffer(content)
         } else {
-            throw CoreErrors.util.wrongContentForBuffer()
+            throw TransportErrors.util.wrongContentForBuffer()
         }
         return buffer
     }

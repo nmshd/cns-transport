@@ -1,10 +1,10 @@
 import { CoreBuffer, CryptoHash, CryptoHashAlgorithm, ICryptoSignaturePublicKey } from "@nmshd/crypto"
-import { CoreAddress, CoreErrors } from "../../core"
+import { CoreAddress, TransportErrors } from "../../core"
 
 export class IdentityUtil {
     public static async createAddress(publicKey: ICryptoSignaturePublicKey, realm = "ID0"): Promise<CoreAddress> {
         if (realm && realm.length !== 3) {
-            throw CoreErrors.identity.realmLength()
+            throw TransportErrors.identity.realmLength()
         }
         const sha512buffer = await CryptoHash.hash(publicKey.publicKey, CryptoHashAlgorithm.SHA512)
         const hash = await CryptoHash.hash(sha512buffer, CryptoHashAlgorithm.SHA256)

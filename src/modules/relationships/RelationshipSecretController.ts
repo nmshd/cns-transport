@@ -12,9 +12,9 @@ import {
     CryptoSignaturePublicKey
 } from "@nmshd/crypto"
 import { ControllerName, CoreCrypto, CoreId } from "../../core"
-import { CoreErrors } from "../../core/CoreErrors"
 import { CoreIds } from "../../core/CoreIds"
 import { CoreUtil } from "../../core/CoreUtil"
+import { TransportErrors } from "../../core/TransportErrors"
 import { AccountController } from "../accounts/AccountController"
 import { Identity } from "../accounts/data/Identity"
 import { CachedRelationshipTemplate } from "../relationshipTemplates/local/CachedRelationshipTemplate"
@@ -43,7 +43,7 @@ export class RelationshipSecretController extends SecretController {
 
         const secretContainer = await this.loadActiveSecretByName(secretIdAsString)
         if (!secretContainer) {
-            throw CoreErrors.general
+            throw TransportErrors.general
                 .recordNotFound("CryptoRelationshipRequestSecrets | CryptoRelationshipSecrets", secretIdAsString)
                 .logWith(this._log)
         }
@@ -52,7 +52,7 @@ export class RelationshipSecretController extends SecretController {
             !(secretContainer.secret instanceof CryptoRelationshipRequestSecrets) &&
             !(secretContainer.secret instanceof CryptoRelationshipSecrets)
         ) {
-            throw CoreErrors.secrets.wrongSecretType(secretIdAsString).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(secretIdAsString).logWith(this._log)
         }
         const secret = secretContainer.secret
         this.cache.set(relationshipSecretId, secret)
@@ -82,11 +82,11 @@ export class RelationshipSecretController extends SecretController {
         const exchangeKeypairContainer = await this.loadActiveSecretByName(templateKeyId)
 
         if (!exchangeKeypairContainer) {
-            throw CoreErrors.general.recordNotFound(CryptoExchangeKeypair, templateKeyId).logWith(this._log)
+            throw TransportErrors.general.recordNotFound(CryptoExchangeKeypair, templateKeyId).logWith(this._log)
         }
 
         if (!(exchangeKeypairContainer.secret instanceof CryptoExchangeKeypair)) {
-            throw CoreErrors.secrets.wrongSecretType(templateKeyId).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(templateKeyId).logWith(this._log)
         }
 
         const exchangeKeypair = exchangeKeypairContainer.secret
@@ -100,13 +100,13 @@ export class RelationshipSecretController extends SecretController {
     public async getPublicResponse(relationshipSecretId: CoreId): Promise<CryptoRelationshipPublicResponse> {
         const secret = await this.loadActiveSecretByName(relationshipSecretId.toString())
         if (!secret) {
-            throw CoreErrors.general
+            throw TransportErrors.general
                 .recordNotFound(CryptoRelationshipSecrets, relationshipSecretId.toString())
                 .logWith(this._log)
         }
 
         if (!(secret.secret instanceof CryptoRelationshipSecrets)) {
-            throw CoreErrors.secrets.wrongSecretType(secret.id.toString()).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(secret.id.toString()).logWith(this._log)
         }
         const publicResponse = await secret.secret.toPublicResponse()
         return publicResponse
@@ -118,7 +118,7 @@ export class RelationshipSecretController extends SecretController {
     ): Promise<SecretContainerCipher> {
         const request = await this.getSecret(relationshipSecretId)
         if (request instanceof CryptoRelationshipSecrets) {
-            throw CoreErrors.secrets.wrongSecretType().logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType().logWith(this._log)
         }
 
         const secrets = await CryptoRelationshipSecrets.fromRelationshipResponse(response, request)
@@ -158,7 +158,7 @@ export class RelationshipSecretController extends SecretController {
         const secrets = await this.getSecret(relationshipSecretId)
 
         if (!(secrets instanceof CryptoRelationshipRequestSecrets)) {
-            throw CoreErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
         }
 
         return await secrets.encryptRequest(buffer)
@@ -172,7 +172,7 @@ export class RelationshipSecretController extends SecretController {
         const secrets = await this.getSecret(relationshipSecretId)
 
         if (!(secrets instanceof CryptoRelationshipSecrets)) {
-            throw CoreErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
         }
 
         return await secrets.encrypt(buffer)
@@ -182,7 +182,7 @@ export class RelationshipSecretController extends SecretController {
         const secrets = await this.getSecret(relationshipSecretId)
 
         if (!(secrets instanceof CryptoRelationshipRequestSecrets) && !(secrets instanceof CryptoRelationshipSecrets)) {
-            throw CoreErrors.secrets.wrongSecretType(relationshipSecretId.toString()).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(relationshipSecretId.toString()).logWith(this._log)
         }
 
         return await secrets.decryptRequest(cipher)
@@ -203,7 +203,7 @@ export class RelationshipSecretController extends SecretController {
         const secrets = await this.getSecret(relationshipSecretId)
 
         if (!(secrets instanceof CryptoRelationshipSecrets)) {
-            throw CoreErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
         }
 
         return await secrets.decryptPeer(cipher, omitCounterCheck)
@@ -218,7 +218,7 @@ export class RelationshipSecretController extends SecretController {
         const secrets = await this.getSecret(relationshipSecretId)
 
         if (!(secrets instanceof CryptoRelationshipSecrets)) {
-            throw CoreErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
         }
 
         return await secrets.decryptOwn(cipher)
@@ -252,7 +252,7 @@ export class RelationshipSecretController extends SecretController {
 
         const secrets = await this.getSecret(relationshipSecretId)
         if (secrets instanceof CryptoRelationshipRequestSecrets) {
-            throw CoreErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
+            throw TransportErrors.secrets.wrongSecretType(secrets.id).logWith(this._log)
         }
 
         const valid = await secrets.verifyPeer(bufferToVerify, signature)

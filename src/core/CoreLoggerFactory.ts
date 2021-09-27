@@ -1,5 +1,5 @@
 import { ILogger, ILoggerFactory } from "@js-soft/logging-abstractions"
-import { CoreErrors } from "./CoreErrors"
+import { TransportErrors } from "./TransportErrors"
 
 export class CoreLoggerFactory {
     private static instance: ILoggerFactory
@@ -10,7 +10,7 @@ export class CoreLoggerFactory {
 
     public static getLogger(name: string | Function): ILogger {
         if (!this.isInitialized()) {
-            throw CoreErrors.util.logging.loggerNotInitialized()
+            throw TransportErrors.util.logging.loggerNotInitialized()
         }
 
         if (typeof name === "function") {
