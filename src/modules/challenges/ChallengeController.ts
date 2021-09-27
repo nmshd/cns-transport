@@ -1,6 +1,6 @@
 import { CoreBuffer, CryptoSignatureKeypair } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, TransportErrors } from "../../core"
-import { ControllerName, CoreController } from "../../core/CoreController"
+import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { Relationship } from "../relationships/local/Relationship"
 import { ChallengeAuthClient } from "./backbone/ChallengeAuthClient"
@@ -8,7 +8,7 @@ import { ChallengeClient } from "./backbone/ChallengeClient"
 import { Challenge, ChallengeType } from "./data/Challenge"
 import { ChallengeSigned } from "./data/ChallengeSigned"
 
-export class ChallengeController extends CoreController {
+export class ChallengeController extends TransportController {
     private client: ChallengeClient
     private authClient: ChallengeAuthClient
 

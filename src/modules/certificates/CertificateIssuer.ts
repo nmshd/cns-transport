@@ -1,6 +1,6 @@
 import { IDatabaseCollection } from "@js-soft/docdb-access-abstractions"
 import { CoreBuffer, ICryptoSignaturePublicKey } from "@nmshd/crypto"
-import { ControllerName, CoreController, CoreDate, ICoreAddress, ICoreDate } from "../../core"
+import { ControllerName, CoreDate, ICoreAddress, ICoreDate, TransportController } from "../../core"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
 import { AccountController } from "../accounts/AccountController"
 import { Certificate } from "./data/Certificate"
@@ -13,7 +13,7 @@ import { ICertificateItem } from "./data/CertificateItem"
  * for own identity (e.g. for technical communication) or others (e.g. verification
  * of other identities or certification of attributes).
  */
-export class CertificateIssuer extends CoreController {
+export class CertificateIssuer extends TransportController {
     public certificatesIssued: IDatabaseCollection
 
     public constructor(parent: AccountController) {

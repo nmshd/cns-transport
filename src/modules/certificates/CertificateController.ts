@@ -1,4 +1,4 @@
-import { ControllerName, CoreController } from "../../core"
+import { ControllerName, TransportController } from "../../core"
 import { AccountController } from "../accounts/AccountController"
 
 /**
@@ -10,7 +10,7 @@ import { AccountController } from "../accounts/AccountController"
  *  - Store certificates for own relationships/roles/authorization
  *  - Store certificates for other identities
  */
-export class CertificateController extends CoreController {
+export class CertificateController extends TransportController {
     public constructor(parent: AccountController) {
         super(ControllerName.Certificate, parent)
     }

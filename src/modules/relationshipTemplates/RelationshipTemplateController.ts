@@ -1,8 +1,8 @@
 import { ISerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, CryptoSignature } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, TransportErrors } from "../../core"
-import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { RelationshipSecretController } from "../relationships/RelationshipSecretController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
@@ -17,7 +17,7 @@ import {
 import { RelationshipTemplateContent } from "./transmission/RelationshipTemplateContent"
 import { RelationshipTemplateSigned } from "./transmission/RelationshipTemplateSigned"
 
-export class RelationshipTemplateController extends CoreController {
+export class RelationshipTemplateController extends TransportController {
     protected readonly client: RelationshipTemplateClient
     protected templates: SynchronizedCollection
     protected readonly secrets: RelationshipSecretController

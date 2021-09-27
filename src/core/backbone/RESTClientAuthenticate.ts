@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from "axios"
 import _ from "lodash"
-import { IConfig } from "../../core/Core"
+import { IConfig } from "../Transport"
 import { Authenticator } from "./Authenticator"
 import { ClientResult } from "./ClientResult"
 import { Paginator } from "./Paginator"

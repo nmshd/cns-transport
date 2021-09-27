@@ -1,10 +1,10 @@
 import { CoreBuffer, CryptoSignature, CryptoSignaturePrivateKey, CryptoSignaturePublicKey } from "@nmshd/crypto"
-import { ControllerName, CoreAddress, CoreController, CoreCrypto, CoreDate, TransportErrors } from "../../core"
+import { ControllerName, CoreAddress, CoreCrypto, CoreDate, TransportController, TransportErrors } from "../../core"
 import { AccountController } from "../accounts/AccountController"
 import { DeviceSecretType } from "../devices/DeviceSecretController"
 import { Identity, IdentityType, Realm } from "./data/Identity"
 
-export class IdentityController extends CoreController {
+export class IdentityController extends TransportController {
     public get address(): CoreAddress {
         return this._identity.address
     }

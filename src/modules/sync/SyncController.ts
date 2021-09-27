@@ -1,5 +1,5 @@
 import { IDatabaseCollection, IDatabaseMap } from "@js-soft/docdb-access-abstractions"
-import { ControllerName, CoreController, CoreDate, CoreError, CoreId } from "../../core"
+import { ControllerName, CoreDate, CoreError, CoreId, TransportController } from "../../core"
 import { AccountController } from "../accounts/AccountController"
 import { BackboneDatawalletModification } from "./backbone/BackboneDatawalletModification"
 import { BackboneSyncRun } from "./backbone/BackboneSyncRun"
@@ -14,7 +14,7 @@ import { ExternalEventsProcessor } from "./ExternalEventsProcessor"
 import { DatawalletModification } from "./local/DatawalletModification"
 import { WhatToSync } from "./WhatToSync"
 
-export class SyncController extends CoreController {
+export class SyncController extends TransportController {
     private client: SyncClient
     private syncInfo: IDatabaseMap
 

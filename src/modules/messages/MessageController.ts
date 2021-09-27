@@ -2,8 +2,8 @@ import { ISerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, ICryptoSignature } from "@nmshd/crypto"
 import { nameof } from "ts-simple-nameof"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, ICoreAddress, TransportErrors } from "../../core"
-import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { File } from "../files/local/File"
 import { FileReference } from "../files/transmission/FileReference"
@@ -23,7 +23,7 @@ import { MessagePlain } from "./transmission/MessagePlain"
 import { MessageSignature } from "./transmission/MessageSignature"
 import { MessageSigned } from "./transmission/MessageSigned"
 
-export class MessageController extends CoreController {
+export class MessageController extends TransportController {
     private client: MessageClient
     private messages: SynchronizedCollection
 

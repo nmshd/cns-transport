@@ -9,8 +9,8 @@ import {
     Encoding
 } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreHash, CoreId, TransportErrors } from "../../core"
-import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
 import { BackboneGetFilesResponse } from "./backbone/BackboneGetFiles"
@@ -22,7 +22,7 @@ import { ISendFileParameters, SendFileParameters } from "./local/SendFileParamet
 import { FileMetadata } from "./transmission/FileMetadata"
 import { FileReference } from "./transmission/FileReference"
 
-export class FileController extends CoreController {
+export class FileController extends TransportController {
     private client: FileClient
     private files: SynchronizedCollection
 

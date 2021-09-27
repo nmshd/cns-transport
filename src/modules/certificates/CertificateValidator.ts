@@ -1,4 +1,4 @@
-import { ControllerName, CoreController } from "../../core"
+import { ControllerName, TransportController } from "../../core"
 import { AccountController } from "../accounts/AccountController"
 
 /**
@@ -10,7 +10,7 @@ import { AccountController } from "../accounts/AccountController"
  * - Check Constraints (Time, Region, ...)
  * - Check Content
  */
-export class CertificateValidator extends CoreController {
+export class CertificateValidator extends TransportController {
     public constructor(parent: AccountController) {
         super(ControllerName.CertificateValidator, parent)
     }

@@ -4,11 +4,11 @@ import { nameof } from "ts-simple-nameof"
 import {
     ControllerName,
     CoreAddress,
-    CoreController,
     CoreCrypto,
     CoreDate,
     CoreId,
-    ICoreSerializable
+    ICoreSerializable,
+    TransportController
 } from "../../core"
 import { CoreIds } from "../../core/CoreIds"
 import { CoreUtil } from "../../core/CoreUtil"
@@ -40,7 +40,7 @@ import { RelationshipCreationChangeResponseCipher } from "./transmission/respons
 import { RelationshipCreationChangeResponseContent } from "./transmission/responses/RelationshipCreationChangeResponseContent"
 import { RelationshipCreationChangeResponseSigned } from "./transmission/responses/RelationshipCreationChangeResponseSigned"
 
-export class RelationshipsController extends CoreController {
+export class RelationshipsController extends TransportController {
     private client: RelationshipClient
     private relationships: SynchronizedCollection
     private readonly secrets: RelationshipSecretController

@@ -1,7 +1,7 @@
 import { IDatabaseCollection, IDatabaseCollectionProvider, IDatabaseMap } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
 import { CryptoSecretKey } from "@nmshd/crypto"
-import { ControllerName, Core, CoreAddress, CoreDate, CoreId, IConfig, TransportErrors } from "../../core"
+import { ControllerName, CoreAddress, CoreDate, CoreId, IConfig, Transport, TransportErrors } from "../../core"
 import { Authenticator } from "../../core/backbone/Authenticator"
 import { CoreCrypto } from "../../core/CoreCrypto"
 import { CoreLoggerFactory } from "../../core/CoreLoggerFactory"
@@ -73,7 +73,7 @@ export class AccountController {
 
     protected _dbClosed = false
 
-    public get core(): Core {
+    public get core(): Transport {
         return this._core
     }
 
@@ -94,7 +94,7 @@ export class AccountController {
     }
 
     public constructor(
-        private readonly _core: Core,
+        private readonly _core: Transport,
         private readonly _realm: Realm,
         private readonly _db: IDatabaseCollectionProvider,
         private readonly _config: IConfig

@@ -12,8 +12,8 @@ import {
     CryptoSignaturePrivateKey
 } from "@nmshd/crypto"
 import { CoreCrypto, CoreDate, CoreId, CoreIds, TransportErrors } from "../../core"
-import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { DeviceSecretType } from "../devices/DeviceSecretController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
@@ -30,7 +30,7 @@ export enum SecretBaseKeyType {
  * The SecretController which acts as a single touchpoint to access any secret within the runtime.
  * Each access can be audited.
  */
-export class SecretController extends CoreController {
+export class SecretController extends TransportController {
     /**
      * Context of the secret derivation function. Doesn't have to be secret.
      * Must be 8 characters long.

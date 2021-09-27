@@ -1,10 +1,10 @@
 import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
 import { AccountController } from "../modules/accounts/AccountController"
-import { Core, IConfig } from "./Core"
 import { CoreLoggerFactory } from "./CoreLoggerFactory"
 import { CoreSerializable } from "./CoreSerializable"
 import { CoreSerializableAsync } from "./CoreSerializableAsync"
+import { IConfig, Transport } from "./Transport"
 import { TransportErrors } from "./TransportErrors"
 
 export enum ControllerName {
@@ -32,7 +32,7 @@ export enum ControllerName {
     Token = "Token"
 }
 
-export class CoreController {
+export class TransportController {
     protected _log: ILogger
     public get log(): ILogger {
         return this._log
@@ -50,8 +50,8 @@ export class CoreController {
 
     protected _dbClosed = false
 
-    protected _core: Core
-    public get core(): Core {
+    protected _core: Transport
+    public get core(): Transport {
         return this._core
     }
 
@@ -84,7 +84,7 @@ export class CoreController {
         this._log = CoreLoggerFactory.getLogger(loggerName)
     }
 
-    public init(): Promise<CoreController> {
+    public init(): Promise<TransportController> {
         if (this._initialized) {
             throw TransportErrors.controller.alreadyInitialized(this.controllerName).logWith(this._log)
         }

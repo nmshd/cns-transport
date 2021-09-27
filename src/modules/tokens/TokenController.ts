@@ -1,8 +1,8 @@
 import { ISerializableAsync, SerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializableAsync, TransportErrors } from "../../core"
-import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
 import { BackboneGetTokensResponse } from "./backbone/BackboneGetTokens"
@@ -12,7 +12,7 @@ import { ISendTokenParameters, SendTokenParameters } from "./local/SendTokenPara
 import { Token } from "./local/Token"
 import { TokenReference } from "./transmission/TokenReference"
 
-export class TokenController extends CoreController {
+export class TokenController extends TransportController {
     private client: TokenClient
     private tokens: SynchronizedCollection
 

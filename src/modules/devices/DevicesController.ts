@@ -1,6 +1,6 @@
 import { CoreDate, CoreId, TransportErrors } from "../../core"
-import { ControllerName, CoreController } from "../../core/CoreController"
 import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { ControllerName, TransportController } from "../../core/TransportController"
 import { PasswordGenerator } from "../../util"
 import { AccountController } from "../accounts/AccountController"
 import { ChallengeType } from "../challenges/data/Challenge"
@@ -10,7 +10,7 @@ import { Device, DeviceType } from "./local/Device"
 import { ISendDeviceParameters, SendDeviceParameters } from "./local/SendDeviceParameters"
 import { DeviceSharedSecret } from "./transmission/DeviceSharedSecret"
 
-export class DevicesController extends CoreController {
+export class DevicesController extends TransportController {
     private devices: SynchronizedCollection
     private client: DeviceAuthClient
 

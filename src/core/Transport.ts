@@ -36,7 +36,7 @@ export interface IConfigOverwrite {
     platformMaxRedirects?: number
     platformMaxUnencryptedFileSize?: number
     platformAdditionalHeaders?: object
-    baseUrl?: string
+    baseUrl: string
     useGateway?: boolean
     realm?: Realm
     datawalletEnabled?: boolean
@@ -44,7 +44,7 @@ export interface IConfigOverwrite {
     httpsAgent?: HTTPSAgentOptions
 }
 
-export class Core {
+export class Transport {
     private readonly databaseConnection: IDatabaseConnection
 
     private readonly _config: IConfig
@@ -52,7 +52,7 @@ export class Core {
         return this._config
     }
 
-    public defaultConfig: IConfig = {
+    private readonly defaultConfig: IConfig = {
         debug: false,
         platformClientId: "",
         platformClientSecret: "",
@@ -77,17 +77,14 @@ export class Core {
 
     public constructor(
         databaseConnection: IDatabaseConnection,
-        customConfig: IConfigOverwrite = {
-            platformClientId: "",
-            platformClientSecret: ""
-        },
+        customConfig: IConfigOverwrite,
         loggerFactory: ILoggerFactory = new SimpleLoggerFactory()
     ) {
         this.databaseConnection = databaseConnection
         this._config = _.defaultsDeep({}, customConfig, this.defaultConfig)
 
         CoreLoggerFactory.init(loggerFactory)
-        log = CoreLoggerFactory.getLogger(Core)
+        log = CoreLoggerFactory.getLogger(Transport)
 
         if (!this._config.platformClientId) {
             throw TransportErrors.general.platformClientIdNotSet().logWith(log)
@@ -102,7 +99,7 @@ export class Core {
         }
     }
 
-    public async init(): Promise<Core> {
+    public async init(): Promise<Transport> {
         log.trace("Initializing Libsodium...")
         await SodiumWrapper.ready()
         log.trace("Libsodium initialized")

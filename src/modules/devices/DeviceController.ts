@@ -7,11 +7,11 @@ import {
 } from "@nmshd/crypto"
 import {
     ControllerName,
-    CoreController,
     CoreCrypto,
     CoreDate,
     CoreId,
     CredentialsBasic,
+    TransportController,
     TransportErrors
 } from "../../core"
 import { AccountController } from "../accounts/AccountController"
@@ -19,7 +19,7 @@ import { DeviceSecretController, DeviceSecretType } from "./DeviceSecretControll
 import { Device, DeviceType } from "./local/Device"
 import { DeviceSecretCredentials } from "./local/DeviceSecretCredentials"
 
-export class DeviceController extends CoreController {
+export class DeviceController extends TransportController {
     public get secrets(): DeviceSecretController {
         return this._secrets
     }

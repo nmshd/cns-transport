@@ -12,8 +12,8 @@ import {
     ICryptoCipher
 } from "@nmshd/crypto"
 import { CoreCrypto, CoreDate, TransportErrors } from "../../core"
-import { ControllerName, CoreController } from "../../core/CoreController"
 import { CoreIds } from "../../core/CoreIds"
+import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { ISecretContainerCipher, SecretContainerCipher } from "../secrets/data/SecretContainerCipher"
 import { SecretContainerPlain } from "../secrets/data/SecretContainerPlain"
@@ -36,7 +36,7 @@ export enum DeviceSecretType {
  * Each access can be audited.
  *
  */
-export class DeviceSecretController extends CoreController {
+export class DeviceSecretController extends TransportController {
     private secrets: IDatabaseMap
 
     private static readonly secretContext: string = "DEVICE01"
