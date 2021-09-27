@@ -17,3 +17,6 @@ jobs:
       - run: bash .ci/publish.sh
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    services:
+      mongo:
+        image: mongo

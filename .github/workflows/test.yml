@@ -14,3 +14,6 @@ jobs:
       - run: apt-get update && apt-get install jq -y
       - run: bash .ci/build.sh
       - run: bash .ci/test.sh
+    services:
+      mongo:
+        image: mongo
