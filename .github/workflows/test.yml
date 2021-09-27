@@ -24,8 +24,9 @@ jobs:
         with:
           node-version: 14
       - run: npm ci
-      - run: export CONNECTION_STRING="mongodb://127.0.0.1:27017/?readPreference=primary&appname=Core&ssl=false"
       - run: npm run test:node:mongodb
+        env:
+          CONNECTION_STRING: mongodb://127.0.0.1:27017/?readPreference=primary&appname=Core&ssl=false
     services:
       mongo:
         image: mongo
