@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+  transportlib-mongo:
+    container_name: transportlib-mongo
+    image: mongo
+    logging:
+      driver: "none"
+    ports:
+      - 27020:27017
+  transportlib-mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    ports:
+      - "3006:8081"
+    environment:
+      ME_CONFIG_OPTIONS_EDITORTHEME: lucario
+      ME_CONFIG_MONGODB_SERVER: transportlib-mongo
+    depends_on:
+      - transportlib-mongo

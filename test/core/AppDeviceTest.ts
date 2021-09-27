@@ -1,0 +1,44 @@
+import { ILogger } from "@js-soft/logging-abstractions"
+import { AccountController, Core, DeviceSharedSecret } from "@nmshd/transport"
+import { DeviceTestParameters } from "./DeviceTestParameters"
+import { TestUtil } from "./TestUtil"
+
+export class AppDeviceTest {
+    protected parameters: DeviceTestParameters
+
+    protected core: Core
+    protected logger: ILogger
+
+    private readonly createdAccounts: AccountController[] = []
+
+    public constructor(parameters: DeviceTestParameters) {
+        this.parameters = parameters
+        this.core = new Core(this.parameters.connection, this.parameters.config, this.parameters.loggerFactory)
+    }
+
+    public async init(): Promise<void> {
+        await TestUtil.clearAccounts(this.parameters.connection)
+        await this.core.init()
+    }
+
+    public async createAccount(): Promise<AccountController> {
+        const accounts = await TestUtil.provideAccounts(this.core, 1, AppDeviceTest.name)
+
+        const account = accounts[0]
+
+        this.createdAccounts.push(account)
+        return account
+    }
+
+    public async onboardDevice(sharedSecret: DeviceSharedSecret): Promise<AccountController> {
+        const account = await TestUtil.onboardDevice(this.core, sharedSecret)
+        this.createdAccounts.push(account)
+        return account
+    }
+
+    public async close(): Promise<void> {
+        for (const account of this.createdAccounts) {
+            await account.close()
+        }
+    }
+}
