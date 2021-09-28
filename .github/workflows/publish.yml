@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 14
           registry-url: https://registry.npmjs.org/
-      - run: apt-get update && apt-get install jq -y
+      - run: sudo apt-get update && sudo apt-get install jq -y
       - run: npm ci
       - run: npm run build:ci
         env:
@@ -29,4 +29,4 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-    needs: [security]
+    needs: ["run-checks"]
