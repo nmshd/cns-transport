@@ -21,6 +21,8 @@ if [ "$DEPENDENCIES" = "null" ]; then
     DEPENDENCIES="{}"
 fi
 
+DEPENDENCIES="${DEPENDENCIES//[\/]/\\/}" # replace '/' with '\/' because it's a special char
+
 VERSION=$(jq .version package.json -cr)
 if [ -z "$VERSION" ]; then
     echo "Couldn't read the version from package.json."
@@ -29,6 +31,8 @@ fi
 
 DATE=$(date -u --iso-8601=seconds)
 
+TARGET_FILE="./dist/BuildInformation.js"
+
 echo "Writing the following properties into $TARGET_FILE"
 echo "  - DEPENDENCIES: $DEPENDENCIES"
 echo "  - VERSION: $VERSION"
@@ -36,9 +40,7 @@ echo "  - BUILD_NUMBER: $BUILD_NUMBER"
 echo "  - COMMIT_HASH: $COMMIT_HASH"
 echo "  - DATE: $DATE"
 
-TARGET_FILE="./dist/BuildInformation.js"
-
-sed -i "s/\"{{dependencies}}\"/$DEPENDENCIES/" $TARGET_FILE
+sed -i "s/\"{{dependencies}}\"/"$DEPENDENCIES"/" $TARGET_FILE
 sed -i "s/{{version}}/$VERSION/" $TARGET_FILE
 sed -i "s/{{build}}/$BUILD_NUMBER/" $TARGET_FILE
 sed -i "s/{{commit}}/$COMMIT_HASH/" $TARGET_FILE
