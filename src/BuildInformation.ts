@@ -1,24 +1,14 @@
-import { ServalBuildInformation } from "@js-soft/ts-serval"
-import { CryptoBuildInformation } from "@nmshd/crypto"
+import { buildInformation as servalBuildInformation } from "@js-soft/ts-serval"
+import { buildInformation as cryptoBuildInformation } from "@nmshd/crypto"
 
-export class TransportBuildInformation {
-    public readonly version: string = "{{version}}"
-    public readonly build: string = "{{build}}"
-    public readonly date: string = "{{date}}"
-    public readonly commit: string = "{{commit}}"
-    public readonly dependencies: object
-
-    public readonly crypto = CryptoBuildInformation.info
-    public readonly serval = ServalBuildInformation.info
-
-    private constructor() {
-        try {
-            // eslint-disable-next-line @typescript-eslint/quotes
-            this.dependencies = JSON.parse(`{{dependencies}}`)
-        } catch (e) {
-            this.dependencies = {}
-        }
+export const buildInformation = {
+    version: "{{version}}",
+    build: "{{build}}",
+    date: "{{date}}",
+    commit: "{{commit}}",
+    dependencies: "{{dependencies}}",
+    libraries: {
+        crypto: cryptoBuildInformation,
+        serval: servalBuildInformation
     }
-
-    public static readonly info: TransportBuildInformation = new TransportBuildInformation()
 }

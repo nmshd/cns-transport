@@ -1,4 +1,4 @@
-export * from "../TransportBuildInformation"
+export * from "../BuildInformation"
 export * from "./backbone"
 export * from "./CoreCrypto"
 export * from "./CoreError"
