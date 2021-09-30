@@ -4,7 +4,7 @@
     "description": "The transport library handles backbone communication and content encryption.",
     "homepage": "https://enmeshed.eu",
     "repository": "github:nmshd/cns-transport",
-    "license": "UNLICENSED",
+    "license": "MIT",
     "author": "j&s-soft GmbH",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
