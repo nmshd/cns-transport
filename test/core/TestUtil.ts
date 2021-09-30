@@ -374,7 +374,7 @@ export class TestUtil {
 
         let iterationNumber = 0
         while (!until(syncResult) && iterationNumber < 20) {
-            await sleep(25 * iterationNumber)
+            await sleep(150 * iterationNumber)
             const newSyncResult = await accountController.syncEverything()
             syncResult.messages.push(...newSyncResult.messages)
             syncResult.relationships.push(...newSyncResult.relationships)

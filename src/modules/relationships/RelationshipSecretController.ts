@@ -12,9 +12,9 @@ import {
     CryptoSignaturePublicKey
 } from "@nmshd/crypto"
 import { ControllerName, CoreCrypto, CoreId } from "../../core"
-import { TransportIds } from "../../core/CoreIds"
 import { CoreUtil } from "../../core/CoreUtil"
 import { TransportErrors } from "../../core/TransportErrors"
+import { TransportIds } from "../../core/TransportIds"
 import { AccountController } from "../accounts/AccountController"
 import { Identity } from "../accounts/data/Identity"
 import { CachedRelationshipTemplate } from "../relationshipTemplates/local/CachedRelationshipTemplate"
