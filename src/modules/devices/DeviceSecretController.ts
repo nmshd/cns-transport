@@ -12,8 +12,8 @@ import {
     ICryptoCipher
 } from "@nmshd/crypto"
 import { CoreCrypto, CoreDate, TransportErrors } from "../../core"
-import { TransportIds } from "../../core/CoreIds"
 import { ControllerName, TransportController } from "../../core/TransportController"
+import { TransportIds } from "../../core/TransportIds"
 import { AccountController } from "../accounts/AccountController"
 import { ISecretContainerCipher, SecretContainerCipher } from "../secrets/data/SecretContainerCipher"
 import { SecretContainerPlain } from "../secrets/data/SecretContainerPlain"
