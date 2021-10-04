@@ -216,12 +216,13 @@ export class RelationshipsController extends TransportController {
         for (const change of response.changes) {
             switch (change.type) {
                 case RelationshipChangeType.Creation:
-                    changesPromises.push(this.parseCreationChange(change, relationship, templateId))
+                    changesPromises.push(this.parseCreationChange(change, relationshipSecretId, templateId))
                     break
                 default:
                     break
             }
         }
+
         const changes = await Promise.all(changesPromises)
 
         const cachedRelationship = await CachedRelationship.from({
@@ -321,7 +322,7 @@ export class RelationshipsController extends TransportController {
 
     private async parseCreationChange(
         change: BackboneGetRelationshipsChangesResponse,
-        relationship: Relationship,
+        relationshipSecretId: CoreId,
         templateId: CoreId
     ) {
         if (change.type !== RelationshipChangeType.Creation) {
@@ -329,12 +330,12 @@ export class RelationshipsController extends TransportController {
         }
 
         const promises: any[] = []
-        promises.push(this.decryptCreationChangeRequest(change.request, relationship.relationshipSecretId, templateId))
+        promises.push(this.decryptCreationChangeRequest(change.request, relationshipSecretId, templateId))
 
-        const hasRelationshipSecret = await this.secrets.hasCryptoRelationshipSecrets(relationship.relationshipSecretId)
+        const hasRelationshipSecret = await this.secrets.hasCryptoRelationshipSecrets(relationshipSecretId)
 
         if (change.response && hasRelationshipSecret) {
-            promises.push(this.decryptCreationChangeResponse(change, relationship))
+            promises.push(this.decryptCreationChangeResponse(change, relationshipSecretId))
         }
 
         const [requestContent, responseContent] = await Promise.all(promises)
@@ -393,7 +394,7 @@ export class RelationshipsController extends TransportController {
 
     private async decryptCreationChangeResponse(
         change: BackboneGetRelationshipsChangesResponse,
-        relationship: Relationship
+        relationshipSecretId: CoreId
     ): Promise<RelationshipCreationChangeResponseContent> {
         if (!change.response) {
             throw TransportErrors.relationships.changeResponseMissing(change.id).logWith(this._log)
@@ -412,29 +413,25 @@ export class RelationshipsController extends TransportController {
         let signedResponseBuffer
         if (change.status !== RelationshipChangeStatus.Revoked) {
             if (isOwnChange) {
-                signedResponseBuffer = await this.secrets.decryptOwn(relationship.relationshipSecretId, cipher.cipher)
+                signedResponseBuffer = await this.secrets.decryptOwn(relationshipSecretId, cipher.cipher)
             } else {
-                signedResponseBuffer = await this.secrets.decryptPeer(
-                    relationship.relationshipSecretId,
-                    cipher.cipher,
-                    true
-                )
+                signedResponseBuffer = await this.secrets.decryptPeer(relationshipSecretId, cipher.cipher, true)
             }
         } else {
-            signedResponseBuffer = await this.secrets.decryptRequest(relationship.relationshipSecretId, cipher.cipher)
+            signedResponseBuffer = await this.secrets.decryptRequest(relationshipSecretId, cipher.cipher)
         }
 
         const signedResponse = await RelationshipCreationChangeResponseSigned.deserialize(signedResponseBuffer.toUtf8())
         let relationshipSignatureValid
         if (isOwnChange) {
             relationshipSignatureValid = await this.secrets.verifyOwn(
-                relationship.relationshipSecretId,
+                relationshipSecretId,
                 CoreBuffer.fromUtf8(signedResponse.serializedResponse),
                 signedResponse.relationshipSignature
             )
         } else {
             relationshipSignatureValid = await this.secrets.verifyPeer(
-                relationship.relationshipSecretId,
+                relationshipSecretId,
                 CoreBuffer.fromUtf8(signedResponse.serializedResponse),
                 signedResponse.relationshipSignature
             )
@@ -448,7 +445,7 @@ export class RelationshipsController extends TransportController {
             signedResponse.serializedResponse
         )
 
-        if (responseContent.relationshipId.toString() !== relationship.id.toString()) {
+        if (responseContent.relationshipId.toString() !== change.relationshipId.toString()) {
             throw TransportErrors.relationships.responseContainsWrongRequestId().logWith(this._log)
         }
         return responseContent
@@ -486,7 +483,7 @@ export class RelationshipsController extends TransportController {
             await this.secrets.convertSecrets(relationship.relationshipSecretId, cipher.publicResponseCrypto)
         }
 
-        const responseContent = await this.decryptCreationChangeResponse(change, relationship)
+        const responseContent = await this.decryptCreationChangeResponse(change, relationship.relationshipSecretId)
 
         const response = await RelationshipChangeResponse.fromBackbone(change.response, responseContent.content)
 
