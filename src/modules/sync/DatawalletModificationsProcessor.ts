@@ -1,27 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
-import {
-    CachedFile,
-    CachedMessage,
-    CachedRelationship,
-    CachedRelationshipTemplate,
-    CachedToken,
-    File,
-    FileController,
-    Message,
-    MessageController,
-    Relationship,
-    RelationshipsController,
-    RelationshipTemplate,
-    RelationshipTemplateController,
-    Token,
-    TokenController
-} from "@nmshd/transport"
 import _ from "lodash"
-import { ICacheable } from "src/core/ICacheable"
 import { CoreId, CoreSerializableAsync } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
+import { ICacheable } from "../../core/ICacheable"
+import { FileController } from "../files/FileController"
+import { CachedFile } from "../files/local/CachedFile"
+import { File } from "../files/local/File"
+import { CachedMessage } from "../messages/local/CachedMessage"
+import { Message } from "../messages/local/Message"
+import { MessageController } from "../messages/MessageController"
+import { CachedRelationship } from "../relationships/local/CachedRelationship"
+import { Relationship } from "../relationships/local/Relationship"
+import { RelationshipsController } from "../relationships/RelationshipsController"
+import { CachedRelationshipTemplate } from "../relationshipTemplates/local/CachedRelationshipTemplate"
+import { RelationshipTemplate } from "../relationshipTemplates/local/RelationshipTemplate"
+import { RelationshipTemplateController } from "../relationshipTemplates/RelationshipTemplateController"
+import { CachedToken } from "../tokens/local/CachedToken"
+import { Token } from "../tokens/local/Token"
+import { TokenController } from "../tokens/TokenController"
 import { DatawalletModification, DatawalletModificationType } from "./local/DatawalletModification"
 
 export class DatawalletModificationsProcessor {
