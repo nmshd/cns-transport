@@ -1,5 +1,5 @@
 import { IDatabaseCollection, IDatabaseMap } from "@js-soft/docdb-access-abstractions"
-import { ControllerName, CoreDate, CoreError, CoreId, TransportController } from "../../core"
+import { ControllerName, CoreDate, CoreError, CoreId, TransportController, TransportLoggerFactory } from "../../core"
 import { AccountController } from "../accounts/AccountController"
 import { BackboneDatawalletModification } from "./backbone/BackboneDatawalletModification"
 import { BackboneSyncRun } from "./backbone/BackboneSyncRun"
@@ -9,7 +9,7 @@ import { StartSyncRunStatus } from "./backbone/StartSyncRun"
 import { SyncClient } from "./backbone/SyncClient"
 import { ChangedItems } from "./ChangedItems"
 import { DatawalletModificationMapper } from "./DatawalletModificationMapper"
-import { DatawalletModificationsProcessor } from "./DatawalletModificationsProcessor"
+import { CacheFetcher, DatawalletModificationsProcessor } from "./DatawalletModificationsProcessor"
 import { ExternalEventsProcessor } from "./ExternalEventsProcessor"
 import { DatawalletModification } from "./local/DatawalletModification"
 import { WhatToSync } from "./WhatToSync"
@@ -128,13 +128,16 @@ export class SyncController extends TransportController {
         this.log.trace(`${incomingModifications.length} incoming modifications found`)
 
         const datawalletModificationsProcessor = new DatawalletModificationsProcessor(
+            new CacheFetcher(
+                this.parent.files,
+                this.parent.messages,
+                this.parent.relationshipTemplates,
+                this.parent.relationships,
+                this.parent.tokens,
+                TransportLoggerFactory.getLogger(CacheFetcher)
+            ),
             this._db,
-            incomingModifications,
-            this.parent.files,
-            this.parent.messages,
-            this.parent.relationshipTemplates,
-            this.parent.relationships,
-            this.parent.tokens
+            incomingModifications
         )
 
         await datawalletModificationsProcessor.execute()
