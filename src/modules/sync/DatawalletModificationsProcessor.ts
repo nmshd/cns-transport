@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
-import { ILogger } from "@js-soft/logging-abstractions"
 import _ from "lodash"
 import { CoreId, CoreSerializableAsync } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
@@ -153,8 +152,7 @@ export class CacheFetcher {
         private readonly messageController: MessageController,
         private readonly relationshipTemplateController: RelationshipTemplateController,
         private readonly relationshipController: RelationshipsController,
-        private readonly tokenController: TokenController,
-        private readonly logger: ILogger
+        private readonly tokenController: TokenController
     ) {}
 
     public async fetchCacheFor(itemIds: FetchCacheInput): Promise<FetchCacheOutput> {
