@@ -85,14 +85,14 @@ export class RelationshipsController extends TransportController {
             orderedBackboneRelationships.push(backboneRelationships.find((f) => f.id === id.id)!)
         }
 
-        const promises = backboneRelationships.map(async (r) => {
+        const decryptionPromises = orderedBackboneRelationships.map(async (r) => {
             const relationshipDoc = await this.relationships.read(r.id)
             const relationship = await Relationship.from(relationshipDoc)
 
             return await this.decryptRelationship(r, relationship.relationshipSecretId)
         })
 
-        return await Promise.all(promises)
+        return await Promise.all(decryptionPromises)
     }
 
     private async updateCacheOfExistingRelationshipInDb(id: string, response?: BackboneGetRelationshipsResponse) {

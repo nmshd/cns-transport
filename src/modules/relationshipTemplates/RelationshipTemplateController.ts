@@ -128,14 +128,14 @@ export class RelationshipTemplateController extends TransportController {
             orderedBackboneRelationshipTemplates.push(backboneRelationships.find((f) => f.id === id.id)!)
         }
 
-        const promises = backboneRelationships.map(async (r) => {
+        const decryptionPromises = orderedBackboneRelationshipTemplates.map(async (r) => {
             const templateDoc = await this.templates.read(r.id)
             const template = await RelationshipTemplate.from(templateDoc)
 
             return await this.decryptRelationshipTemplate(r, template.secretKey)
         })
 
-        return await Promise.all(promises)
+        return await Promise.all(decryptionPromises)
     }
 
     private async updateCacheOfExistingTemplateInDb(id: string, response?: BackboneGetRelationshipTemplatesResponse) {

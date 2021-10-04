@@ -110,14 +110,14 @@ export class TokenController extends TransportController {
             orderedBackboneTokens.push(backboneTokens.find((f) => f.id === id.id)!)
         }
 
-        const promises = backboneTokens.map(async (r) => {
+        const decryptionPromises = orderedBackboneTokens.map(async (r) => {
             const tokenDoc = await this.tokens.read(r.id)
             const token = await Token.from(tokenDoc)
 
             return await this.decryptToken(r, token.secretKey)
         })
 
-        return await Promise.all(promises)
+        return await Promise.all(decryptionPromises)
     }
 
     private async updateCacheOfExistingTokenInDb(id: string, response?: BackboneGetTokensResponse) {

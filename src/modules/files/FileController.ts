@@ -58,14 +58,14 @@ export class FileController extends TransportController {
             orderedBackboneFiles.push(backboneFiles.find((f) => f.id === id.id)!)
         }
 
-        const promises = backboneFiles.map(async (r) => {
+        const decryptionPromises = orderedBackboneFiles.map(async (r) => {
             const fileDoc = await this.files.read(r.id)
             const file = await File.from(fileDoc)
 
             return await this.decryptFile(r, file.secretKey)
         })
 
-        return await Promise.all(promises)
+        return await Promise.all(decryptionPromises)
     }
 
     public async updateCache(ids: string[]): Promise<File[]> {

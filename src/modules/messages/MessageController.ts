@@ -100,7 +100,7 @@ export class MessageController extends TransportController {
             orderedBackboneMessages.push(backboneMessages.find((f) => f.id === id.id)!)
         }
 
-        const promises = backboneMessages.map(async (r) => {
+        const decryptionPromises = orderedBackboneMessages.map(async (r) => {
             const messageDoc = await this.messages.read(r.id)
             const message = await Message.from(messageDoc)
             const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(r)
@@ -108,7 +108,7 @@ export class MessageController extends TransportController {
             return (await this.decryptMessage(envelope, message.secretKey))[0]
         })
 
-        return await Promise.all(promises)
+        return await Promise.all(decryptionPromises)
     }
 
     private async updateCacheOfExistingMessageInDb(id: string, response?: BackboneGetMessagesResponse) {
