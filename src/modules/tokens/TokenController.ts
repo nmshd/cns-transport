@@ -100,6 +100,26 @@ export class TokenController extends TransportController {
         return await Promise.all(promises)
     }
 
+    public async getCache(ids: CoreId[]): Promise<CachedToken[]> {
+        if (ids.length === 0) return []
+
+        const backboneTokens = await (await this.client.getTokens({ ids: ids.map((id) => id.id) })).value.collect()
+
+        const orderedBackboneTokens: BackboneGetTokensResponse[] = []
+        for (const id of ids) {
+            orderedBackboneTokens.push(backboneTokens.find((f) => f.id === id.id)!)
+        }
+
+        const promises = backboneTokens.map(async (r) => {
+            const tokenDoc = await this.tokens.read(r.id)
+            const token = await Token.from(tokenDoc)
+
+            return await this.decryptToken(r, token.secretKey)
+        })
+
+        return await Promise.all(promises)
+    }
+
     private async updateCacheOfExistingTokenInDb(id: string, response?: BackboneGetTokensResponse) {
         const tokenDoc = await this.tokens.read(id)
         if (!tokenDoc) {

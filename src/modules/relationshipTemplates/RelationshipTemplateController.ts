@@ -116,6 +116,28 @@ export class RelationshipTemplateController extends TransportController {
         return await Promise.all(promises)
     }
 
+    public async getCache(ids: CoreId[]): Promise<CachedRelationshipTemplate[]> {
+        if (ids.length === 0) return []
+
+        const backboneRelationships = await (
+            await this.client.getRelationshipTemplates({ ids: ids.map((id) => id.id) })
+        ).value.collect()
+
+        const orderedBackboneRelationshipTemplates: BackboneGetRelationshipTemplatesResponse[] = []
+        for (const id of ids) {
+            orderedBackboneRelationshipTemplates.push(backboneRelationships.find((f) => f.id === id.id)!)
+        }
+
+        const promises = backboneRelationships.map(async (r) => {
+            const templateDoc = await this.templates.read(r.id)
+            const template = await RelationshipTemplate.from(templateDoc)
+
+            return await this.decryptRelationshipTemplate(r, template.secretKey)
+        })
+
+        return await Promise.all(promises)
+    }
+
     private async updateCacheOfExistingTemplateInDb(id: string, response?: BackboneGetRelationshipTemplatesResponse) {
         const templateDoc = await this.templates.read(id)
         if (!templateDoc) {
