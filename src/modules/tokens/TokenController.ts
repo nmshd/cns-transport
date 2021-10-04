@@ -120,12 +120,20 @@ export class TokenController extends TransportController {
             response = (await this.client.getToken(tokenId)).value
         }
 
+        const cachedToken = await this.decryptToken(response, token.secretKey)
+        token.setCache(cachedToken)
+
+        // Update isOwn, as it is possible that the identity receives an own token
+        token.isOwn = this.parent.identity.isMe(cachedToken.createdBy)
+    }
+
+    private async decryptToken(response: BackboneGetTokensResponse, secretKey: CryptoSecretKey) {
         const cipher = await CryptoCipher.fromBase64(response.content)
-        const plaintextTokenBuffer = await CoreCrypto.decrypt(cipher, token.secretKey)
+        const plaintextTokenBuffer = await CoreCrypto.decrypt(cipher, secretKey)
         const plaintextTokenContent = await CoreSerializableAsync.deserializeUnknown(plaintextTokenBuffer.toUtf8())
 
         if (!(plaintextTokenContent instanceof SerializableAsync)) {
-            throw TransportErrors.tokens.invalidTokenContent(tokenId).logWith(this._log)
+            throw TransportErrors.tokens.invalidTokenContent(response.id).logWith(this._log)
         }
 
         const cachedToken = await CachedToken.from({
@@ -135,10 +143,7 @@ export class TokenController extends TransportController {
             createdByDevice: CoreId.from(response.createdByDevice),
             content: plaintextTokenContent
         })
-        token.setCache(cachedToken)
-
-        // Update isOwn, as it is possible that the identity receives an own token
-        token.isOwn = this.parent.identity.isMe(cachedToken.createdBy)
+        return cachedToken
     }
 
     public async loadPeerTokenByTruncated(truncated: string, ephemeral: boolean): Promise<Token> {

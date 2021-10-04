@@ -203,15 +203,22 @@ export class RelationshipsController extends TransportController {
             response = (await this.client.getRelationship(relationship.id.toString())).value
         }
 
+        const cachedRelationship = await this.decryptRelationship(response, relationship.relationshipSecretId)
+
+        relationship.setCache(cachedRelationship)
+    }
+
+    private async decryptRelationship(response: BackboneGetRelationshipsResponse, relationshipSecretId: CoreId) {
         const templateId = CoreId.from(response.relationshipTemplateId)
 
-        this._log.trace(`Parsing relationship template ${templateId} for ${relationship.id}...`)
+        this._log.trace(`Parsing relationship template ${templateId} for ${response.id}...`)
         const template = await this.parent.relationshipTemplates.getRelationshipTemplate(templateId)
         if (!template) {
             throw TransportErrors.general.recordNotFound(RelationshipTemplate, templateId.toString())
         }
 
-        this._log.trace(`Parsing relationship changes of ${relationship.id}...`)
+        this._log.trace(`Parsing relationship changes of ${response.id}...`)
+
         const changesPromises = []
         for (const change of response.changes) {
             switch (change.type) {
@@ -230,7 +237,7 @@ export class RelationshipsController extends TransportController {
             template: template
         })
 
-        relationship.setCache(cachedRelationship)
+        return cachedRelationship
     }
 
     private async prepareRequest(

@@ -137,8 +137,19 @@ export class RelationshipTemplateController extends TransportController {
             response = (await this.client.getRelationshipTemplate(template.id.toString())).value
         }
 
+        const cachedTemplate = await this.decryptRelationshipTemplate(response, template.secretKey)
+        template.setCache(cachedTemplate)
+
+        // Update isOwn, as it is possible that the identity receives an own template.
+        template.isOwn = this.parent.identity.isMe(cachedTemplate.createdBy)
+    }
+
+    private async decryptRelationshipTemplate(
+        response: BackboneGetRelationshipTemplatesResponse,
+        secretKey: CryptoSecretKey
+    ) {
         const cipher: CryptoCipher = await CryptoCipher.fromBase64(response.content)
-        const signedTemplateBuffer: CoreBuffer = await this.secrets.decryptTemplate(cipher, template.secretKey)
+        const signedTemplateBuffer: CoreBuffer = await this.secrets.decryptTemplate(cipher, secretKey)
 
         const signedTemplate = await RelationshipTemplateSigned.deserialize(signedTemplateBuffer.toUtf8())
         const templateContent = await RelationshipTemplateContent.deserialize(signedTemplate.serializedTemplate)
@@ -163,10 +174,8 @@ export class RelationshipTemplateController extends TransportController {
             maxNumberOfRelationships: response.maxNumberOfRelationships ?? undefined,
             templateKey: templateContent.templateKey
         })
-        template.setCache(cachedTemplate)
 
-        // Update isOwn, as it is possible that the identity receives an own template.
-        template.isOwn = this.parent.identity.isMe(cachedTemplate.createdBy)
+        return cachedTemplate
     }
 
     public async getRelationshipTemplate(id: CoreId): Promise<RelationshipTemplate | undefined> {

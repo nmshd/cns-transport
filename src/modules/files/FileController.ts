@@ -77,20 +77,25 @@ export class FileController extends TransportController {
             response = (await this.client.getFile(fileId)).value
         }
 
-        const cipher = await CryptoCipher.fromBase64(response.encryptedProperties)
-        const plaintextMetadataBuffer = await CoreCrypto.decrypt(cipher, file.secretKey)
-        const plaintextMetadata: FileMetadata = await FileMetadata.deserialize(plaintextMetadataBuffer.toUtf8())
-
-        if (!(plaintextMetadata instanceof FileMetadata)) {
-            throw TransportErrors.files.invalidMetadata(fileId).logWith(this._log)
-        }
-
-        // TODO: JSSNMSHDD-2486 (check signature)
-        const cachedFile = await CachedFile.fromBackbone(response, plaintextMetadata)
+        const cachedFile = await this.decryptFile(response, file.secretKey)
         file.setCache(cachedFile)
 
         // Update isOwn, as it is possible that the identity receives an attachment with an own File.
         file.isOwn = this.parent.identity.isMe(cachedFile.createdBy)
+    }
+
+    private async decryptFile(response: BackboneGetFilesResponse, secretKey: CryptoSecretKey) {
+        const cipher = await CryptoCipher.fromBase64(response.encryptedProperties)
+        const plaintextMetadataBuffer = await CoreCrypto.decrypt(cipher, secretKey)
+        const plaintextMetadata: FileMetadata = await FileMetadata.deserialize(plaintextMetadataBuffer.toUtf8())
+
+        if (!(plaintextMetadata instanceof FileMetadata)) {
+            throw TransportErrors.files.invalidMetadata(response.id).logWith(this._log)
+        }
+
+        // TODO: JSSNMSHDD-2486 (check signature)
+        const cachedFile = await CachedFile.fromBackbone(response, plaintextMetadata)
+        return cachedFile
     }
 
     public async loadPeerFileByTruncated(truncated: string): Promise<File> {
