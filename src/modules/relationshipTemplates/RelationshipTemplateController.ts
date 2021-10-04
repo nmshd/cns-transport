@@ -35,7 +35,7 @@ export class RelationshipTemplateController extends TransportController {
     public async init(): Promise<this> {
         await super.init()
 
-        this.templates = await this.parent.getSynchronizedCollection(DbCollectionNames.Templates)
+        this.templates = await this.parent.getSynchronizedCollection(DbCollectionNames.RelationshipTemplates)
 
         return this
     }

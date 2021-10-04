@@ -2,7 +2,7 @@ export enum DbCollectionNames {
     Files = "Files",
     Tokens = "Tokens",
     Relationships = "Relationships",
-    Templates = "Templates",
+    RelationshipTemplates = "Templates",
     Messages = "Messages",
     CertificatesIssued = "CertificatesIssued",
     UnpushedDatawalletModifications = "UnpushedDatawalletModifications",
