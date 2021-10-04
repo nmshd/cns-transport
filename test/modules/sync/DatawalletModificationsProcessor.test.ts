@@ -1,61 +1,63 @@
 /* eslint-disable jest/no-commented-out-tests */
 // TODO: JSSNMSHDD-2492 (make all unit tests run)
-
 /*
-
+import { IDatabaseCollection, IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
+import { LokiJsCollection } from "@js-soft/docdb-access-loki"
 import {
     CoreId,
     DatawalletModification,
+    DatawalletModificationCategory,
     DatawalletModificationsProcessor,
-    DatawalletModificationType
+    DatawalletModificationType,
+    TransportIds
 } from "@nmshd/transport"
-import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
-import { LokiJsCollection } from "@js-soft/docdb-access-loki"
+import { uniqueId } from "lodash"
 import { anyString, instance, mock, verify, when } from "ts-mockito"
 import { AbstractTest } from "../../core"
 import { DatawalletModificationBuilder } from "./builder/DatawalletModificationBuilder"
 import { ACollectionItem } from "./data/ACollectionItem"
+import { FakeDatabaseCollection } from "./fakes/FakeDatabaseCollection"
 import { FakeDbCollectionProvider } from "./fakes/FakeDbCollectionProvider"
 import { objectWith } from "./fakes/PartialObjectMatcher"
 
 export class DatawalletModificationsProcessorTest extends AbstractTest {
     public run(): void {
-         describe("DatawalletModificationsProcessor", async function () {
-            this.beforeEach(async () => {})
-
-            it("when applying CreateModifications, should create corresponding objects in database", async function() {
+        describe("DatawalletModificationsProcessor", function () {
+            it("when applying 'create' modifications, should create corresponding objects in database", async function () {
                 // Arrange
                 const fakeDbCollectionProvider = new FakeDbCollectionProvider()
                 const mockCollection = mock<IDatabaseCollection>()
 
                 fakeDbCollectionProvider.setCollection(instance(mockCollection))
 
-                const modificatorUnderTest = createDatawalletModificator(fakeDbCollectionProvider)
-
-                // Act
-                const datawalletModification = new DatawalletModificationBuilder()
-                    .withType(DatawalletModificationType.Create)
-                    .withCategory(DatawalletModificationCategory.TechnicalData)
-                    .withCollection("ACollection")
-                    .withPayload({
+                const datawalletModification = await createDatawalletModification({
+                    type: DatawalletModificationType.Create,
+                    payloadCategory: DatawalletModificationCategory.TechnicalData,
+                    collection: "ACollection",
+                    payload: {
                         "@type": ACollectionItem.name,
                         "@context": "https://schema.corp",
                         someTechnicalStringProperty: "Some value"
-                    })
-                    .build()
+                    }
+                })
 
-                await modificatorUnderTest.applyModifications([datawalletModification])
+                const modificatorUnderTest = createDatawalletModificator(fakeDbCollectionProvider, [
+                    datawalletModification
+                ])
+
+                // Act
+                await modificatorUnderTest.execute()
 
                 // Assert
                 verify(
                     mockCollection.create({
-                        id: CoreId.from(datawalletModification.objectIdentifier!),
+                        id: CoreId.from(datawalletModification.objectIdentifier),
                         someTechnicalStringProperty: "Some value"
                     })
                 ).once()
             })
 
-            it("when applying UpdateModifications, should update corresponding objects in database", async function() {
+            it("when applying UpdateModifications, should update corresponding objects in database", async function () {
                 // Arrange
                 const fakeDbCollectionProvider = new FakeDbCollectionProvider()
                 const mockCollection = mock(LokiJsCollection)
@@ -100,34 +102,44 @@ export class DatawalletModificationsProcessorTest extends AbstractTest {
                 ).once()
             })
 
-            it("should not delete $loki", async function() {})
+            // it("should not delete $loki", async function () {})
 
-            it("should write to collection specified in DatawalletModification", async function() {
+            it("should write to collection specified in DatawalletModification", async function () {
                 const mockDbCollectionProvider = mock<IDatabaseCollectionProvider>()
                 when(mockDbCollectionProvider.getCollection(anyString())).thenCall(
                     (name) => new FakeDatabaseCollection(name)
                 )
 
-                const datawalletModificator = new DatawalletModificator(instance(mockDbCollectionProvider))
-
-                await datawalletModificator.applyModifications([
+                const datawalletModificator = createDatawalletModificator(instance(mockDbCollectionProvider), [
                     new DatawalletModificationBuilder().withCollection("CollectionA").build(),
                     new DatawalletModificationBuilder().withCollection("CollectionB").build()
                 ])
+
+                await datawalletModificator.execute()
 
                 verify(mockDbCollectionProvider.getCollection("CollectionA")).once()
                 verify(mockDbCollectionProvider.getCollection("CollectionB")).once()
             })
 
             function createDatawalletModificator(
-                collectionProvider: IDatabaseCollectionProvider,
-                modifications: DatawalletModification[]
-            ) {
-
-                return new DatawalletModificationsProcessor(collectionProvider, modifications)
+                _collectionProvider: IDatabaseCollectionProvider,
+                _modifications: DatawalletModification[]
+            ): DatawalletModificationsProcessor {
+                throw new Error()
+                // return new DatawalletModificationsProcessor(collectionProvider, modifications)
             }
         })
+
+        async function createDatawalletModification(properties: Partial<DatawalletModification>) {
+            return DatawalletModification.from({
+                localId: properties.localId ?? (await TransportIds.datawalletModification.generate()),
+                type: properties.type ?? DatawalletModificationType.Create,
+                collection: properties.collection ?? "SomeCollection",
+                payloadCategory: properties.payloadCategory ?? DatawalletModificationCategory.TechnicalData,
+                payload: properties.payload ?? { aPayloadProperty: "aPayloadValue" },
+                objectIdentifier: properties.objectIdentifier ?? CoreId.from(uniqueId())
+            })
+        }
     }
 }
-
 */
