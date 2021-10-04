@@ -3,6 +3,7 @@ import { CoreSynchronizable } from "./CoreSynchronizable"
 
 export interface ICacheable {
     cache?: any
+    setCache(cache: any): void
 }
 
 export function isCacheable(object: unknown): object is ICacheable {
@@ -10,10 +11,12 @@ export function isCacheable(object: unknown): object is ICacheable {
         return false
     }
 
-    const hasCacheProperty = Object.prototype.hasOwnProperty.call(
-        object.toJSON(),
-        nameof<ICacheable>((o) => o.cache)
-    )
+    if (typeof object !== "object") {
+        return false
+    }
 
-    return hasCacheProperty
+    const hasCacheProperty = object.toJSON().hasOwnProperty(nameof<ICacheable>((o) => o.cache))
+    const hasSetCacheMethod = typeof (object as any).setCache === "function"
+
+    return hasCacheProperty && hasSetCacheMethod
 }

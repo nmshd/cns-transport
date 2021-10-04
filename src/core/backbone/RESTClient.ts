@@ -132,7 +132,7 @@ export class RESTClient {
             const requestStartTime = (response.config as any).meta.startTime as number
 
             // Backbone Call duration
-            const backboneResponseDuration = response.headers?.["x-response-duration-ms"]
+            const backboneResponseDuration = response.headers["x-response-duration-ms"]
                 ? Number.parseInt(response.headers["x-response-duration-ms"])
                 : undefined
 

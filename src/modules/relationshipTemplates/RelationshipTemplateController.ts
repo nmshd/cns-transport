@@ -1,7 +1,7 @@
 import { ISerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, CryptoSignature } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, TransportErrors } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { RelationshipSecretController } from "../relationships/RelationshipSecretController"
@@ -35,7 +35,7 @@ export class RelationshipTemplateController extends TransportController {
     public async init(): Promise<this> {
         await super.init()
 
-        this.templates = await this.parent.getSynchronizedCollection(DbCollectionNames.Templates)
+        this.templates = await this.parent.getSynchronizedCollection(DbCollectionName.RelationshipTemplates)
 
         return this
     }
@@ -116,6 +116,23 @@ export class RelationshipTemplateController extends TransportController {
         return await Promise.all(promises)
     }
 
+    public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedRelationshipTemplate }[]> {
+        if (ids.length === 0) return []
+
+        const backboneRelationships = await (
+            await this.client.getRelationshipTemplates({ ids: ids.map((id) => id.id) })
+        ).value.collect()
+
+        const decryptionPromises = backboneRelationships.map(async (t) => {
+            const templateDoc = await this.templates.read(t.id)
+            const template = await RelationshipTemplate.from(templateDoc)
+
+            return { id: CoreId.from(t.id), cache: await this.decryptRelationshipTemplate(t, template.secretKey) }
+        })
+
+        return await Promise.all(decryptionPromises)
+    }
+
     private async updateCacheOfExistingTemplateInDb(id: string, response?: BackboneGetRelationshipTemplatesResponse) {
         const templateDoc = await this.templates.read(id)
         if (!templateDoc) {
@@ -137,8 +154,19 @@ export class RelationshipTemplateController extends TransportController {
             response = (await this.client.getRelationshipTemplate(template.id.toString())).value
         }
 
+        const cachedTemplate = await this.decryptRelationshipTemplate(response, template.secretKey)
+        template.setCache(cachedTemplate)
+
+        // Update isOwn, as it is possible that the identity receives an own template.
+        template.isOwn = this.parent.identity.isMe(cachedTemplate.createdBy)
+    }
+
+    private async decryptRelationshipTemplate(
+        response: BackboneGetRelationshipTemplatesResponse,
+        secretKey: CryptoSecretKey
+    ) {
         const cipher: CryptoCipher = await CryptoCipher.fromBase64(response.content)
-        const signedTemplateBuffer: CoreBuffer = await this.secrets.decryptTemplate(cipher, template.secretKey)
+        const signedTemplateBuffer: CoreBuffer = await this.secrets.decryptTemplate(cipher, secretKey)
 
         const signedTemplate = await RelationshipTemplateSigned.deserialize(signedTemplateBuffer.toUtf8())
         const templateContent = await RelationshipTemplateContent.deserialize(signedTemplate.serializedTemplate)
@@ -163,10 +191,8 @@ export class RelationshipTemplateController extends TransportController {
             maxNumberOfRelationships: response.maxNumberOfRelationships ?? undefined,
             templateKey: templateContent.templateKey
         })
-        template.setCache(cachedTemplate)
 
-        // Update isOwn, as it is possible that the identity receives an own template.
-        template.isOwn = this.parent.identity.isMe(cachedTemplate.createdBy)
+        return cachedTemplate
     }
 
     public async getRelationshipTemplate(id: CoreId): Promise<RelationshipTemplate | undefined> {

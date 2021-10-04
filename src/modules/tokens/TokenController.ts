@@ -1,7 +1,7 @@
 import { ISerializableAsync, SerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializableAsync, TransportErrors } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
@@ -24,7 +24,7 @@ export class TokenController extends TransportController {
         await super.init()
 
         this.client = new TokenClient(this.config, this.parent.authenticator)
-        this.tokens = await this.parent.getSynchronizedCollection(DbCollectionNames.Tokens)
+        this.tokens = await this.parent.getSynchronizedCollection(DbCollectionName.Tokens)
 
         return this
     }
@@ -100,6 +100,21 @@ export class TokenController extends TransportController {
         return await Promise.all(promises)
     }
 
+    public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedToken }[]> {
+        if (ids.length === 0) return []
+
+        const backboneTokens = await (await this.client.getTokens({ ids: ids.map((id) => id.id) })).value.collect()
+
+        const decryptionPromises = backboneTokens.map(async (t) => {
+            const tokenDoc = await this.tokens.read(t.id)
+            const token = await Token.from(tokenDoc)
+
+            return { id: CoreId.from(t), cache: await this.decryptToken(t, token.secretKey) }
+        })
+
+        return await Promise.all(decryptionPromises)
+    }
+
     private async updateCacheOfExistingTokenInDb(id: string, response?: BackboneGetTokensResponse) {
         const tokenDoc = await this.tokens.read(id)
         if (!tokenDoc) {
@@ -120,12 +135,20 @@ export class TokenController extends TransportController {
             response = (await this.client.getToken(tokenId)).value
         }
 
+        const cachedToken = await this.decryptToken(response, token.secretKey)
+        token.setCache(cachedToken)
+
+        // Update isOwn, as it is possible that the identity receives an own token
+        token.isOwn = this.parent.identity.isMe(cachedToken.createdBy)
+    }
+
+    private async decryptToken(response: BackboneGetTokensResponse, secretKey: CryptoSecretKey) {
         const cipher = await CryptoCipher.fromBase64(response.content)
-        const plaintextTokenBuffer = await CoreCrypto.decrypt(cipher, token.secretKey)
+        const plaintextTokenBuffer = await CoreCrypto.decrypt(cipher, secretKey)
         const plaintextTokenContent = await CoreSerializableAsync.deserializeUnknown(plaintextTokenBuffer.toUtf8())
 
         if (!(plaintextTokenContent instanceof SerializableAsync)) {
-            throw TransportErrors.tokens.invalidTokenContent(tokenId).logWith(this._log)
+            throw TransportErrors.tokens.invalidTokenContent(response.id).logWith(this._log)
         }
 
         const cachedToken = await CachedToken.from({
@@ -135,10 +158,7 @@ export class TokenController extends TransportController {
             createdByDevice: CoreId.from(response.createdByDevice),
             content: plaintextTokenContent
         })
-        token.setCache(cachedToken)
-
-        // Update isOwn, as it is possible that the identity receives an own token
-        token.isOwn = this.parent.identity.isMe(cachedToken.createdBy)
+        return cachedToken
     }
 
     public async loadPeerTokenByTruncated(truncated: string, ephemeral: boolean): Promise<Token> {

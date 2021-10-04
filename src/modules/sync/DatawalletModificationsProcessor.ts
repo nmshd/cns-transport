@@ -1,22 +1,31 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
 import _ from "lodash"
-import { CoreSerializableAsync } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { CoreId, CoreSerializableAsync } from "../../core"
+import { DbCollectionName } from "../../core/DbCollectionName"
+import { ICacheable } from "../../core/ICacheable"
+import { FileController } from "../files/FileController"
+import { CachedFile } from "../files/local/CachedFile"
+import { File } from "../files/local/File"
+import { CachedMessage } from "../messages/local/CachedMessage"
+import { Message } from "../messages/local/Message"
+import { MessageController } from "../messages/MessageController"
+import { CachedRelationship } from "../relationships/local/CachedRelationship"
+import { Relationship } from "../relationships/local/Relationship"
+import { RelationshipsController } from "../relationships/RelationshipsController"
+import { CachedRelationshipTemplate } from "../relationshipTemplates/local/CachedRelationshipTemplate"
+import { RelationshipTemplate } from "../relationshipTemplates/local/RelationshipTemplate"
+import { RelationshipTemplateController } from "../relationshipTemplates/RelationshipTemplateController"
+import { CachedToken } from "../tokens/local/CachedToken"
+import { Token } from "../tokens/local/Token"
+import { TokenController } from "../tokens/TokenController"
 import { DatawalletModification, DatawalletModificationType } from "./local/DatawalletModification"
-
-interface ICacheUpdater {
-    updateCache(ids: string[]): Promise<any[]>
-}
 
 export class DatawalletModificationsProcessor {
     public constructor(
+        private readonly cacheFetcher: CacheFetcher,
         private readonly collectionProvider: IDatabaseCollectionProvider,
-        private readonly modifications: DatawalletModification[],
-        private readonly fileCacheUpdater: ICacheUpdater,
-        private readonly messageCacheUpdater: ICacheUpdater,
-        private readonly relationshipTemplateCacheUpdater: ICacheUpdater,
-        private readonly relationshipCacheUpdater: ICacheUpdater,
-        private readonly tokenCacheUpdater: ICacheUpdater
+        private readonly modifications: DatawalletModification[]
     ) {}
 
     public async execute(): Promise<void> {
@@ -97,57 +106,102 @@ export class DatawalletModificationsProcessor {
 
         const cacheChangesGroupedByCollection = _.groupBy(cacheChanges, (c) => c.collection)
 
-        const fillCachePromises: Promise<any>[] = []
+        const caches = await this.cacheFetcher.fetchCacheFor({
+            files: (cacheChangesGroupedByCollection[DbCollectionName.Files] ?? []).map((m) => m.objectIdentifier),
+            messages: (cacheChangesGroupedByCollection[DbCollectionName.Messages] ?? []).map((m) => m.objectIdentifier),
+            relationshipTemplates: (cacheChangesGroupedByCollection[DbCollectionName.RelationshipTemplates] ?? []).map(
+                (m) => m.objectIdentifier
+            ),
+            tokens: (cacheChangesGroupedByCollection[DbCollectionName.Tokens] ?? []).map((m) => m.objectIdentifier)
+        })
 
-        for (const collectionName in cacheChangesGroupedByCollection) {
-            const modificationsInCollection = cacheChangesGroupedByCollection[collectionName]
+        await this.save(caches.files, DbCollectionName.Files, File)
+        await this.save(caches.messages, DbCollectionName.Messages, Message)
+        await this.save(caches.relationshipTemplates, DbCollectionName.RelationshipTemplates, RelationshipTemplate)
+        await this.save(caches.tokens, DbCollectionName.Tokens, Token)
 
-            switch (collectionName) {
-                case DbCollectionNames.Files:
-                    fillCachePromises.push(
-                        this.fileCacheUpdater.updateCache(
-                            modificationsInCollection.map((m) => m.objectIdentifier.toString())
-                        )
-                    )
-                    break
-                case DbCollectionNames.Messages:
-                    fillCachePromises.push(
-                        this.messageCacheUpdater.updateCache(
-                            modificationsInCollection.map((m) => m.objectIdentifier.toString())
-                        )
-                    )
-                    break
-                case DbCollectionNames.Relationships:
-                    // Relationship caches are filled afterwards. It requires the template caches to be filled.
-                    break
-                case DbCollectionNames.Templates:
-                    fillCachePromises.push(
-                        this.relationshipTemplateCacheUpdater.updateCache(
-                            modificationsInCollection.map((m) => m.objectIdentifier.toString())
-                        )
-                    )
-                    break
-                case DbCollectionNames.Tokens:
-                    fillCachePromises.push(
-                        this.tokenCacheUpdater.updateCache(
-                            modificationsInCollection.map((m) => m.objectIdentifier.toString())
-                        )
-                    )
-                    break
-                default:
-                    throw new Error(`DB collection with name '${collectionName}' is not supported.'`)
-            }
-        }
-
-        await Promise.all(fillCachePromises)
-
-        const relationshipCacheUpdates = cacheChangesGroupedByCollection[DbCollectionNames.Relationships]
-
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (relationshipCacheUpdates) {
-            await this.relationshipCacheUpdater.updateCache(
-                relationshipCacheUpdates.map((m) => m.objectIdentifier.toString())
+        const relationshipCaches = await this.cacheFetcher.fetchCacheFor({
+            relationships: (cacheChangesGroupedByCollection[DbCollectionName.Relationships] ?? []).map(
+                (m) => m.objectIdentifier
             )
-        }
+        })
+        await this.save(relationshipCaches.relationships, DbCollectionName.Relationships, Relationship)
     }
+
+    private async save<T extends ICacheable>(
+        caches: FetchCacheOutputItem<any>[],
+        collectionName: DbCollectionName,
+        constructorOfT: new () => T
+    ) {
+        const collection = await this.collectionProvider.getCollection(collectionName)
+
+        await Promise.all(
+            caches.map(async (c) => {
+                const itemDoc = await collection.read(c.id.toString())
+                const item = await CoreSerializableAsync.fromT(itemDoc, constructorOfT)
+                item.setCache(c.cache)
+                await collection.update(itemDoc, item)
+            })
+        )
+    }
+}
+
+export class CacheFetcher {
+    public constructor(
+        private readonly fileController: FileController,
+        private readonly messageController: MessageController,
+        private readonly relationshipTemplateController: RelationshipTemplateController,
+        private readonly relationshipController: RelationshipsController,
+        private readonly tokenController: TokenController
+    ) {}
+
+    public async fetchCacheFor(input: FetchCacheInput): Promise<FetchCacheOutput> {
+        const caches = await Promise.all([
+            this.fetchCaches(this.fileController, input.files),
+            this.fetchCaches(this.messageController, input.messages),
+            this.fetchCaches(this.relationshipController, input.relationships),
+            this.fetchCaches(this.relationshipTemplateController, input.relationshipTemplates),
+            this.fetchCaches(this.tokenController, input.tokens)
+        ])
+
+        const output: FetchCacheOutput = {
+            files: caches[0],
+            messages: caches[1],
+            relationships: caches[2],
+            relationshipTemplates: caches[3],
+            tokens: caches[4]
+        }
+
+        return output
+    }
+
+    private async fetchCaches<TCache>(
+        controller: { fetchCaches(ids: CoreId[]): Promise<FetchCacheOutputItem<TCache>[]> },
+        ids?: CoreId[]
+    ) {
+        if (!ids) return []
+        const caches = await controller.fetchCaches(ids)
+        return caches
+    }
+}
+
+interface FetchCacheInput {
+    files?: CoreId[]
+    messages?: CoreId[]
+    relationships?: CoreId[]
+    relationshipTemplates?: CoreId[]
+    tokens?: CoreId[]
+}
+
+interface FetchCacheOutput {
+    files: FetchCacheOutputItem<CachedFile>[]
+    messages: FetchCacheOutputItem<CachedMessage>[]
+    relationships: FetchCacheOutputItem<CachedRelationship>[]
+    relationshipTemplates: FetchCacheOutputItem<CachedRelationshipTemplate>[]
+    tokens: FetchCacheOutputItem<CachedToken>[]
+}
+
+interface FetchCacheOutputItem<TCache> {
+    id: CoreId
+    cache: TCache
 }

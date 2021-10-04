@@ -9,7 +9,7 @@ import {
     Encoding
 } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreHash, CoreId, TransportErrors } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
@@ -34,7 +34,7 @@ export class FileController extends TransportController {
         await super.init()
 
         this.client = new FileClient(this.config, this.parent.authenticator)
-        this.files = await this.parent.getSynchronizedCollection(DbCollectionNames.Files)
+        this.files = await this.parent.getSynchronizedCollection(DbCollectionName.Files)
         return this
     }
 
@@ -46,6 +46,21 @@ export class FileController extends TransportController {
     public async getFile(id: CoreId): Promise<File | undefined> {
         const doc = await this.files.read(id.toString())
         return doc ? await File.from(doc) : undefined
+    }
+
+    public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedFile }[]> {
+        if (ids.length === 0) return []
+
+        const backboneFiles = await (await this.client.getFiles({ ids: ids.map((id) => id.id) })).value.collect()
+
+        const decryptionPromises = backboneFiles.map(async (f) => {
+            const fileDoc = await this.files.read(f.id)
+            const file = await File.from(fileDoc)
+
+            return { id: CoreId.from(f.id), cache: await this.decryptFile(f, file.secretKey) }
+        })
+
+        return await Promise.all(decryptionPromises)
     }
 
     public async updateCache(ids: string[]): Promise<File[]> {
@@ -77,20 +92,25 @@ export class FileController extends TransportController {
             response = (await this.client.getFile(fileId)).value
         }
 
-        const cipher = await CryptoCipher.fromBase64(response.encryptedProperties)
-        const plaintextMetadataBuffer = await CoreCrypto.decrypt(cipher, file.secretKey)
-        const plaintextMetadata: FileMetadata = await FileMetadata.deserialize(plaintextMetadataBuffer.toUtf8())
-
-        if (!(plaintextMetadata instanceof FileMetadata)) {
-            throw TransportErrors.files.invalidMetadata(fileId).logWith(this._log)
-        }
-
-        // TODO: JSSNMSHDD-2486 (check signature)
-        const cachedFile = await CachedFile.fromBackbone(response, plaintextMetadata)
+        const cachedFile = await this.decryptFile(response, file.secretKey)
         file.setCache(cachedFile)
 
         // Update isOwn, as it is possible that the identity receives an attachment with an own File.
         file.isOwn = this.parent.identity.isMe(cachedFile.createdBy)
+    }
+
+    private async decryptFile(response: BackboneGetFilesResponse, secretKey: CryptoSecretKey) {
+        const cipher = await CryptoCipher.fromBase64(response.encryptedProperties)
+        const plaintextMetadataBuffer = await CoreCrypto.decrypt(cipher, secretKey)
+        const plaintextMetadata: FileMetadata = await FileMetadata.deserialize(plaintextMetadataBuffer.toUtf8())
+
+        if (!(plaintextMetadata instanceof FileMetadata)) {
+            throw TransportErrors.files.invalidMetadata(response.id).logWith(this._log)
+        }
+
+        // TODO: JSSNMSHDD-2486 (check signature)
+        const cachedFile = await CachedFile.fromBackbone(response, plaintextMetadata)
+        return cachedFile
     }
 
     public async loadPeerFileByTruncated(truncated: string): Promise<File> {

@@ -2,7 +2,7 @@ import { ISerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, ICryptoSignature } from "@nmshd/crypto"
 import { nameof } from "ts-simple-nameof"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, ICoreAddress, TransportErrors } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { File } from "../files/local/File"
@@ -43,7 +43,7 @@ export class MessageController extends TransportController {
         await this.secrets.init()
 
         this.client = new MessageClient(this.config, this.parent.authenticator)
-        this.messages = await this.parent.getSynchronizedCollection(DbCollectionNames.Messages)
+        this.messages = await this.parent.getSynchronizedCollection(DbCollectionName.Messages)
         return this
     }
 
@@ -88,6 +88,25 @@ export class MessageController extends TransportController {
         return await Promise.all(promises)
     }
 
+    public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedMessage }[]> {
+        if (ids.length === 0) return []
+
+        const backboneMessages = await (
+            await this.client.getMessages({ ids: ids.map((id) => id.toString()) })
+        ).value.collect()
+
+        const decryptionPromises = backboneMessages.map(async (m) => {
+            const messageDoc = await this.messages.read(m.id)
+            const message = await Message.from(messageDoc)
+            const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(m)
+
+            const cachedMessage = (await this.decryptMessage(envelope, message.secretKey))[0]
+            return { id: CoreId.from(m.id), cache: cachedMessage }
+        })
+
+        return await Promise.all(decryptionPromises)
+    }
+
     private async updateCacheOfExistingMessageInDb(id: string, response?: BackboneGetMessagesResponse) {
         const messageDoc = await this.messages.read(id)
         if (!messageDoc) {
@@ -109,7 +128,7 @@ export class MessageController extends TransportController {
         }
 
         const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(response)
-        const [cachedMessage, messageKey] = await this.decryptSealedEnvelope(envelope, message.secretKey)
+        const [cachedMessage, messageKey] = await this.decryptMessage(envelope, message.secretKey)
 
         message.secretKey = messageKey
         message.setCache(cachedMessage)
@@ -119,7 +138,7 @@ export class MessageController extends TransportController {
         const response = (await this.client.getMessage(id.toString())).value
 
         const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(response)
-        const [cachedMessage, messageKey, relationship] = await this.decryptSealedEnvelope(envelope)
+        const [cachedMessage, messageKey, relationship] = await this.decryptMessage(envelope)
 
         if (!relationship) {
             throw TransportErrors.general.recordNotFound(Relationship, envelope.id.toString()).logWith(this._log)
@@ -362,7 +381,7 @@ export class MessageController extends TransportController {
         return [messagePlain, plaintextKey]
     }
 
-    private async decryptSealedEnvelope(
+    private async decryptMessage(
         envelope: MessageEnvelope,
         secretKey?: CryptoSecretKey
     ): Promise<[CachedMessage, CryptoSecretKey, Relationship?]> {

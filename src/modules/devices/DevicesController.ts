@@ -1,5 +1,5 @@
 import { CoreDate, CoreId, TransportErrors } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { PasswordGenerator } from "../../util"
 import { AccountController } from "../accounts/AccountController"
@@ -22,7 +22,7 @@ export class DevicesController extends TransportController {
         await super.init()
 
         this.client = new DeviceAuthClient(this.config, this.parent.authenticator)
-        this.devices = await this.parent.getSynchronizedCollection(DbCollectionNames.Devices)
+        this.devices = await this.parent.getSynchronizedCollection(DbCollectionName.Devices)
         return this
     }
 
