@@ -88,6 +88,29 @@ export class MessageController extends TransportController {
         return await Promise.all(promises)
     }
 
+    public async getCache(ids: CoreId[]): Promise<CachedMessage[]> {
+        if (ids.length === 0) return []
+
+        const backboneMessages = await (
+            await this.client.getMessages({ ids: ids.map((id) => id.toString()) })
+        ).value.collect()
+
+        const orderedBackboneMessages: BackboneGetMessagesResponse[] = []
+        for (const id of ids) {
+            orderedBackboneMessages.push(backboneMessages.find((f) => f.id === id.id)!)
+        }
+
+        const promises = backboneMessages.map(async (r) => {
+            const messageDoc = await this.messages.read(r.id)
+            const message = await Message.from(messageDoc)
+            const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(r)
+
+            return (await this.decryptMessage(envelope, message.secretKey))[0]
+        })
+
+        return await Promise.all(promises)
+    }
+
     private async updateCacheOfExistingMessageInDb(id: string, response?: BackboneGetMessagesResponse) {
         const messageDoc = await this.messages.read(id)
         if (!messageDoc) {
@@ -109,7 +132,7 @@ export class MessageController extends TransportController {
         }
 
         const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(response)
-        const [cachedMessage, messageKey] = await this.decryptSealedEnvelope(envelope, message.secretKey)
+        const [cachedMessage, messageKey] = await this.decryptMessage(envelope, message.secretKey)
 
         message.secretKey = messageKey
         message.setCache(cachedMessage)
@@ -119,7 +142,7 @@ export class MessageController extends TransportController {
         const response = (await this.client.getMessage(id.toString())).value
 
         const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(response)
-        const [cachedMessage, messageKey, relationship] = await this.decryptSealedEnvelope(envelope)
+        const [cachedMessage, messageKey, relationship] = await this.decryptMessage(envelope)
 
         if (!relationship) {
             throw TransportErrors.general.recordNotFound(Relationship, envelope.id.toString()).logWith(this._log)
@@ -362,7 +385,7 @@ export class MessageController extends TransportController {
         return [messagePlain, plaintextKey]
     }
 
-    private async decryptSealedEnvelope(
+    private async decryptMessage(
         envelope: MessageEnvelope,
         secretKey?: CryptoSecretKey
     ): Promise<[CachedMessage, CryptoSecretKey, Relationship?]> {
