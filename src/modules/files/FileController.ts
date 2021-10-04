@@ -9,7 +9,7 @@ import {
     Encoding
 } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreHash, CoreId, TransportErrors } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
@@ -34,7 +34,7 @@ export class FileController extends TransportController {
         await super.init()
 
         this.client = new FileClient(this.config, this.parent.authenticator)
-        this.files = await this.parent.getSynchronizedCollection(DbCollectionNames.Files)
+        this.files = await this.parent.getSynchronizedCollection(DbCollectionName.Files)
         return this
     }
 
@@ -48,7 +48,7 @@ export class FileController extends TransportController {
         return doc ? await File.from(doc) : undefined
     }
 
-    public async getCache(ids: CoreId[]): Promise<CachedFile[]> {
+    public async fetchCaches(ids: CoreId[]): Promise<CachedFile[]> {
         if (ids.length === 0) return []
 
         const backboneFiles = await (await this.client.getFiles({ ids: ids.map((id) => id.id) })).value.collect()

@@ -2,7 +2,7 @@ import { ISerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, ICryptoSignature } from "@nmshd/crypto"
 import { nameof } from "ts-simple-nameof"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, ICoreAddress, TransportErrors } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { File } from "../files/local/File"
@@ -43,7 +43,7 @@ export class MessageController extends TransportController {
         await this.secrets.init()
 
         this.client = new MessageClient(this.config, this.parent.authenticator)
-        this.messages = await this.parent.getSynchronizedCollection(DbCollectionNames.Messages)
+        this.messages = await this.parent.getSynchronizedCollection(DbCollectionName.Messages)
         return this
     }
 
@@ -88,7 +88,7 @@ export class MessageController extends TransportController {
         return await Promise.all(promises)
     }
 
-    public async getCache(ids: CoreId[]): Promise<CachedMessage[]> {
+    public async fetchCaches(ids: CoreId[]): Promise<CachedMessage[]> {
         if (ids.length === 0) return []
 
         const backboneMessages = await (

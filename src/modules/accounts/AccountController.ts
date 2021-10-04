@@ -4,7 +4,7 @@ import { CryptoSecretKey } from "@nmshd/crypto"
 import { ControllerName, CoreAddress, CoreDate, CoreId, IConfig, Transport, TransportErrors } from "../../core"
 import { Authenticator } from "../../core/backbone/Authenticator"
 import { CoreCrypto } from "../../core/CoreCrypto"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { TransportLoggerFactory } from "../../core/TransportLoggerFactory"
 import { PasswordGenerator } from "../../util"
 import { CertificateController } from "../certificates/CertificateController"
@@ -107,7 +107,7 @@ export class AccountController {
     public async init(deviceSharedSecret?: DeviceSharedSecret): Promise<AccountController> {
         this.info = await this.db.getMap("AccountInfo")
         this.unpushedDatawalletModifications = await this.db.getCollection(
-            DbCollectionNames.UnpushedDatawalletModifications
+            DbCollectionName.UnpushedDatawalletModifications
         )
 
         this.deviceClient = new DeviceClient(this.config)

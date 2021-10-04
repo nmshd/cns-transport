@@ -1,7 +1,7 @@
 import { ISerializableAsync, SerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializableAsync, TransportErrors } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
@@ -24,7 +24,7 @@ export class TokenController extends TransportController {
         await super.init()
 
         this.client = new TokenClient(this.config, this.parent.authenticator)
-        this.tokens = await this.parent.getSynchronizedCollection(DbCollectionNames.Tokens)
+        this.tokens = await this.parent.getSynchronizedCollection(DbCollectionName.Tokens)
 
         return this
     }
@@ -100,7 +100,7 @@ export class TokenController extends TransportController {
         return await Promise.all(promises)
     }
 
-    public async getCache(ids: CoreId[]): Promise<CachedToken[]> {
+    public async fetchCaches(ids: CoreId[]): Promise<CachedToken[]> {
         if (ids.length === 0) return []
 
         const backboneTokens = await (await this.client.getTokens({ ids: ids.map((id) => id.id) })).value.collect()

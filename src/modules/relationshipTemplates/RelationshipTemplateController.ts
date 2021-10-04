@@ -1,7 +1,7 @@
 import { ISerializableAsync } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, CryptoSignature } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, TransportErrors } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { RelationshipSecretController } from "../relationships/RelationshipSecretController"
@@ -35,7 +35,7 @@ export class RelationshipTemplateController extends TransportController {
     public async init(): Promise<this> {
         await super.init()
 
-        this.templates = await this.parent.getSynchronizedCollection(DbCollectionNames.RelationshipTemplates)
+        this.templates = await this.parent.getSynchronizedCollection(DbCollectionName.RelationshipTemplates)
 
         return this
     }
@@ -116,7 +116,7 @@ export class RelationshipTemplateController extends TransportController {
         return await Promise.all(promises)
     }
 
-    public async getCache(ids: CoreId[]): Promise<CachedRelationshipTemplate[]> {
+    public async fetchCaches(ids: CoreId[]): Promise<CachedRelationshipTemplate[]> {
         if (ids.length === 0) return []
 
         const backboneRelationships = await (

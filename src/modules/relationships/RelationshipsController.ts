@@ -11,7 +11,7 @@ import {
     TransportController
 } from "../../core"
 import { CoreUtil } from "../../core/CoreUtil"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { TransportErrors } from "../../core/TransportErrors"
 import { TransportIds } from "../../core/TransportIds"
 import { AccountController } from "../accounts/AccountController"
@@ -54,7 +54,7 @@ export class RelationshipsController extends TransportController {
         await super.init()
 
         this.client = new RelationshipClient(this.config, this.parent.authenticator)
-        this.relationships = await this.parent.getSynchronizedCollection(DbCollectionNames.Relationships)
+        this.relationships = await this.parent.getSynchronizedCollection(DbCollectionName.Relationships)
 
         return this
     }
@@ -73,7 +73,7 @@ export class RelationshipsController extends TransportController {
         return await Promise.all(promises)
     }
 
-    public async getCache(ids: CoreId[]): Promise<CachedRelationship[]> {
+    public async fetchCaches(ids: CoreId[]): Promise<CachedRelationship[]> {
         if (ids.length === 0) return []
 
         const backboneRelationships = await (

@@ -12,7 +12,7 @@ import {
     CryptoSignaturePrivateKey
 } from "@nmshd/crypto"
 import { CoreCrypto, CoreDate, CoreId, TransportErrors, TransportIds } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
 import { DeviceSecretType } from "../devices/DeviceSecretController"
@@ -52,7 +52,7 @@ export class SecretController extends TransportController {
     public async init(): Promise<this> {
         await super.init()
 
-        this.secrets = await this.parent.getSynchronizedCollection(DbCollectionNames.Secrets)
+        this.secrets = await this.parent.getSynchronizedCollection(DbCollectionName.Secrets)
         const lastNonce = await this.parent.info.get(SecretController.secretNonceKey)
         if (lastNonce) {
             this.nonce = lastNonce

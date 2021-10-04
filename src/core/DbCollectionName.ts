@@ -1,4 +1,4 @@
-export enum DbCollectionNames {
+export enum DbCollectionName {
     Files = "Files",
     Tokens = "Tokens",
     Relationships = "Relationships",

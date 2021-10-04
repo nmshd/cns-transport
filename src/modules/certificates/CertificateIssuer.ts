@@ -1,7 +1,7 @@
 import { IDatabaseCollection } from "@js-soft/docdb-access-abstractions"
 import { CoreBuffer, ICryptoSignaturePublicKey } from "@nmshd/crypto"
 import { ControllerName, CoreDate, ICoreAddress, ICoreDate, TransportController } from "../../core"
-import { DbCollectionNames } from "../../core/DbCollectionNames"
+import { DbCollectionName } from "../../core/DbCollectionName"
 import { AccountController } from "../accounts/AccountController"
 import { Certificate } from "./data/Certificate"
 import { ICertificateConstraint } from "./data/CertificateConstraint"
@@ -23,7 +23,7 @@ export class CertificateIssuer extends TransportController {
     public async init(): Promise<this> {
         await super.init()
 
-        this.certificatesIssued = await this.db.getCollection(DbCollectionNames.CertificatesIssued)
+        this.certificatesIssued = await this.db.getCollection(DbCollectionName.CertificatesIssued)
         return this
     }
 
