@@ -88,24 +88,20 @@ export class MessageController extends TransportController {
         return await Promise.all(promises)
     }
 
-    public async fetchCaches(ids: CoreId[]): Promise<CachedMessage[]> {
+    public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedMessage }[]> {
         if (ids.length === 0) return []
 
         const backboneMessages = await (
             await this.client.getMessages({ ids: ids.map((id) => id.toString()) })
         ).value.collect()
 
-        const orderedBackboneMessages: BackboneGetMessagesResponse[] = []
-        for (const id of ids) {
-            orderedBackboneMessages.push(backboneMessages.find((f) => f.id === id.id)!)
-        }
-
-        const decryptionPromises = orderedBackboneMessages.map(async (r) => {
-            const messageDoc = await this.messages.read(r.id)
+        const decryptionPromises = backboneMessages.map(async (m) => {
+            const messageDoc = await this.messages.read(m.id)
             const message = await Message.from(messageDoc)
-            const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(r)
+            const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(m)
 
-            return (await this.decryptMessage(envelope, message.secretKey))[0]
+            const cachedMessage = (await this.decryptMessage(envelope, message.secretKey))[0]
+            return { id: CoreId.from(m.id), cache: cachedMessage }
         })
 
         return await Promise.all(decryptionPromises)

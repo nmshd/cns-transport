@@ -48,21 +48,16 @@ export class FileController extends TransportController {
         return doc ? await File.from(doc) : undefined
     }
 
-    public async fetchCaches(ids: CoreId[]): Promise<CachedFile[]> {
+    public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedFile }[]> {
         if (ids.length === 0) return []
 
         const backboneFiles = await (await this.client.getFiles({ ids: ids.map((id) => id.id) })).value.collect()
 
-        const orderedBackboneFiles: BackboneGetFilesResponse[] = []
-        for (const id of ids) {
-            orderedBackboneFiles.push(backboneFiles.find((f) => f.id === id.id)!)
-        }
-
-        const decryptionPromises = orderedBackboneFiles.map(async (r) => {
-            const fileDoc = await this.files.read(r.id)
+        const decryptionPromises = backboneFiles.map(async (f) => {
+            const fileDoc = await this.files.read(f.id)
             const file = await File.from(fileDoc)
 
-            return await this.decryptFile(r, file.secretKey)
+            return { id: CoreId.from(f.id), cache: await this.decryptFile(f, file.secretKey) }
         })
 
         return await Promise.all(decryptionPromises)

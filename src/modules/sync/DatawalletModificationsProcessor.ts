@@ -18,7 +18,6 @@ import {
     Token,
     TokenController
 } from "@nmshd/transport"
-import stringify from "json-stringify-safe"
 import _ from "lodash"
 import { ICacheable } from "src/core/ICacheable"
 import { CoreId, CoreSerializableAsync } from "../../core"
@@ -180,28 +179,13 @@ export class CacheFetcher {
         return output
     }
 
-    private async fetchCaches<TCache>(controller: { fetchCaches(ids: CoreId[]): Promise<TCache[]> }, ids?: CoreId[]) {
+    private async fetchCaches<TCache>(
+        controller: { fetchCaches(ids: CoreId[]): Promise<FetchCacheOutputItem<TCache>[]> },
+        ids?: CoreId[]
+    ) {
         if (!ids) return []
         const caches = await controller.fetchCaches(ids)
-        return this.toOutputItems<TCache>(ids, caches)
-    }
-
-    private toOutputItems<T>(ids: CoreId[], caches: T[]) {
-        const outputItems: FetchCacheOutputItem<T>[] = []
-
-        if (ids.length !== caches.length) {
-            this.logger.warn(
-                `Number of ids did not match number of retrieved caches. ids: ${ids}; caches: ${stringify(caches)}`
-            )
-        }
-
-        for (let i = 0; i < ids.length; i++) {
-            const id = ids[i]
-            const cache = caches[i]
-            outputItems.push({ id: id, cache: cache })
-        }
-
-        return outputItems
+        return caches
     }
 }
 

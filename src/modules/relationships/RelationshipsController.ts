@@ -73,23 +73,21 @@ export class RelationshipsController extends TransportController {
         return await Promise.all(promises)
     }
 
-    public async fetchCaches(ids: CoreId[]): Promise<CachedRelationship[]> {
+    public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedRelationship }[]> {
         if (ids.length === 0) return []
 
         const backboneRelationships = await (
             await this.client.getRelationships({ ids: ids.map((id) => id.id) })
         ).value.collect()
 
-        const orderedBackboneRelationships: BackboneGetRelationshipsResponse[] = []
-        for (const id of ids) {
-            orderedBackboneRelationships.push(backboneRelationships.find((f) => f.id === id.id)!)
-        }
-
-        const decryptionPromises = orderedBackboneRelationships.map(async (r) => {
+        const decryptionPromises = backboneRelationships.map(async (r) => {
             const relationshipDoc = await this.relationships.read(r.id)
             const relationship = await Relationship.from(relationshipDoc)
 
-            return await this.decryptRelationship(r, relationship.relationshipSecretId)
+            return {
+                id: CoreId.from(r.id),
+                cache: await this.decryptRelationship(r, relationship.relationshipSecretId)
+            }
         })
 
         return await Promise.all(decryptionPromises)
