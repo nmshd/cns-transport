@@ -4,7 +4,7 @@ import { CoreId } from "./types/CoreId"
 export class CoreIdHelper {
     private readonly coreIdRegex: RegExp
 
-    public constructor(private readonly prefix: string, private readonly validateOnly: boolean = false) {
+    public constructor(public readonly prefix: string, private readonly validateOnly: boolean = false) {
         this.coreIdRegex = new RegExp(`${prefix}[${RandomCharacterRange.Alphanumeric}]{${20 - prefix.length}}`)
     }
 
