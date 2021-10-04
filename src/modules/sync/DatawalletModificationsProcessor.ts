@@ -23,7 +23,7 @@ import { DatawalletModification, DatawalletModificationType } from "./local/Data
 
 export class DatawalletModificationsProcessor {
     public constructor(
-        private readonly cacher: CacheFetcher,
+        private readonly cacheFetcher: CacheFetcher,
         private readonly collectionProvider: IDatabaseCollectionProvider,
         private readonly modifications: DatawalletModification[]
     ) {}
@@ -106,7 +106,7 @@ export class DatawalletModificationsProcessor {
 
         const cacheChangesGroupedByCollection = _.groupBy(cacheChanges, (c) => c.collection)
 
-        const caches = await this.cacher.fetchCacheFor({
+        const caches = await this.cacheFetcher.fetchCacheFor({
             files: (cacheChangesGroupedByCollection[DbCollectionName.Files] ?? []).map((m) => m.objectIdentifier),
             messages: (cacheChangesGroupedByCollection[DbCollectionName.Messages] ?? []).map((m) => m.objectIdentifier),
             relationshipTemplates: (cacheChangesGroupedByCollection[DbCollectionName.RelationshipTemplates] ?? []).map(
@@ -120,7 +120,7 @@ export class DatawalletModificationsProcessor {
         await this.save(caches.relationshipTemplates, DbCollectionName.RelationshipTemplates, RelationshipTemplate)
         await this.save(caches.tokens, DbCollectionName.Tokens, Token)
 
-        const relationshipCaches = await this.cacher.fetchCacheFor({
+        const relationshipCaches = await this.cacheFetcher.fetchCacheFor({
             relationships: (cacheChangesGroupedByCollection[DbCollectionName.Relationships] ?? []).map(
                 (m) => m.objectIdentifier
             )
@@ -155,13 +155,13 @@ export class CacheFetcher {
         private readonly tokenController: TokenController
     ) {}
 
-    public async fetchCacheFor(itemIds: FetchCacheInput): Promise<FetchCacheOutput> {
+    public async fetchCacheFor(input: FetchCacheInput): Promise<FetchCacheOutput> {
         const caches = await Promise.all([
-            this.fetchCaches(this.fileController, itemIds.files),
-            this.fetchCaches(this.messageController, itemIds.messages),
-            this.fetchCaches(this.relationshipController, itemIds.relationships),
-            this.fetchCaches(this.relationshipTemplateController, itemIds.relationshipTemplates),
-            this.fetchCaches(this.tokenController, itemIds.tokens)
+            this.fetchCaches(this.fileController, input.files),
+            this.fetchCaches(this.messageController, input.messages),
+            this.fetchCaches(this.relationshipController, input.relationships),
+            this.fetchCaches(this.relationshipTemplateController, input.relationshipTemplates),
+            this.fetchCaches(this.tokenController, input.tokens)
         ])
 
         const output: FetchCacheOutput = {
