@@ -19,7 +19,7 @@ export interface IConfig {
     platformTimeout: number
     platformMaxRedirects: number
     platformMaxUnencryptedFileSize: number
-    platformAdditionalHeaders?: object
+    platformAdditionalHeaders?: Record<string, string>
     baseUrl: string
     useGateway: boolean
     realm: Realm

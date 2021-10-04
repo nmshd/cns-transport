@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios"
 import qs from "qs"
 import { CoreDate } from "../types"
 import { ClientResult } from "./ClientResult"
@@ -24,7 +25,7 @@ export class AuthClient extends RESTClient {
 
         let response
         try {
-            response = await this.createAxios().post(
+            response = await this.createAxios().post<string, AxiosResponse<any>>(
                 path,
                 qs.stringify({
                     client_id: params.clientId, // eslint-disable-line @typescript-eslint/naming-convention
