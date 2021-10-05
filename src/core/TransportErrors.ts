@@ -342,6 +342,13 @@ class Tokens {
 }
 
 class General {
+    public invalidIdentityVersion() {
+        return new CoreError(
+            "error.transport.general.invalidIdentityVersion",
+            "The given identity version is invalid. The value must be 0 or higher."
+        )
+    }
+
     public baseUrlNotSet() {
         return new CoreError("error.transport.general.baseUrlNotSet", "The baseUrl was not set.")
     }

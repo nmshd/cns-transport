@@ -264,7 +264,8 @@ export class AccountController {
                 identityPublicKey: identityKeypair.publicKey.toBase64(),
                 signedChallenge: signedChallenge.toJSON(false),
                 clientId: this._config.platformClientId,
-                clientSecret: this._config.platformClientSecret
+                clientSecret: this._config.platformClientSecret,
+                identityVersion: this._config.identityVersion
             }),
             // Generate Synchronization Root Key
             CoreCrypto.generateSecretKey(),

@@ -13,6 +13,7 @@ import { TransportLoggerFactory } from "./TransportLoggerFactory"
 let log: ILogger
 
 export interface IConfig {
+    identityVersion: number
     debug: boolean
     platformClientId: string
     platformClientSecret: string
@@ -29,6 +30,7 @@ export interface IConfig {
 }
 
 export interface IConfigOverwrite {
+    identityVersion: number
     debug?: boolean
     platformClientId: string
     platformClientSecret: string
@@ -53,6 +55,7 @@ export class Transport {
     }
 
     private readonly defaultConfig: IConfig = {
+        identityVersion: -1,
         debug: false,
         platformClientId: "",
         platformClientSecret: "",
@@ -96,6 +99,11 @@ export class Transport {
 
         if (!this._config.baseUrl) {
             throw TransportErrors.general.baseUrlNotSet().logWith(log)
+        }
+
+        this._config.identityVersion = Math.floor(this._config.identityVersion)
+        if (this._config.identityVersion < 0) {
+            throw TransportErrors.general.invalidIdentityVersion().logWith(log)
         }
     }
 
