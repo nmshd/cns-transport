@@ -45,7 +45,7 @@ export enum BackboneEnvironment {
 export class Test {
     public static readonly currentEnvironment = BackboneEnvironment.Stage
     public static readonly config: IConfigOverwrite = {
-        identityVersion: 0,
+        datawalletVersion: 0,
         baseUrl: Test.currentEnvironment,
         debug: true,
         platformClientId: "test",
