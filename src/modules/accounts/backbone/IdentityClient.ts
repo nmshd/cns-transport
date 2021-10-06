@@ -8,7 +8,6 @@ export interface PlatformIdentityPostRequest {
     signedChallenge: IChallengeSignedSerialized
     clientId: string
     clientSecret: string
-    identityVersion: number
 }
 
 export interface PlatformIdentityDevice {
