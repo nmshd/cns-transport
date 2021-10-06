@@ -22,7 +22,6 @@ export interface IConfig {
     platformMaxUnencryptedFileSize: number
     platformAdditionalHeaders?: Record<string, string>
     baseUrl: string
-    useGateway: boolean
     realm: Realm
     datawalletEnabled: boolean
     httpAgent: AgentOptions
@@ -30,7 +29,6 @@ export interface IConfig {
 }
 
 export interface IConfigOverwrite {
-    datawalletVersion: number
     debug?: boolean
     platformClientId: string
     platformClientSecret: string
@@ -39,7 +37,6 @@ export interface IConfigOverwrite {
     platformMaxUnencryptedFileSize?: number
     platformAdditionalHeaders?: object
     baseUrl: string
-    useGateway?: boolean
     realm?: Realm
     datawalletEnabled?: boolean
     httpAgent?: AgentOptions
@@ -55,7 +52,7 @@ export class Transport {
     }
 
     private readonly defaultConfig: IConfig = {
-        datawalletVersion: -1,
+        datawalletVersion: 1,
         debug: false,
         platformClientId: "",
         platformClientSecret: "",
@@ -63,7 +60,6 @@ export class Transport {
         platformMaxRedirects: 10,
         platformMaxUnencryptedFileSize: 10 * 1024 * 1024,
         baseUrl: "",
-        useGateway: true,
         realm: Realm.Prod,
         datawalletEnabled: false,
         httpAgent: {
