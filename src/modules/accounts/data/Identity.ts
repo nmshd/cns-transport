@@ -12,6 +12,7 @@ export interface IIdentity extends ICoreSerializableAsync {
     description: string
     createdAt: CoreDate
     type: IdentityType
+    datawalletVersion?: number
 }
 
 export const enum IdentityType {
@@ -56,6 +57,10 @@ export class Identity extends CoreSerializableAsync implements IIdentity {
     @validate()
     @serialize()
     public type: IdentityType
+
+    @validate({ nullable: true })
+    @serialize()
+    public datawalletVersion?: number
 
     public static async from(value: IIdentity): Promise<Identity> {
         return await super.fromT(value, Identity)

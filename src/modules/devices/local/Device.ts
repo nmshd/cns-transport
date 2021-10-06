@@ -31,6 +31,7 @@ export interface IDevice extends ICoreSynchronizable {
     type: DeviceType
     username: string
     initialPassword?: string
+    datawalletVersion?: number
 }
 
 @type("Device")
@@ -99,6 +100,10 @@ export class Device extends CoreSynchronizable implements IDevice {
     @validate({ nullable: true })
     @serialize()
     public isAdmin?: boolean
+
+    @validate({ nullable: true })
+    @serialize()
+    public datawalletVersion?: number
 
     public static async from(value: IDevice): Promise<Device> {
         return await super.fromT(value, Device)
