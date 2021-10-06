@@ -307,6 +307,13 @@ export class SyncController extends TransportController {
     private async setLastCompletedDatawalletSyncTime() {
         await this.setSyncTimeByName("Datawallet")
     }
+
+    public async setInititalDatawalletVersion(version: number): Promise<void> {
+        await this.client.updateDatawallet({
+            version: version,
+            modifications: []
+        })
+    }
 }
 
 function descending(modification1: BackboneDatawalletModification, modification2: BackboneDatawalletModification) {

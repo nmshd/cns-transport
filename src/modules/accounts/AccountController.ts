@@ -166,6 +166,7 @@ export class AccountController {
 
         if (identityCreated) {
             await this.devices.addExistingDevice(device!)
+            await this.synchronization.setInititalDatawalletVersion(this._config.supportedDatawalletVersion)
         } else if (deviceUpdated) {
             await this.syncDatawallet()
             await this.devices.update(device!)
@@ -302,7 +303,8 @@ export class AccountController {
             name: "",
             realm: realm,
             type: IdentityType.UNKNOWN,
-            publicKey: identityKeypair.publicKey
+            publicKey: identityKeypair.publicKey,
+            datawalletVersion: this._config.supportedDatawalletVersion
         })
 
         const deviceId = CoreId.from(deviceResponse.device.id)
@@ -318,7 +320,8 @@ export class AccountController {
             publicKey: deviceKeypair.publicKey,
             type: deviceInfo.type,
             certificate: "",
-            username: deviceResponse.device.username
+            username: deviceResponse.device.username,
+            datawalletVersion: this._config.supportedDatawalletVersion
         })
 
         // Initialize required controllers
