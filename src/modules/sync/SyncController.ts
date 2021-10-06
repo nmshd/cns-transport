@@ -204,7 +204,7 @@ export class SyncController extends TransportController {
                 localModification,
                 calculatedIndex++
             )
-            const backboneModification = DatawalletModificationMapper.toCreateDatawalletModificationsRequestItem(
+            const backboneModification = DatawalletModificationMapper.toUpdateDatawalletRequestItem(
                 localModification,
                 encryptedPayload
             )

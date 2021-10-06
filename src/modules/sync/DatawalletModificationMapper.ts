@@ -62,7 +62,7 @@ export class DatawalletModificationMapper {
         })
     }
 
-    public static toCreateDatawalletModificationsRequestItem(
+    public static toUpdateDatawalletRequestItem(
         datawalletModification: DatawalletModification,
         encryptedPayload: string | undefined
     ): UpdateDatawalletRequestItem {
