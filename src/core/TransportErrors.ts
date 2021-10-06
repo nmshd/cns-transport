@@ -1,4 +1,5 @@
 import { DatabaseType } from "@js-soft/docdb-access-abstractions"
+import stringify from "json-stringify-safe"
 import { RelationshipChangeType } from ".."
 import { BackboneGetRelationshipsChangesResponse } from "../modules/relationships/backbone/BackboneGetRelationshipsChanges"
 import { RelationshipChange } from "../modules/relationships/transmission/changes/RelationshipChange"
@@ -290,6 +291,22 @@ class Datawallet {
             "error.transport.datawallet.encryptedPayloadIsNoCipher",
             "The given encrypted payload is no cipher."
         )
+    }
+
+    public unsupportedModification(type: "unsupportedCacheChangedModificationCollection", data: any) {
+        const errorCode = "error.transport.datawallet.unsupportedModification"
+        const formattedData = data ? stringify(data) : ""
+
+        switch (type) {
+            case "unsupportedCacheChangedModificationCollection":
+                return new CoreError(
+                    errorCode,
+                    `The following collections were received in CacheChanged datawallet modifications but are not supported by the current version of this library: ${formattedData}.`
+                )
+
+            default:
+                throw new Error(`Given type '${type}' is not supported.`)
+        }
     }
 }
 

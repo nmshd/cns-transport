@@ -1,5 +1,5 @@
 import { IDatabaseCollection, IDatabaseMap } from "@js-soft/docdb-access-abstractions"
-import { ControllerName, CoreDate, CoreError, CoreId, TransportController } from "../../core"
+import { ControllerName, CoreDate, CoreError, CoreId, TransportController, TransportLoggerFactory } from "../../core"
 import { AccountController } from "../accounts/AccountController"
 import { BackboneDatawalletModification } from "./backbone/BackboneDatawalletModification"
 import { BackboneSyncRun } from "./backbone/BackboneSyncRun"
@@ -136,7 +136,8 @@ export class SyncController extends TransportController {
                 this.parent.tokens
             ),
             this._db,
-            incomingModifications
+            incomingModifications,
+            TransportLoggerFactory.getLogger(DatawalletModificationsProcessor)
         )
 
         await datawalletModificationsProcessor.execute()
