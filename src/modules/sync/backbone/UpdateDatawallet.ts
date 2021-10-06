@@ -1,9 +1,10 @@
-export interface CreateDatawalletModificationsRequest {
+export interface UpdateDatawalletRequest {
+    version?: number
     localIndex?: number
-    modifications: CreateDatawalletModificationsRequestItem[]
+    modifications: UpdateDatawalletRequestItem[]
 }
 
-export interface CreateDatawalletModificationsRequestItem {
+export interface UpdateDatawalletRequestItem {
     objectIdentifier: string
     payloadCategory?: string
     collection: string
@@ -11,7 +12,7 @@ export interface CreateDatawalletModificationsRequestItem {
     encryptedPayload?: string
 }
 
-export interface CreateDatawalletModificationsResponse {
+export interface UpdateDatawalletResponse {
     newIndex: number
     modifications: {
         id: string

@@ -1,6 +1,6 @@
 import { CoreId, TransportIds } from "../../core"
 import { BackboneDatawalletModification } from "./backbone/BackboneDatawalletModification"
-import { CreateDatawalletModificationsRequestItem } from "./backbone/CreateDatawalletModifications"
+import { UpdateDatawalletRequestItem } from "./backbone/UpdateDatawallet"
 import {
     DatawalletModification,
     DatawalletModificationCategory,
@@ -65,7 +65,7 @@ export class DatawalletModificationMapper {
     public static toCreateDatawalletModificationsRequestItem(
         datawalletModification: DatawalletModification,
         encryptedPayload: string | undefined
-    ): CreateDatawalletModificationsRequestItem {
+    ): UpdateDatawalletRequestItem {
         return {
             objectIdentifier: datawalletModification.objectIdentifier.toString(),
             payloadCategory: datawalletModification.payloadCategory,

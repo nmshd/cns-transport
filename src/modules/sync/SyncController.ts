@@ -3,10 +3,10 @@ import { ControllerName, CoreDate, CoreError, CoreId, TransportController, Trans
 import { AccountController } from "../accounts/AccountController"
 import { BackboneDatawalletModification } from "./backbone/BackboneDatawalletModification"
 import { BackboneSyncRun } from "./backbone/BackboneSyncRun"
-import { CreateDatawalletModificationsRequestItem } from "./backbone/CreateDatawalletModifications"
 import { FinalizeSyncRunRequestExternalEventResult } from "./backbone/FinalizeSyncRun"
 import { StartSyncRunStatus } from "./backbone/StartSyncRun"
 import { SyncClient } from "./backbone/SyncClient"
+import { UpdateDatawalletRequestItem } from "./backbone/UpdateDatawallet"
 import { ChangedItems } from "./ChangedItems"
 import { DatawalletModificationMapper } from "./DatawalletModificationMapper"
 import { CacheFetcher, DatawalletModificationsProcessor } from "./DatawalletModificationsProcessor"
@@ -113,11 +113,12 @@ export class SyncController extends TransportController {
     }
 
     private async applyIncomingDatawalletModifications() {
-        const getDatawalletModificationsResult = await this.client.getDatawalletModifications({
+        const getDatawalletModificationsResult = await this.client.getDatawallet({
             localIndex: await this.getLocalDatawalletModificationIndex()
         })
 
-        const encryptedIncomingModifications = await getDatawalletModificationsResult.value.collect()
+        const responses = await getDatawalletModificationsResult.value.collect()
+        const encryptedIncomingModifications = responses.flatMap((response) => response.modifications)
 
         if (encryptedIncomingModifications.length === 0) {
             return
@@ -174,7 +175,7 @@ export class SyncController extends TransportController {
             return
         }
 
-        const result = await this.client.createDatawalletModifications({
+        const result = await this.client.updateDatawallet({
             localIndex: await this.getLocalDatawalletModificationIndex(),
             modifications: backboneModifications
         })
@@ -184,7 +185,7 @@ export class SyncController extends TransportController {
     }
 
     private async prepareLocalDatawalletModificationsForPush() {
-        const backboneModifications: CreateDatawalletModificationsRequestItem[] = []
+        const backboneModifications: UpdateDatawalletRequestItem[] = []
         const localModificationIds: CoreId[] = []
 
         if (!this.datawalletEnabled) {
