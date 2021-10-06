@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
+import { ILogger } from "@js-soft/logging-abstractions"
 import _ from "lodash"
-import { CoreId, CoreSerializableAsync } from "../../core"
+import { CoreId, CoreSerializableAsync, TransportErrors } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
 import { ICacheable } from "../../core/ICacheable"
 import { FileController } from "../files/FileController"
@@ -25,7 +26,8 @@ export class DatawalletModificationsProcessor {
     public constructor(
         private readonly cacheFetcher: CacheFetcher,
         private readonly collectionProvider: IDatabaseCollectionProvider,
-        private readonly modifications: DatawalletModification[]
+        private readonly modifications: DatawalletModification[],
+        private readonly logger: ILogger
     ) {}
 
     public async execute(): Promise<void> {
@@ -104,31 +106,65 @@ export class DatawalletModificationsProcessor {
             return
         }
 
-        const cacheChangesGroupedByCollection = _.groupBy(cacheChanges, (c) => c.collection)
+        const cacheChangesGroupedByCollection = this.groupCacheChangesByCollection(cacheChanges)
 
         const caches = await this.cacheFetcher.fetchCacheFor({
-            files: (cacheChangesGroupedByCollection[DbCollectionName.Files] ?? []).map((m) => m.objectIdentifier),
-            messages: (cacheChangesGroupedByCollection[DbCollectionName.Messages] ?? []).map((m) => m.objectIdentifier),
-            relationshipTemplates: (cacheChangesGroupedByCollection[DbCollectionName.RelationshipTemplates] ?? []).map(
-                (m) => m.objectIdentifier
-            ),
-            tokens: (cacheChangesGroupedByCollection[DbCollectionName.Tokens] ?? []).map((m) => m.objectIdentifier)
+            files: cacheChangesGroupedByCollection.fileIds,
+            messages: cacheChangesGroupedByCollection.messageIds,
+            relationshipTemplates: cacheChangesGroupedByCollection.relationshipTemplateIds,
+            tokens: cacheChangesGroupedByCollection.tokenIds
         })
 
-        await this.save(caches.files, DbCollectionName.Files, File)
-        await this.save(caches.messages, DbCollectionName.Messages, Message)
-        await this.save(caches.relationshipTemplates, DbCollectionName.RelationshipTemplates, RelationshipTemplate)
-        await this.save(caches.tokens, DbCollectionName.Tokens, Token)
+        await this.saveNewCaches(caches.files, DbCollectionName.Files, File)
+        await this.saveNewCaches(caches.messages, DbCollectionName.Messages, Message)
+        await this.saveNewCaches(
+            caches.relationshipTemplates,
+            DbCollectionName.RelationshipTemplates,
+            RelationshipTemplate
+        )
+        await this.saveNewCaches(caches.tokens, DbCollectionName.Tokens, Token)
 
+        // Need to fetch the cache for relationships after the cache for relationship templates was fetched,
+        // because when building the relationship cache, the cache of thecorresponding relationship template
+        // is needed
         const relationshipCaches = await this.cacheFetcher.fetchCacheFor({
-            relationships: (cacheChangesGroupedByCollection[DbCollectionName.Relationships] ?? []).map(
-                (m) => m.objectIdentifier
-            )
+            relationships: cacheChangesGroupedByCollection.relationshipIds
         })
-        await this.save(relationshipCaches.relationships, DbCollectionName.Relationships, Relationship)
+        await this.saveNewCaches(relationshipCaches.relationships, DbCollectionName.Relationships, Relationship)
     }
 
-    private async save<T extends ICacheable>(
+    private groupCacheChangesByCollection(cacheChanges: DatawalletModification[]) {
+        const groups = _.groupBy(cacheChanges, (c) => c.collection)
+
+        const fileIds = (groups[DbCollectionName.Files] ?? []).map((m) => m.objectIdentifier)
+        delete groups[DbCollectionName.Files]
+
+        const messageIds = (groups[DbCollectionName.Messages] ?? []).map((m) => m.objectIdentifier)
+        delete groups[DbCollectionName.Messages]
+
+        const relationshipIds = (groups[DbCollectionName.Relationships] ?? []).map((m) => m.objectIdentifier)
+        delete groups[DbCollectionName.Relationships]
+
+        const relationshipTemplateIds = (groups[DbCollectionName.RelationshipTemplates] ?? []).map(
+            (m) => m.objectIdentifier
+        )
+        delete groups[DbCollectionName.RelationshipTemplates]
+
+        const tokenIds = (groups[DbCollectionName.Tokens] ?? []).map((m) => m.objectIdentifier)
+        delete groups[DbCollectionName.Tokens]
+
+        const unsupportedCollections = Object.keys(groups) // all collections not deleted before are considered as unsupported
+
+        if (unsupportedCollections.length > 0) {
+            throw TransportErrors.datawallet
+                .unsupportedModification("unsupportedCacheChangedModificationCollection", unsupportedCollections)
+                .logWith(this.logger)
+        }
+
+        return { fileIds, messageIds, relationshipTemplateIds, tokenIds, relationshipIds }
+    }
+
+    private async saveNewCaches<T extends ICacheable>(
         caches: FetchCacheOutputItem<any>[],
         collectionName: DbCollectionName,
         constructorOfT: new () => T
