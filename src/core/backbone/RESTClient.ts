@@ -89,9 +89,6 @@ export class RESTClient {
                     encode: false,
                     allowDots: true
                 })
-            },
-            headers: {
-                "x-datawallet-version": config.datawalletVersion.toString()
             }
         }
 

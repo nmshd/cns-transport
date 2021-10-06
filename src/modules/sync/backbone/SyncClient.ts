@@ -1,4 +1,5 @@
-import { Paginator, RESTClientAuthenticate } from "../../../core"
+import { IConfig, Paginator, RESTClientAuthenticate } from "../../../core"
+import { Authenticator } from "../../../core/backbone/Authenticator"
 import { ClientResult } from "../../../core/backbone/ClientResult"
 import { BackboneDatawalletModification } from "./BackboneDatawalletModification"
 import { BackboneExternalEvent } from "./BackboneExternalEvent"
@@ -11,6 +12,14 @@ import { GetDatawalletModificationsRequest } from "./GetDatawalletModifications"
 import { StartSyncRunResponse } from "./StartSyncRun"
 
 export class SyncClient extends RESTClientAuthenticate {
+    public constructor(config: IConfig, authenticator: Authenticator) {
+        super(config, authenticator, {
+            headers: {
+                "x-datawallet-version": config.supportedDatawalletVersion.toString()
+            }
+        })
+    }
+
     public async startSyncRun(): Promise<ClientResult<StartSyncRunResponse>> {
         return await this.post<StartSyncRunResponse>("/api/v1/SyncRuns", {})
     }
