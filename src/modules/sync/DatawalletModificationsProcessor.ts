@@ -2,7 +2,7 @@
 import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
 import _ from "lodash"
-import { CoreId, CoreSerializableAsync, TransportErrors } from "../../core"
+import { CoreId, CoreSerializableAsync, TransportErrors, TransportIds } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
 import { ICacheable } from "../../core/ICacheable"
 import { FileController } from "../files/FileController"
@@ -30,26 +30,43 @@ export class DatawalletModificationsProcessor {
         private readonly logger: ILogger
     ) {}
 
+    private readonly collectionsWithCacheableItems: string[] = [
+        DbCollectionName.Files,
+        DbCollectionName.Messages,
+        DbCollectionName.Relationships,
+        DbCollectionName.RelationshipTemplates,
+        DbCollectionName.Tokens
+    ]
+
     public async execute(): Promise<void> {
         const modificationsGroupedByType = _.groupBy(this.modifications, (m) => m.type)
 
-        await this.applyCreations(modificationsGroupedByType[DatawalletModificationType.Create])
+        const cacheChangesForCreatedItems = await this.applyCreations(
+            modificationsGroupedByType[DatawalletModificationType.Create]
+        )
+
         await this.applyUpdates(modificationsGroupedByType[DatawalletModificationType.Update])
         await this.applyDeletes(modificationsGroupedByType[DatawalletModificationType.Delete])
-        await this.applyCacheChanges(modificationsGroupedByType[DatawalletModificationType.CacheChanged])
+
+        const cacheChanges = modificationsGroupedByType[DatawalletModificationType.CacheChanged] ?? []
+        cacheChanges.push(...cacheChangesForCreatedItems)
+        await this.applyCacheChanges(cacheChanges)
     }
 
     private async applyCreations(creations?: DatawalletModification[]) {
         if (!creations || creations.length === 0) {
-            return
+            return []
         }
 
         const creationsGroupedByObjectIdentifier = _.groupBy(creations, (c) => c.objectIdentifier)
 
+        const cacheChangesForCreatedItems: DatawalletModification[] = []
+
         for (const objectIdentifier in creationsGroupedByObjectIdentifier) {
             const currentCreations = creationsGroupedByObjectIdentifier[objectIdentifier]
 
-            const targetCollection = await this.collectionProvider.getCollection(currentCreations[0].collection)
+            const targetCollectionName = currentCreations[0].collection
+            const targetCollection = await this.collectionProvider.getCollection(targetCollectionName)
 
             let mergedCreation = { id: objectIdentifier }
 
@@ -66,8 +83,21 @@ export class DatawalletModificationsProcessor {
                 await targetCollection.update(oldDoc, updatedObject)
             }
 
+            if (this.collectionsWithCacheableItems.includes(targetCollectionName)) {
+                const modification = DatawalletModification.from({
+                    localId: await TransportIds.datawalletModification.generate(),
+                    type: DatawalletModificationType.CacheChanged,
+                    collection: targetCollectionName,
+                    objectIdentifier: CoreId.from(objectIdentifier)
+                })
+
+                cacheChangesForCreatedItems.push(modification)
+            }
+
             await targetCollection.create(newObject)
         }
+
+        return cacheChangesForCreatedItems
     }
 
     private async applyUpdates(updateModifications?: DatawalletModification[]) {
