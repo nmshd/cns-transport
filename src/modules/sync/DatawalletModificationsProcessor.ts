@@ -29,9 +29,9 @@ export class DatawalletModificationsProcessor {
     private readonly cacheChanges: DatawalletModification[]
 
     public constructor(
+        modifications: DatawalletModification[],
         private readonly cacheFetcher: CacheFetcher,
         private readonly collectionProvider: IDatabaseCollectionProvider,
-        modifications: DatawalletModification[],
         private readonly logger: ILogger
     ) {
         const modificationsGroupedByType = _.groupBy(modifications, (m) => m.type)
