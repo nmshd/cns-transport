@@ -70,13 +70,13 @@ export class DatawalletModificationsProcessor {
             const targetCollectionName = currentCreates[0].collection
             const targetCollection = await this.collectionProvider.getCollection(targetCollectionName)
 
-            let mergedCreate = { id: objectIdentifier }
+            let mergedPayload = { id: objectIdentifier }
 
             for (const create of currentCreates) {
-                mergedCreate = { ...mergedCreate, ...create.payload }
+                mergedPayload = { ...mergedPayload, ...create.payload }
             }
 
-            const newObject = await CoreSerializableAsync.fromUnknown(mergedCreate)
+            const newObject = await CoreSerializableAsync.fromUnknown(mergedPayload)
 
             const oldDoc = await targetCollection.read(objectIdentifier)
             if (oldDoc) {
