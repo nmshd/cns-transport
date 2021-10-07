@@ -125,6 +125,8 @@ export class DatawalletModificationsProcessor {
             return
         }
 
+        this.ensureAllItemsAreCacheable()
+
         const cacheChangesGroupedByCollection = this.groupCacheChangesByCollection(this.cacheChanges)
 
         const caches = await this.cacheFetcher.fetchCacheFor({
@@ -152,35 +154,33 @@ export class DatawalletModificationsProcessor {
         await this.saveNewCaches(relationshipCaches.relationships, DbCollectionName.Relationships, Relationship)
     }
 
+    private ensureAllItemsAreCacheable() {
+        const collections = this.cacheChanges.map((c) => c.collection)
+        const uniqueCollections = [...new Set(collections)]
+        const collectionsWithUncacheableItems = uniqueCollections.filter(
+            (c) => !this.collectionsWithCacheableItems.includes(c)
+        )
+
+        if (collectionsWithUncacheableItems.length > 0) {
+            throw TransportErrors.datawallet
+                .unsupportedModification(
+                    "unsupportedCacheChangedModificationCollection",
+                    collectionsWithUncacheableItems
+                )
+                .logWith(this.logger)
+        }
+    }
+
     private groupCacheChangesByCollection(cacheChanges: DatawalletModification[]) {
         const groups = _.groupBy(cacheChanges, (c) => c.collection)
 
         const fileIds = (groups[DbCollectionName.Files] ?? []).map((m) => m.objectIdentifier)
-        delete groups[DbCollectionName.Files]
-
         const messageIds = (groups[DbCollectionName.Messages] ?? []).map((m) => m.objectIdentifier)
-        delete groups[DbCollectionName.Messages]
-
         const relationshipIds = (groups[DbCollectionName.Relationships] ?? []).map((m) => m.objectIdentifier)
-        delete groups[DbCollectionName.Relationships]
-
-        const relationshipTemplateIds = (groups[DbCollectionName.RelationshipTemplates] ?? []).map(
-            (m) => m.objectIdentifier
-        )
-        delete groups[DbCollectionName.RelationshipTemplates]
-
+        const templateIds = (groups[DbCollectionName.RelationshipTemplates] ?? []).map((m) => m.objectIdentifier)
         const tokenIds = (groups[DbCollectionName.Tokens] ?? []).map((m) => m.objectIdentifier)
-        delete groups[DbCollectionName.Tokens]
 
-        const unsupportedCollections = Object.keys(groups) // all collections not deleted before are considered as unsupported
-
-        if (unsupportedCollections.length > 0) {
-            throw TransportErrors.datawallet
-                .unsupportedModification("unsupportedCacheChangedModificationCollection", unsupportedCollections)
-                .logWith(this.logger)
-        }
-
-        return { fileIds, messageIds, relationshipTemplateIds, tokenIds, relationshipIds }
+        return { fileIds, messageIds, relationshipTemplateIds: templateIds, tokenIds, relationshipIds }
     }
 
     private async saveNewCaches<T extends ICacheable>(
