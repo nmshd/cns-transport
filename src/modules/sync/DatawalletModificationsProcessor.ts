@@ -51,32 +51,32 @@ export class DatawalletModificationsProcessor {
     ]
 
     public async execute(): Promise<void> {
-        await this.applyCreations()
+        await this.applyCreates()
         await this.applyUpdates()
         await this.applyCacheChanges()
         await this.applyDeletes()
     }
 
-    private async applyCreations() {
+    private async applyCreates() {
         if (this.creates.length === 0) {
             return
         }
 
-        const creationsGroupedByObjectIdentifier = _.groupBy(this.creates, (c) => c.objectIdentifier)
+        const createsGroupedByObjectIdentifier = _.groupBy(this.creates, (c) => c.objectIdentifier)
 
-        for (const objectIdentifier in creationsGroupedByObjectIdentifier) {
-            const currentCreations = creationsGroupedByObjectIdentifier[objectIdentifier]
+        for (const objectIdentifier in createsGroupedByObjectIdentifier) {
+            const currentCreates = createsGroupedByObjectIdentifier[objectIdentifier]
 
-            const targetCollectionName = currentCreations[0].collection
+            const targetCollectionName = currentCreates[0].collection
             const targetCollection = await this.collectionProvider.getCollection(targetCollectionName)
 
-            let mergedCreation = { id: objectIdentifier }
+            let mergedCreate = { id: objectIdentifier }
 
-            for (const creation of currentCreations) {
-                mergedCreation = { ...mergedCreation, ...creation.payload }
+            for (const create of currentCreates) {
+                mergedCreate = { ...mergedCreate, ...create.payload }
             }
 
-            const newObject = await CoreSerializableAsync.fromUnknown(mergedCreation)
+            const newObject = await CoreSerializableAsync.fromUnknown(mergedCreate)
 
             const oldDoc = await targetCollection.read(objectIdentifier)
             if (oldDoc) {
