@@ -120,17 +120,6 @@ export class DatawalletModificationsProcessor {
         }
     }
 
-    private async applyDeletes() {
-        if (this.deletes.length === 0) {
-            return
-        }
-
-        for (const deleteModification of this.deletes) {
-            const targetCollection = await this.collectionProvider.getCollection(deleteModification.collection)
-            await targetCollection.delete({ id: deleteModification.objectIdentifier })
-        }
-    }
-
     private async applyCacheChanges() {
         if (this.cacheChanges.length === 0) {
             return
@@ -209,6 +198,17 @@ export class DatawalletModificationsProcessor {
                 await collection.update(itemDoc, item)
             })
         )
+    }
+
+    private async applyDeletes() {
+        if (this.deletes.length === 0) {
+            return
+        }
+
+        for (const deleteModification of this.deletes) {
+            const targetCollection = await this.collectionProvider.getCollection(deleteModification.collection)
+            await targetCollection.delete({ id: deleteModification.objectIdentifier })
+        }
     }
 }
 
