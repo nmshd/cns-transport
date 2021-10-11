@@ -4,7 +4,7 @@ import _ from "lodash"
 import { nameof } from "ts-simple-nameof"
 import { CoreSerializableAsync } from "../../core/CoreSerializableAsync"
 import { CoreSynchronizable, ICoreSynchronizable } from "../../core/CoreSynchronizable"
-import { ICacheable, isCacheable } from "../../core/ICacheable"
+import { ICacheable } from "../../core/ICacheable"
 import { TransportIds } from "../../core/TransportIds"
 import {
     DatawalletModification,
@@ -80,17 +80,6 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     objectIdentifier: objectIdentifier,
                     payloadCategory: DatawalletModificationCategory.Userdata,
                     payload: userdataModificationPayload
-                })
-            )
-        }
-
-        if (isCacheable(newObject)) {
-            await this.datawalletModifications.create(
-                DatawalletModification.from({
-                    localId: await TransportIds.datawalletModification.generate(),
-                    type: DatawalletModificationType.CacheChanged,
-                    collection: this.name,
-                    objectIdentifier: objectIdentifier
                 })
             )
         }
