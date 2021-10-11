@@ -52,7 +52,7 @@ export function runOnMongoDb(): void {
         return
     }
 
-    const connectionString = process.env["CONNECTION_STRING"]!.replace('"', "")
+    const connectionString = process.env["CONNECTION_STRING"]!.replace(/"/g, "")
     const mongoDbConnection = new MongoDbConnection(connectionString)
 
     before(async function () {
