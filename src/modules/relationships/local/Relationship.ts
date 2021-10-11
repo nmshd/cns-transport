@@ -7,14 +7,14 @@ import { BackboneGetRelationshipsResponse } from "../backbone/BackboneGetRelatio
 import { IRelationshipChange } from "../transmission/changes/RelationshipChange"
 import { RelationshipChangeResponse } from "../transmission/changes/RelationshipChangeResponse"
 import { RelationshipStatus } from "../transmission/RelationshipStatus"
-import { CachedRelationship } from "./CachedRelationship"
+import { CachedRelationship, ICachedRelationship } from "./CachedRelationship"
 
 export interface IRelationship extends ICoreSynchronizable {
     relationshipSecretId: ICoreId
     peer: IIdentity
     status: RelationshipStatus
 
-    cache?: CachedRelationship
+    cache?: ICachedRelationship
     cachedAt?: CoreDate
 
     metadata?: any
