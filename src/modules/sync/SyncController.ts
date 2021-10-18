@@ -129,6 +129,7 @@ export class SyncController extends TransportController {
         this.log.trace(`${incomingModifications.length} incoming modifications found`)
 
         const datawalletModificationsProcessor = new DatawalletModificationsProcessor(
+            incomingModifications,
             new CacheFetcher(
                 this.parent.files,
                 this.parent.messages,
@@ -137,7 +138,6 @@ export class SyncController extends TransportController {
                 this.parent.tokens
             ),
             this._db,
-            incomingModifications,
             TransportLoggerFactory.getLogger(DatawalletModificationsProcessor)
         )
 

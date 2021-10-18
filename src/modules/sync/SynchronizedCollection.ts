@@ -1,11 +1,11 @@
-import { DatabaseType, IDatabaseCollection } from "@js-soft/docdb-access-abstractions"
+import {DatabaseType, IDatabaseCollection} from "@js-soft/docdb-access-abstractions"
 import jsonpatch from "fast-json-patch"
 import _ from "lodash"
-import { nameof } from "ts-simple-nameof"
-import { CoreSerializableAsync } from "../../core/CoreSerializableAsync"
-import { CoreSynchronizable, ICoreSynchronizable } from "../../core/CoreSynchronizable"
-import { ICacheable, isCacheable } from "../../core/ICacheable"
-import { TransportIds } from "../../core/TransportIds"
+import {nameof} from "ts-simple-nameof"
+import {CoreSerializableAsync} from "../../core/CoreSerializableAsync"
+import {CoreSynchronizable, ICoreSynchronizable} from "../../core/CoreSynchronizable"
+import {ICacheable} from "../../core/ICacheable"
+import {TransportIds} from "../../core/TransportIds"
 import {
     DatawalletModification,
     DatawalletModificationCategory,
@@ -83,18 +83,6 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     objectIdentifier: objectIdentifier,
                     payloadCategory: DatawalletModificationCategory.Userdata,
                     payload: userdataModificationPayload,
-                    datawalletVersion: this.datawalletVersion
-                })
-            )
-        }
-
-        if (isCacheable(newObject)) {
-            await this.datawalletModifications.create(
-                DatawalletModification.from({
-                    localId: await TransportIds.datawalletModification.generate(),
-                    type: DatawalletModificationType.CacheChanged,
-                    collection: this.name,
-                    objectIdentifier: objectIdentifier,
                     datawalletVersion: this.datawalletVersion
                 })
             )

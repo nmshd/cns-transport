@@ -2,7 +2,7 @@
 import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
 import _ from "lodash"
-import { CoreId, CoreSerializableAsync, TransportErrors } from "../../core"
+import { CoreId, CoreSerializableAsync, TransportErrors, TransportIds } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
 import { ICacheable } from "../../core/ICacheable"
 import { FileController } from "../files/FileController"
@@ -23,41 +23,60 @@ import { TokenController } from "../tokens/TokenController"
 import { DatawalletModification, DatawalletModificationType } from "./local/DatawalletModification"
 
 export class DatawalletModificationsProcessor {
+    private readonly creates: DatawalletModification[]
+    private readonly updates: DatawalletModification[]
+    private readonly deletes: DatawalletModification[]
+    private readonly cacheChanges: DatawalletModification[]
+
     public constructor(
+        modifications: DatawalletModification[],
         private readonly cacheFetcher: CacheFetcher,
         private readonly collectionProvider: IDatabaseCollectionProvider,
-        private readonly modifications: DatawalletModification[],
         private readonly logger: ILogger
-    ) {}
+    ) {
+        const modificationsGroupedByType = _.groupBy(modifications, (m) => m.type)
 
-    public async execute(): Promise<void> {
-        const modificationsGroupedByType = _.groupBy(this.modifications, (m) => m.type)
-
-        await this.applyCreations(modificationsGroupedByType[DatawalletModificationType.Create])
-        await this.applyUpdates(modificationsGroupedByType[DatawalletModificationType.Update])
-        await this.applyDeletes(modificationsGroupedByType[DatawalletModificationType.Delete])
-        await this.applyCacheChanges(modificationsGroupedByType[DatawalletModificationType.CacheChanged])
+        this.creates = modificationsGroupedByType[DatawalletModificationType.Create] ?? []
+        this.updates = modificationsGroupedByType[DatawalletModificationType.Update] ?? []
+        this.deletes = modificationsGroupedByType[DatawalletModificationType.Delete] ?? []
+        this.cacheChanges = modificationsGroupedByType[DatawalletModificationType.CacheChanged] ?? []
     }
 
-    private async applyCreations(creations?: DatawalletModification[]) {
-        if (!creations || creations.length === 0) {
+    private readonly collectionsWithCacheableItems: string[] = [
+        DbCollectionName.Files,
+        DbCollectionName.Messages,
+        DbCollectionName.Relationships,
+        DbCollectionName.RelationshipTemplates,
+        DbCollectionName.Tokens
+    ]
+
+    public async execute(): Promise<void> {
+        await this.applyCreates()
+        await this.applyUpdates()
+        await this.applyCacheChanges()
+        await this.applyDeletes()
+    }
+
+    private async applyCreates() {
+        if (this.creates.length === 0) {
             return
         }
 
-        const creationsGroupedByObjectIdentifier = _.groupBy(creations, (c) => c.objectIdentifier)
+        const createsGroupedByObjectIdentifier = _.groupBy(this.creates, (c) => c.objectIdentifier)
 
-        for (const objectIdentifier in creationsGroupedByObjectIdentifier) {
-            const currentCreations = creationsGroupedByObjectIdentifier[objectIdentifier]
+        for (const objectIdentifier in createsGroupedByObjectIdentifier) {
+            const currentCreates = createsGroupedByObjectIdentifier[objectIdentifier]
 
-            const targetCollection = await this.collectionProvider.getCollection(currentCreations[0].collection)
+            const targetCollectionName = currentCreates[0].collection
+            const targetCollection = await this.collectionProvider.getCollection(targetCollectionName)
 
-            let mergedCreation = { id: objectIdentifier }
+            let mergedPayload = { id: objectIdentifier }
 
-            for (const creation of currentCreations) {
-                mergedCreation = { ...mergedCreation, ...creation.payload }
+            for (const create of currentCreates) {
+                mergedPayload = { ...mergedPayload, ...create.payload }
             }
 
-            const newObject = await CoreSerializableAsync.fromUnknown(mergedCreation)
+            const newObject = await CoreSerializableAsync.fromUnknown(mergedPayload)
 
             const oldDoc = await targetCollection.read(objectIdentifier)
             if (oldDoc) {
@@ -66,16 +85,27 @@ export class DatawalletModificationsProcessor {
                 await targetCollection.update(oldDoc, updatedObject)
             }
 
+            if (this.collectionsWithCacheableItems.includes(targetCollectionName)) {
+                const modification = DatawalletModification.from({
+                    localId: await TransportIds.datawalletModification.generate(),
+                    type: DatawalletModificationType.CacheChanged,
+                    collection: targetCollectionName,
+                    objectIdentifier: CoreId.from(objectIdentifier)
+                })
+
+                this.cacheChanges.push(modification)
+            }
+
             await targetCollection.create(newObject)
         }
     }
 
-    private async applyUpdates(updateModifications?: DatawalletModification[]) {
-        if (!updateModifications || updateModifications.length === 0) {
+    private async applyUpdates() {
+        if (this.updates.length === 0) {
             return
         }
 
-        for (const updateModification of updateModifications) {
+        for (const updateModification of this.updates) {
             const targetCollection = await this.collectionProvider.getCollection(updateModification.collection)
             const oldDoc = await targetCollection.read(updateModification.objectIdentifier.toString())
 
@@ -90,23 +120,14 @@ export class DatawalletModificationsProcessor {
         }
     }
 
-    private async applyDeletes(deleteModifications?: DatawalletModification[]) {
-        if (!deleteModifications || deleteModifications.length === 0) {
+    private async applyCacheChanges() {
+        if (this.cacheChanges.length === 0) {
             return
         }
 
-        for (const deleteModification of deleteModifications) {
-            const targetCollection = await this.collectionProvider.getCollection(deleteModification.collection)
-            await targetCollection.delete({ id: deleteModification.objectIdentifier })
-        }
-    }
+        this.ensureAllItemsAreCacheable()
 
-    private async applyCacheChanges(cacheChanges?: DatawalletModification[]) {
-        if (!cacheChanges || cacheChanges.length === 0) {
-            return
-        }
-
-        const cacheChangesGroupedByCollection = this.groupCacheChangesByCollection(cacheChanges)
+        const cacheChangesGroupedByCollection = this.groupCacheChangesByCollection(this.cacheChanges)
 
         const caches = await this.cacheFetcher.fetchCacheFor({
             files: cacheChangesGroupedByCollection.fileIds,
@@ -133,35 +154,33 @@ export class DatawalletModificationsProcessor {
         await this.saveNewCaches(relationshipCaches.relationships, DbCollectionName.Relationships, Relationship)
     }
 
+    private ensureAllItemsAreCacheable() {
+        const collections = this.cacheChanges.map((c) => c.collection)
+        const uniqueCollections = [...new Set(collections)]
+        const collectionsWithUncacheableItems = uniqueCollections.filter(
+            (c) => !this.collectionsWithCacheableItems.includes(c)
+        )
+
+        if (collectionsWithUncacheableItems.length > 0) {
+            throw TransportErrors.datawallet
+                .unsupportedModification(
+                    "unsupportedCacheChangedModificationCollection",
+                    collectionsWithUncacheableItems
+                )
+                .logWith(this.logger)
+        }
+    }
+
     private groupCacheChangesByCollection(cacheChanges: DatawalletModification[]) {
         const groups = _.groupBy(cacheChanges, (c) => c.collection)
 
         const fileIds = (groups[DbCollectionName.Files] ?? []).map((m) => m.objectIdentifier)
-        delete groups[DbCollectionName.Files]
-
         const messageIds = (groups[DbCollectionName.Messages] ?? []).map((m) => m.objectIdentifier)
-        delete groups[DbCollectionName.Messages]
-
         const relationshipIds = (groups[DbCollectionName.Relationships] ?? []).map((m) => m.objectIdentifier)
-        delete groups[DbCollectionName.Relationships]
-
-        const relationshipTemplateIds = (groups[DbCollectionName.RelationshipTemplates] ?? []).map(
-            (m) => m.objectIdentifier
-        )
-        delete groups[DbCollectionName.RelationshipTemplates]
-
+        const templateIds = (groups[DbCollectionName.RelationshipTemplates] ?? []).map((m) => m.objectIdentifier)
         const tokenIds = (groups[DbCollectionName.Tokens] ?? []).map((m) => m.objectIdentifier)
-        delete groups[DbCollectionName.Tokens]
 
-        const unsupportedCollections = Object.keys(groups) // all collections not deleted before are considered as unsupported
-
-        if (unsupportedCollections.length > 0) {
-            throw TransportErrors.datawallet
-                .unsupportedModification("unsupportedCacheChangedModificationCollection", unsupportedCollections)
-                .logWith(this.logger)
-        }
-
-        return { fileIds, messageIds, relationshipTemplateIds, tokenIds, relationshipIds }
+        return { fileIds, messageIds, relationshipTemplateIds: templateIds, tokenIds, relationshipIds }
     }
 
     private async saveNewCaches<T extends ICacheable>(
@@ -179,6 +198,17 @@ export class DatawalletModificationsProcessor {
                 await collection.update(itemDoc, item)
             })
         )
+    }
+
+    private async applyDeletes() {
+        if (this.deletes.length === 0) {
+            return
+        }
+
+        for (const deleteModification of this.deletes) {
+            const targetCollection = await this.collectionProvider.getCollection(deleteModification.collection)
+            await targetCollection.delete({ id: deleteModification.objectIdentifier })
+        }
     }
 }
 
