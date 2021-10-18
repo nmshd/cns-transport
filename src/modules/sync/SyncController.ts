@@ -4,7 +4,7 @@ import { AccountController } from "../accounts/AccountController"
 import { BackboneDatawalletModification } from "./backbone/BackboneDatawalletModification"
 import { BackboneSyncRun } from "./backbone/BackboneSyncRun"
 import { FinalizeSyncRunRequestExternalEventResult } from "./backbone/FinalizeSyncRun"
-import { StartSyncRunStatus } from "./backbone/StartSyncRun"
+import { StartSyncRunStatus, SyncRunType } from "./backbone/StartSyncRun"
 import { SyncClient } from "./backbone/SyncClient"
 import { UpdateDatawalletRequestItem } from "./backbone/UpdateDatawallet"
 import { ChangedItems } from "./ChangedItems"
@@ -259,7 +259,7 @@ export class SyncController extends TransportController {
 
         const { backboneModifications, localModificationIds } = await this.prepareLocalDatawalletModificationsForPush()
 
-        await this.client.finalizeSyncRun(this.currentSyncRun.id.toString(), {
+        await this.client.finalizeExternalEventSync(this.currentSyncRun.id.toString(), {
             datawalletModifications: backboneModifications,
             externalEventResults: externalEventResults
         })
@@ -310,9 +310,18 @@ export class SyncController extends TransportController {
     }
 
     public async setInititalDatawalletVersion(version: number): Promise<void> {
-        await this.client.updateDatawallet({
-            version: version,
-            modifications: []
+        const syncRunResult = await this.client.startSyncRun({ type: SyncRunType.DatawalletVersionUpgrade })
+        if (syncRunResult.isError) {
+            throw syncRunResult.error
+        }
+
+        const syncRun = syncRunResult.value.syncRun
+        if (!syncRun) {
+            throw new Error("sync run could not be started")
+        }
+
+        await this.client.finalizeDatawalletVersionUpgrade(syncRun.id, {
+            newDatawalletVersion: version
         })
     }
 }

@@ -2,6 +2,11 @@ export interface FinalizeSyncRunRequest {
     externalEventResults: FinalizeSyncRunRequestExternalEventResult[]
     datawalletModifications: FinalizeSyncRunRequestDatawalletModification[]
 }
+
+export interface FinalizeDatawalletVersionUpgradeRequest {
+    newDatawalletVersion: number
+    datawalletModifications?: FinalizeSyncRunRequestDatawalletModification[]
+}
 export interface FinalizeSyncRunRequestDatawalletModification {
     objectIdentifier?: string
     payloadCategory?: string

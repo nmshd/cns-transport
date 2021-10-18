@@ -5,6 +5,16 @@ export interface StartSyncRunResponse {
     syncRun: BackboneSyncRun | null
 }
 
+export interface StartSyncRunRequest {
+    type?: SyncRunType
+    lockDuration?: number
+}
+
+export enum SyncRunType {
+    ExternalEventSync = "ExternalEventSync",
+    DatawalletVersionUpgrade = "DatawalletVersionUpgrade"
+}
+
 export enum StartSyncRunStatus {
     Created = "Created",
     NoNewEvents = "NoNewEvents"

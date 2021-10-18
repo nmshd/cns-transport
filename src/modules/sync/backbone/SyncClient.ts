@@ -2,9 +2,9 @@ import { IConfig, Paginator, RESTClientAuthenticate } from "../../../core"
 import { Authenticator } from "../../../core/backbone/Authenticator"
 import { ClientResult } from "../../../core/backbone/ClientResult"
 import { BackboneExternalEvent } from "./BackboneExternalEvent"
-import { FinalizeSyncRunRequest } from "./FinalizeSyncRun"
+import { FinalizeDatawalletVersionUpgradeRequest, FinalizeSyncRunRequest } from "./FinalizeSyncRun"
 import { GetDatawalletRequest, GetDatawalletResponse } from "./GetDatawallet"
-import { StartSyncRunResponse } from "./StartSyncRun"
+import { StartSyncRunRequest, StartSyncRunResponse } from "./StartSyncRun"
 import { UpdateDatawalletRequest, UpdateDatawalletResponse } from "./UpdateDatawallet"
 
 export class SyncClient extends RESTClientAuthenticate {
@@ -16,15 +16,22 @@ export class SyncClient extends RESTClientAuthenticate {
         })
     }
 
-    public async startSyncRun(): Promise<ClientResult<StartSyncRunResponse>> {
-        return await this.post<StartSyncRunResponse>("/api/v1/SyncRuns", {})
+    public async startSyncRun(request?: StartSyncRunRequest): Promise<ClientResult<StartSyncRunResponse>> {
+        return await this.post<StartSyncRunResponse>("/api/v1/SyncRuns", request)
     }
 
-    public async finalizeSyncRun(
+    public async finalizeExternalEventSync(
         id: string,
         request: FinalizeSyncRunRequest
     ): Promise<ClientResult<StartSyncRunResponse>> {
-        return await this.put<StartSyncRunResponse>(`/api/v1/SyncRuns/${id}/Finalize`, request)
+        return await this.put<StartSyncRunResponse>(`/api/v1/SyncRuns/${id}/FinalizeExternalEventSync`, request)
+    }
+
+    public async finalizeDatawalletVersionUpgrade(
+        id: string,
+        request: FinalizeDatawalletVersionUpgradeRequest
+    ): Promise<ClientResult<StartSyncRunResponse>> {
+        return await this.put<StartSyncRunResponse>(`/api/v1/SyncRuns/${id}/FinalizeDatawalletVersionUpgrade`, request)
     }
 
     public async getExternalEventsOfSyncRun(
