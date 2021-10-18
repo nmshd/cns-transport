@@ -14,6 +14,7 @@ export class DatawalletModificationBuilder {
     private category: DatawalletModificationCategory = DatawalletModificationCategory.TechnicalData
     private payload: object = { aProperty: "aValue" }
     private readonly localId = CoreId.from(randomUUID())
+    private datawalletVersion = 0
 
     public withType(type: DatawalletModificationType): this {
         this.type = type
@@ -40,6 +41,11 @@ export class DatawalletModificationBuilder {
         return this
     }
 
+    public withDatawalletVersion(datawalletVersion: number): this {
+        this.datawalletVersion = datawalletVersion
+        return this
+    }
+
     public build(): DatawalletModification {
         return DatawalletModification.from({
             localId: this.localId,
@@ -47,7 +53,8 @@ export class DatawalletModificationBuilder {
             collection: this.collection,
             payloadCategory: this.category,
             payload: this.payload,
-            objectIdentifier: this.objectIdentifier
+            objectIdentifier: this.objectIdentifier,
+            datawalletVersion: this.datawalletVersion
         })
     }
 }

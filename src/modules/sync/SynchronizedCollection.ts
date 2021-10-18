@@ -18,6 +18,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
 
     public constructor(
         private readonly parent: IDatabaseCollection,
+        private readonly datawalletVersion: number,
         private readonly datawalletModifications?: IDatabaseCollection
     ) {
         this.name = parent.name
@@ -53,7 +54,8 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
                     payloadCategory: DatawalletModificationCategory.TechnicalData,
-                    payload: technicalModificationPayload
+                    payload: technicalModificationPayload,
+                    datawalletVersion: this.datawalletVersion
                 })
             )
         }
@@ -66,7 +68,8 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
                     payloadCategory: DatawalletModificationCategory.Metadata,
-                    payload: metadataModificationPayload
+                    payload: metadataModificationPayload,
+                    datawalletVersion: this.datawalletVersion
                 })
             )
         }
@@ -79,7 +82,8 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
                     payloadCategory: DatawalletModificationCategory.Userdata,
-                    payload: userdataModificationPayload
+                    payload: userdataModificationPayload,
+                    datawalletVersion: this.datawalletVersion
                 })
             )
         }
@@ -90,7 +94,8 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.CacheChanged,
                     collection: this.name,
-                    objectIdentifier: objectIdentifier
+                    objectIdentifier: objectIdentifier,
+                    datawalletVersion: this.datawalletVersion
                 })
             )
         }
@@ -139,7 +144,8 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
                     payloadCategory: DatawalletModificationCategory.TechnicalData,
-                    payload: payload
+                    payload: payload,
+                    datawalletVersion: this.datawalletVersion
                 })
             )
         }
@@ -153,7 +159,8 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
                     payloadCategory: DatawalletModificationCategory.Metadata,
-                    payload: payload
+                    payload: payload,
+                    datawalletVersion: this.datawalletVersion
                 })
             )
         }
@@ -167,7 +174,8 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     collection: this.name,
                     objectIdentifier: objectIdentifier,
                     payloadCategory: DatawalletModificationCategory.Userdata,
-                    payload: payload
+                    payload: payload,
+                    datawalletVersion: this.datawalletVersion
                 })
             )
         }
@@ -178,7 +186,8 @@ export class SynchronizedCollection implements IDatabaseCollection {
                     localId: await TransportIds.datawalletModification.generate(),
                     type: DatawalletModificationType.CacheChanged,
                     collection: this.name,
-                    objectIdentifier: objectIdentifier
+                    objectIdentifier: objectIdentifier,
+                    datawalletVersion: this.datawalletVersion
                 })
             )
         }
@@ -196,7 +205,8 @@ export class SynchronizedCollection implements IDatabaseCollection {
                 localId: await TransportIds.datawalletModification.generate(),
                 type: DatawalletModificationType.Delete,
                 collection: this.name,
-                objectIdentifier: object.id
+                objectIdentifier: object.id,
+                datawalletVersion: this.datawalletVersion
             })
         )
         return await this.parent.delete({ id: object.id.toString() })

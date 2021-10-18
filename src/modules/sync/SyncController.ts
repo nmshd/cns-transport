@@ -160,7 +160,8 @@ export class SyncController extends TransportController {
             )
             const decryptedModification = await DatawalletModificationMapper.fromBackboneDatawalletModification(
                 encryptedModification,
-                decryptedPayload
+                decryptedPayload,
+                this.config.supportedDatawalletVersion
             )
             decryptedModifications.push(decryptedModification)
         }
