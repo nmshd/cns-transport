@@ -303,8 +303,7 @@ export class AccountController {
             name: "",
             realm: realm,
             type: IdentityType.UNKNOWN,
-            publicKey: identityKeypair.publicKey,
-            datawalletVersion: this._config.supportedDatawalletVersion
+            publicKey: identityKeypair.publicKey
         })
 
         const deviceId = CoreId.from(deviceResponse.device.id)
