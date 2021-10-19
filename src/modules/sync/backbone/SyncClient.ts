@@ -1,11 +1,15 @@
 import { IConfig, Paginator, RESTClientAuthenticate } from "../../../core"
 import { Authenticator } from "../../../core/backbone/Authenticator"
 import { ClientResult } from "../../../core/backbone/ClientResult"
+import { BackboneDatawalletModification } from "./BackboneDatawalletModification"
 import { BackboneExternalEvent } from "./BackboneExternalEvent"
+import {
+    CreateDatawalletModificationsRequest,
+    CreateDatawalletModificationsResponse
+} from "./CreateDatawalletModifications"
 import { FinalizeDatawalletVersionUpgradeRequest, FinalizeSyncRunRequest } from "./FinalizeSyncRun"
-import { GetDatawalletRequest, GetDatawalletResponse } from "./GetDatawallet"
+import { GetDatawalletModificationsRequest } from "./GetDatawalletModifications"
 import { StartSyncRunRequest, StartSyncRunResponse } from "./StartSyncRun"
-import { UpdateDatawalletRequest, UpdateDatawalletResponse } from "./UpdateDatawallet"
 
 export class SyncClient extends RESTClientAuthenticate {
     public constructor(config: IConfig, authenticator: Authenticator) {
@@ -40,11 +44,15 @@ export class SyncClient extends RESTClientAuthenticate {
         return await this.getPaged<BackboneExternalEvent>(`/api/v1/SyncRuns/${syncRunId}/ExternalEvents`, {})
     }
 
-    public async getDatawallet(request: GetDatawalletRequest): Promise<ClientResult<Paginator<GetDatawalletResponse>>> {
-        return await this.getPaged<GetDatawalletResponse>("/api/v1/Datawallet", request)
+    public async getDatawalletModifications(
+        request: GetDatawalletModificationsRequest
+    ): Promise<ClientResult<Paginator<BackboneDatawalletModification>>> {
+        return await this.getPaged<BackboneDatawalletModification>("/api/v1/DatawalletModifications", request)
     }
 
-    public async updateDatawallet(request: UpdateDatawalletRequest): Promise<ClientResult<UpdateDatawalletResponse>> {
-        return await this.put<UpdateDatawalletResponse>("/api/v1/Datawallet", request)
+    public async createDatawalletModifications(
+        request: CreateDatawalletModificationsRequest
+    ): Promise<ClientResult<CreateDatawalletModificationsResponse>> {
+        return await this.post<CreateDatawalletModificationsResponse>("/api/v1/DatawalletModifications", request)
     }
 }
