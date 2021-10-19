@@ -1,11 +1,11 @@
-import {DatabaseType, IDatabaseCollection} from "@js-soft/docdb-access-abstractions"
+import { DatabaseType, IDatabaseCollection } from "@js-soft/docdb-access-abstractions"
 import jsonpatch from "fast-json-patch"
 import _ from "lodash"
-import {nameof} from "ts-simple-nameof"
-import {CoreSerializableAsync} from "../../core/CoreSerializableAsync"
-import {CoreSynchronizable, ICoreSynchronizable} from "../../core/CoreSynchronizable"
-import {ICacheable} from "../../core/ICacheable"
-import {TransportIds} from "../../core/TransportIds"
+import { nameof } from "ts-simple-nameof"
+import { CoreSerializableAsync } from "../../core/CoreSerializableAsync"
+import { CoreSynchronizable, ICoreSynchronizable } from "../../core/CoreSynchronizable"
+import { ICacheable } from "../../core/ICacheable"
+import { TransportIds } from "../../core/TransportIds"
 import {
     DatawalletModification,
     DatawalletModificationCategory,
