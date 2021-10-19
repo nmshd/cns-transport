@@ -1,4 +1,4 @@
-export interface FinalizeSyncRunRequest {
+export interface FinalizeExternalEventSyncRequest {
     externalEventResults: FinalizeSyncRunRequestExternalEventResult[]
     datawalletModifications: FinalizeSyncRunRequestDatawalletModification[]
 }
@@ -19,8 +19,17 @@ export interface FinalizeSyncRunRequestExternalEventResult {
     errorCode?: string
 }
 
-export interface FinalizeSyncRunResponse {
+export interface FinalizeExternalEventSyncResponse {
     newDatawalletModificationIndex: number
+    datawalletModifications: {
+        id: string
+        index: number
+        createdAt: string
+    }
+}
+
+export interface FinalizeDatawalletVersionUpgradeResponse {
+    newDatawalletVersion: number
     datawalletModifications: {
         id: string
         index: number

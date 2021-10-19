@@ -7,7 +7,13 @@ import {
     CreateDatawalletModificationsRequest,
     CreateDatawalletModificationsResponse
 } from "./CreateDatawalletModifications"
-import { FinalizeDatawalletVersionUpgradeRequest, FinalizeSyncRunRequest } from "./FinalizeSyncRun"
+import {
+    FinalizeDatawalletVersionUpgradeRequest,
+    FinalizeDatawalletVersionUpgradeResponse,
+    FinalizeExternalEventSyncRequest,
+    FinalizeExternalEventSyncResponse
+} from "./FinalizeSyncRun"
+import { GetDatawalletResponse } from "./GetDatawallet"
 import { GetDatawalletModificationsRequest } from "./GetDatawalletModifications"
 import { StartSyncRunRequest, StartSyncRunResponse } from "./StartSyncRun"
 
@@ -26,16 +32,22 @@ export class SyncClient extends RESTClientAuthenticate {
 
     public async finalizeExternalEventSync(
         id: string,
-        request: FinalizeSyncRunRequest
-    ): Promise<ClientResult<StartSyncRunResponse>> {
-        return await this.put<StartSyncRunResponse>(`/api/v1/SyncRuns/${id}/FinalizeExternalEventSync`, request)
+        request: FinalizeExternalEventSyncRequest
+    ): Promise<ClientResult<FinalizeExternalEventSyncResponse>> {
+        return await this.put<FinalizeExternalEventSyncResponse>(
+            `/api/v1/SyncRuns/${id}/FinalizeExternalEventSync`,
+            request
+        )
     }
 
     public async finalizeDatawalletVersionUpgrade(
         id: string,
         request: FinalizeDatawalletVersionUpgradeRequest
-    ): Promise<ClientResult<StartSyncRunResponse>> {
-        return await this.put<StartSyncRunResponse>(`/api/v1/SyncRuns/${id}/FinalizeDatawalletVersionUpgrade`, request)
+    ): Promise<ClientResult<FinalizeDatawalletVersionUpgradeResponse>> {
+        return await this.put<FinalizeDatawalletVersionUpgradeResponse>(
+            `/api/v1/SyncRuns/${id}/FinalizeDatawalletVersionUpgrade`,
+            request
+        )
     }
 
     public async getExternalEventsOfSyncRun(
