@@ -51,12 +51,12 @@ export class SyncClient extends RESTClientAuthenticate {
     public async getDatawalletModifications(
         request: GetDatawalletModificationsRequest
     ): Promise<ClientResult<Paginator<BackboneDatawalletModification>>> {
-        return await this.getPaged<BackboneDatawalletModification>("/api/v1/DatawalletModifications", request)
+        return await this.getPaged<BackboneDatawalletModification>("/api/v1/Datawallet/Modifications", request)
     }
 
     public async createDatawalletModifications(
         request: CreateDatawalletModificationsRequest
     ): Promise<ClientResult<CreateDatawalletModificationsResponse>> {
-        return await this.post<CreateDatawalletModificationsResponse>("/api/v1/DatawalletModifications", request)
+        return await this.post<CreateDatawalletModificationsResponse>("/api/v1/Datawallet/Modifications", request)
     }
 }
