@@ -48,7 +48,8 @@ export class Device extends CoreSynchronizable implements IDevice {
         nameof<Device>((d) => d.createdByDevice),
         nameof<Device>((d) => d.lastLoginAt),
         nameof<Device>((d) => d.username),
-        nameof<Device>((d) => d.initialPassword)
+        nameof<Device>((d) => d.initialPassword),
+        nameof<Device>((d) => d.datawalletVersion)
     ]
 
     public readonly userdataProperties = [nameof<Device>((d) => d.name), nameof<Device>((d) => d.description)]
