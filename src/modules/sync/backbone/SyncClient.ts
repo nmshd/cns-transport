@@ -44,6 +44,10 @@ export class SyncClient extends RESTClientAuthenticate {
         return await this.getPaged<BackboneExternalEvent>(`/api/v1/SyncRuns/${syncRunId}/ExternalEvents`, {})
     }
 
+    public async getDatawallet(): Promise<ClientResult<GetDatawalletResponse>> {
+        return await this.get<GetDatawalletResponse>("/api/v1/Datawallet")
+    }
+
     public async getDatawalletModifications(
         request: GetDatawalletModificationsRequest
     ): Promise<ClientResult<Paginator<BackboneDatawalletModification>>> {
