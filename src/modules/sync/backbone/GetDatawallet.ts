@@ -1,3 +1,3 @@
 export interface GetDatawalletResponse {
-    version: number
+    version: number | null
 }
