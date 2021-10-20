@@ -1,5 +1,13 @@
 import { IDatabaseCollection, IDatabaseMap } from "@js-soft/docdb-access-abstractions"
-import { ControllerName, CoreDate, CoreError, CoreId, TransportController, TransportLoggerFactory } from "../../core"
+import {
+    ControllerName,
+    CoreDate,
+    CoreError,
+    CoreId,
+    RequestError,
+    TransportController,
+    TransportLoggerFactory
+} from "../../core"
 import { AccountController } from "../accounts/AccountController"
 import { BackboneDatawalletModification } from "./backbone/BackboneDatawalletModification"
 import { BackboneSyncRun } from "./backbone/BackboneSyncRun"
@@ -104,12 +112,26 @@ export class SyncController extends TransportController {
 
         this.log.trace("Synchronization of Datawallet events started...")
 
-        await this.applyIncomingDatawalletModifications()
-        await this.pushLocalDatawalletModifications()
+        try {
+            await this.applyIncomingDatawalletModifications()
+            await this.pushLocalDatawalletModifications()
 
-        await this.setLastCompletedDatawalletSyncTime()
+            await this.setLastCompletedDatawalletSyncTime()
+        } catch (e: unknown) {
+            // TODO: correct error code
+            const outdatedErrorCode = "error.platform.validation.datawallet.versionOutdated"
+            if (!(e instanceof RequestError) || e.code !== outdatedErrorCode) throw e
+
+            this.doUpdatesIfPossibleOrDie(e)
+        }
 
         this.log.trace("Synchronization of Datawallet events ended...")
+    }
+
+    private doUpdatesIfPossibleOrDie(e: RequestError) {
+        // TODO: update / upgrade logic
+        // TODO: error if no update possible
+        throw e
     }
 
     private async applyIncomingDatawalletModifications() {
