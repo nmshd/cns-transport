@@ -99,7 +99,7 @@ export class Transport {
 
         this._config.supportedDatawalletVersion = Math.floor(this._config.supportedDatawalletVersion)
         if (this._config.supportedDatawalletVersion < 0) {
-            throw TransportErrors.general.invalidIdentityVersion().logWith(log)
+            throw TransportErrors.general.invalidDatawalletVersion().logWith(log)
         }
     }
 

@@ -359,9 +359,9 @@ class Tokens {
 }
 
 class General {
-    public invalidIdentityVersion() {
+    public invalidDatawalletVersion() {
         return new CoreError(
-            "error.transport.general.invalidIdentityVersion",
+            "error.transport.general.invalidDatawalletVersion",
             "The given identity version is invalid. The value must be 0 or higher."
         )
     }
