@@ -7,7 +7,7 @@ export interface StartSyncRunResponse {
 
 export interface StartSyncRunRequest {
     type?: SyncRunType
-    lockDuration?: number
+    duration?: number
 }
 
 export enum SyncRunType {
