@@ -118,8 +118,7 @@ export class SyncController extends TransportController {
 
             await this.setLastCompletedDatawalletSyncTime()
         } catch (e: unknown) {
-            // TODO: correct error code
-            const outdatedErrorCode = "error.platform.validation.datawallet.versionOutdated"
+            const outdatedErrorCode = "error.platform.validation.datawallet.insufficientSupportedDatawalletVersion"
             if (!(e instanceof RequestError) || e.code !== outdatedErrorCode) throw e
 
             this.doUpdatesIfPossibleOrDie(e)
