@@ -330,6 +330,11 @@ export class SyncController extends TransportController {
         }
     }
 
+    public async setInititalDatawalletVersion(version: number): Promise<void> {
+        await this.startDatawalletVersionUpgradeSyncRun()
+        await this.finalizeDatawalletVersionUpgradeSyncRun(version)
+    }
+
     private async startExternalEventsSyncRun(): Promise<boolean> {
         const result = await this.client.startSyncRun({ type: SyncRunType.ExternalEventSync })
 
@@ -445,22 +450,6 @@ export class SyncController extends TransportController {
 
     private async setLastCompletedDatawalletSyncTime() {
         await this.setSyncTimeByName("Datawallet")
-    }
-
-    public async setInititalDatawalletVersion(version: number): Promise<void> {
-        const syncRunResult = await this.client.startSyncRun({ type: SyncRunType.DatawalletVersionUpgrade })
-        if (syncRunResult.isError) {
-            throw syncRunResult.error
-        }
-
-        const syncRun = syncRunResult.value.syncRun
-        if (!syncRun) {
-            throw new Error("sync run could not be started")
-        }
-
-        await this.client.finalizeDatawalletVersionUpgrade(syncRun.id, {
-            newDatawalletVersion: version
-        })
     }
 }
 
