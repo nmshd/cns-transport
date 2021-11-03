@@ -308,6 +308,27 @@ class Datawallet {
                 throw new Error(`Given type '${type}' is not supported.`)
         }
     }
+
+    public insufficientSupportedDatawalletVersion(supportedVersion: number, requiredVersion: number) {
+        return new CoreError(
+            "error.transport.datawallet.insufficientSupportedDatawalletVersion",
+            `The SupportedDatawalletVersion '${supportedVersion}' too low. Minimum version of '${requiredVersion}' required.`
+        )
+    }
+
+    public currentBiggerThanTarget(current: number, target: number) {
+        return new CoreError(
+            "error.transport.datawallet.currentBiggerThanTarget",
+            `The current datawallet version '${current}' is bigger than the target version '${target}'.`
+        )
+    }
+
+    public noMigrationAvailable(version: number) {
+        return new CoreError(
+            "error.core.datawallet.noMigrationAvailable",
+            `There is no migration available for the datawallet version '${version}'.`
+        )
+    }
 }
 
 class Files {

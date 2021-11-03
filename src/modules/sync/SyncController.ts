@@ -6,6 +6,7 @@ import {
     CoreId,
     RequestError,
     TransportController,
+    TransportErrors,
     TransportLoggerFactory
 } from "../../core"
 import { AccountController } from "../accounts/AccountController"
@@ -20,11 +21,14 @@ import { DatawalletModificationMapper } from "./DatawalletModificationMapper"
 import { CacheFetcher, DatawalletModificationsProcessor } from "./DatawalletModificationsProcessor"
 import { ExternalEventsProcessor } from "./ExternalEventsProcessor"
 import { DatawalletModification } from "./local/DatawalletModification"
+import { DeviceMigrations } from "./migrations/DeviceMigrations"
+import { IdentityMigrations } from "./migrations/IdentityMigrations"
 import { WhatToSync } from "./WhatToSync"
 
 export class SyncController extends TransportController {
     private client: SyncClient
     private syncInfo: IDatabaseMap
+    private readonly supportedDatawalletVersion: number
 
     public constructor(
         parent: AccountController,
@@ -32,6 +36,7 @@ export class SyncController extends TransportController {
         private readonly datawalletEnabled: boolean
     ) {
         super(ControllerName.Sync, parent)
+        this.supportedDatawalletVersion = this.config.supportedDatawalletVersion
     }
 
     public async init(): Promise<SyncController> {
@@ -80,7 +85,7 @@ export class SyncController extends TransportController {
             return await this.syncDatawallet()
         }
 
-        const syncRunWasStarted = await this.startSyncRun()
+        const syncRunWasStarted = await this.startExternalEventsSyncRun()
         if (!syncRunWasStarted) {
             await this.syncDatawallet()
             await this.setLastCompletedSyncTime()
@@ -89,7 +94,7 @@ export class SyncController extends TransportController {
 
         await this.applyIncomingDatawalletModifications()
         const result = await this.applyIncomingExternalEvents()
-        await this.finalizeSyncRun(result.results)
+        await this.finalizeExternalEventsSyncRun(result.results)
         await this.setLastCompletedSyncTime()
 
         if (result.results.some((r) => r.errorCode !== undefined)) {
@@ -110,6 +115,8 @@ export class SyncController extends TransportController {
             return
         }
 
+        const identityDatawalletVersion = await this.checkDatawalletVersion()
+
         this.log.trace("Synchronization of Datawallet events started...")
 
         try {
@@ -121,16 +128,98 @@ export class SyncController extends TransportController {
             const outdatedErrorCode = "error.platform.validation.datawallet.insufficientSupportedDatawalletVersion"
             if (!(e instanceof RequestError) || e.code !== outdatedErrorCode) throw e
 
-            this.doUpdatesIfPossibleOrDie(e)
+            throw TransportErrors.datawallet
+                .insufficientSupportedDatawalletVersion(this.supportedDatawalletVersion, identityDatawalletVersion)
+                .logWith(this.log)
         }
 
         this.log.trace("Synchronization of Datawallet events ended...")
     }
 
-    private doUpdatesIfPossibleOrDie(e: RequestError) {
-        // TODO: update / upgrade logic
-        // TODO: error if no update possible
-        throw e
+    private async checkDatawalletVersion(): Promise<number> {
+        const datawalletInfo = (await this.client.getDatawallet()).value
+        const identityDatawalletVersion = datawalletInfo.version
+
+        if (this.supportedDatawalletVersion < identityDatawalletVersion) {
+            throw TransportErrors.datawallet
+                .insufficientSupportedDatawalletVersion(this.supportedDatawalletVersion, identityDatawalletVersion)
+                .logWith(this.log)
+        }
+
+        if (this.supportedDatawalletVersion > identityDatawalletVersion) {
+            await this.upgradeIdentityDatawalletVersion(identityDatawalletVersion, this.supportedDatawalletVersion)
+        }
+
+        const deviceDatawalletVersion = this.parent.activeDevice.device.datawalletVersion ?? 0
+        if (deviceDatawalletVersion !== identityDatawalletVersion) {
+            await this.upgradeDeviceDatawalletVersion(deviceDatawalletVersion, this.supportedDatawalletVersion)
+        }
+
+        return identityDatawalletVersion
+    }
+
+    private async upgradeIdentityDatawalletVersion(identityDatawalletVersion: number, targetDatawalletVersion: number) {
+        if (identityDatawalletVersion === targetDatawalletVersion) return
+
+        if (this.supportedDatawalletVersion < targetDatawalletVersion) {
+            throw TransportErrors.datawallet
+                .insufficientSupportedDatawalletVersion(targetDatawalletVersion, identityDatawalletVersion)
+                .logWith(this.log)
+        }
+
+        if (identityDatawalletVersion > targetDatawalletVersion) {
+            throw TransportErrors.datawallet
+                .currentBiggerThanTarget(identityDatawalletVersion, targetDatawalletVersion)
+                .logWith(this.log)
+        }
+
+        const identityMigrations = new IdentityMigrations(this.parent)
+        while (identityDatawalletVersion < targetDatawalletVersion) {
+            identityDatawalletVersion++
+
+            await this.startDatawalletVersionUpgradeSyncRun()
+
+            switch (identityDatawalletVersion) {
+                case 1:
+                    await identityMigrations.v1()
+                    break
+                default:
+                    throw TransportErrors.datawallet.noMigrationAvailable(identityDatawalletVersion).logWith(this.log)
+            }
+
+            await this.finalizeDatawalletVersionUpgradeSyncRun(identityDatawalletVersion)
+        }
+    }
+
+    private async upgradeDeviceDatawalletVersion(deviceDatawalletVersion: number, targetDatawalletVersion: number) {
+        if (deviceDatawalletVersion === targetDatawalletVersion) return
+
+        if (this.supportedDatawalletVersion < targetDatawalletVersion) {
+            throw TransportErrors.datawallet
+                .insufficientSupportedDatawalletVersion(targetDatawalletVersion, deviceDatawalletVersion)
+                .logWith(this.log)
+        }
+
+        if (deviceDatawalletVersion > targetDatawalletVersion) {
+            throw TransportErrors.datawallet
+                .currentBiggerThanTarget(deviceDatawalletVersion, targetDatawalletVersion)
+                .logWith(this.log)
+        }
+
+        const deviceMigrations = new DeviceMigrations(this.parent)
+        while (deviceDatawalletVersion < targetDatawalletVersion) {
+            deviceDatawalletVersion++
+
+            switch (deviceDatawalletVersion) {
+                case 1:
+                    await deviceMigrations.v1()
+                    break
+                default:
+                    throw TransportErrors.datawallet.noMigrationAvailable(deviceDatawalletVersion).logWith(this.log)
+            }
+
+            await this.parent.activeDevice.update({ datawalletVersion: deviceDatawalletVersion })
+        }
     }
 
     private async applyIncomingDatawalletModifications() {
@@ -241,12 +330,19 @@ export class SyncController extends TransportController {
         }
     }
 
-    private async startSyncRun(): Promise<boolean> {
-        const result = await this.client.startSyncRun()
+    private async startExternalEventsSyncRun(): Promise<boolean> {
+        const result = await this.client.startSyncRun({ type: SyncRunType.ExternalEventSync })
 
         if (result.value.status === StartSyncRunStatus.NoNewEvents) {
             return false
         }
+
+        this.currentSyncRun = result.value.syncRun ?? undefined
+        return this.currentSyncRun !== undefined
+    }
+
+    private async startDatawalletVersionUpgradeSyncRun() {
+        const result = await this.client.startSyncRun({ type: SyncRunType.DatawalletVersionUpgrade })
 
         this.currentSyncRun = result.value.syncRun ?? undefined
         return this.currentSyncRun !== undefined
@@ -271,7 +367,9 @@ export class SyncController extends TransportController {
         return { results: externalEventProcessor.results, changedItems: externalEventProcessor.changedItems }
     }
 
-    private async finalizeSyncRun(externalEventResults: FinalizeSyncRunRequestExternalEventResult[]): Promise<void> {
+    private async finalizeExternalEventsSyncRun(
+        externalEventResults: FinalizeSyncRunRequestExternalEventResult[]
+    ): Promise<void> {
         if (!this.currentSyncRun) {
             throw new Error("There is no active sync run to finalize")
         }
@@ -281,6 +379,27 @@ export class SyncController extends TransportController {
         await this.client.finalizeExternalEventSync(this.currentSyncRun.id.toString(), {
             datawalletModifications: backboneModifications,
             externalEventResults: externalEventResults
+        })
+
+        await this.deleteUnpushedDatawalletModifications(localModificationIds)
+
+        const oldDatawalletModificationIndex = await this.getLocalDatawalletModificationIndex()
+        const newDatawalletModificationIndex = (oldDatawalletModificationIndex || -1) + backboneModifications.length
+        await this.updateLocalDatawalletModificationIndex(newDatawalletModificationIndex)
+
+        this.currentSyncRun = undefined
+    }
+
+    private async finalizeDatawalletVersionUpgradeSyncRun(newDatawalletVersion: number): Promise<void> {
+        if (!this.currentSyncRun) {
+            throw new Error("There is no active sync run to finalize")
+        }
+
+        const { backboneModifications, localModificationIds } = await this.prepareLocalDatawalletModificationsForPush()
+
+        await this.client.finalizeDatawalletVersionUpgrade(this.currentSyncRun.id.toString(), {
+            newDatawalletVersion,
+            datawalletModifications: backboneModifications
         })
 
         await this.deleteUnpushedDatawalletModifications(localModificationIds)
