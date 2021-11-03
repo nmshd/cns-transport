@@ -30,6 +30,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
 
                 synchronizedCollection = new SynchronizedCollection(
                     parentCollection,
+                    1,
                     instance(datawalletModificationsCollectionMock)
                 )
             })

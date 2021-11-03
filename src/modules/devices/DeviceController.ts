@@ -111,9 +111,12 @@ export class DeviceController extends TransportController {
         }
     }
 
-    public async update(name: string, description: string): Promise<void> {
-        this.device.name = name
-        this.device.description = description
+    public async update(update: { name?: string; description?: string; datawalletVersion?: number }): Promise<void> {
+        if (update.name) this.device.name = update.name
+        if (update.description) this.device.description = update.description
+        if (update.datawalletVersion) this.device.datawalletVersion = update.datawalletVersion
+
+        await this.parent.devices.update(this.device)
         await this.parent.info.set("device", this.device)
     }
 
