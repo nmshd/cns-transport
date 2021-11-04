@@ -43,7 +43,7 @@ export enum BackboneEnvironment {
 }
 
 export class Test {
-    public static readonly currentEnvironment = BackboneEnvironment.Stage
+    public static readonly currentEnvironment = BackboneEnvironment.Dev
     public static readonly config: IConfigOverwrite = {
         baseUrl: Test.currentEnvironment,
         debug: true,
