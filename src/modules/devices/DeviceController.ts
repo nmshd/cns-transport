@@ -117,7 +117,7 @@ export class DeviceController extends TransportController {
         if (update.datawalletVersion) this.device.datawalletVersion = update.datawalletVersion
 
         await this.parent.devices.update(this.device)
-        await this.parent.info.set("device", this.device)
+        await this.parent.info.set("device", this.device.toJSON())
     }
 
     public async sign(content: CoreBuffer): Promise<CryptoSignature> {
