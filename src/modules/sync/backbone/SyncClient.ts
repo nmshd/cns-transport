@@ -21,7 +21,7 @@ export class SyncClient extends RESTClientAuthenticate {
     public constructor(config: IConfig, authenticator: Authenticator) {
         super(config, authenticator, {
             headers: {
-                "x-datawallet-version": config.supportedDatawalletVersion.toString()
+                "x-supported-datawallet-version": config.supportedDatawalletVersion.toString()
             }
         })
     }
