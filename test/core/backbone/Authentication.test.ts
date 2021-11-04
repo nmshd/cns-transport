@@ -67,6 +67,7 @@ export class AuthenticationTest extends AbstractTest {
 
             it("should only authenticate once", async function () {
                 interceptor.start()
+                setAuthTokenToExpired(testAccount)
                 // First Request = Auth
                 await testAccount.syncEverything()
                 await testAccount.syncEverything()
