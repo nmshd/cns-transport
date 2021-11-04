@@ -160,8 +160,6 @@ export class SyncController extends TransportController {
         if (deviceDatawalletVersion !== identityDatawalletVersion) {
             await this.upgradeDeviceDatawalletVersion(deviceDatawalletVersion, this.supportedDatawalletVersion)
         }
-
-        return identityDatawalletVersion
     }
 
     private async upgradeIdentityDatawalletVersion(identityDatawalletVersion: number, targetDatawalletVersion: number) {
@@ -185,13 +183,14 @@ export class SyncController extends TransportController {
 
             await this.startDatawalletVersionUpgradeSyncRun()
 
-            switch (identityDatawalletVersion) {
-                case 1:
-                    await identityMigrations.v1()
-                    break
-                default:
-                    throw TransportErrors.datawallet.noMigrationAvailable(identityDatawalletVersion).logWith(this.log)
+            const migrationFunction = (identityMigrations as any)[`v${identityDatawalletVersion}`] as
+                | Function
+                | undefined
+            if (!migrationFunction) {
+                throw TransportErrors.datawallet.noMigrationAvailable(identityDatawalletVersion).logWith(this.log)
             }
+
+            await migrationFunction.call(identityMigrations)
 
             await this.finalizeDatawalletVersionUpgradeSyncRun(identityDatawalletVersion)
         }
@@ -216,13 +215,12 @@ export class SyncController extends TransportController {
         while (deviceDatawalletVersion < targetDatawalletVersion) {
             deviceDatawalletVersion++
 
-            switch (deviceDatawalletVersion) {
-                case 1:
-                    await deviceMigrations.v1()
-                    break
-                default:
-                    throw TransportErrors.datawallet.noMigrationAvailable(deviceDatawalletVersion).logWith(this.log)
+            const migrationFunction = (deviceMigrations as any)[`v${deviceDatawalletVersion}`] as Function | undefined
+            if (!migrationFunction) {
+                throw TransportErrors.datawallet.noMigrationAvailable(deviceDatawalletVersion).logWith(this.log)
             }
+
+            await migrationFunction.call(deviceMigrations)
 
             await this.parent.activeDevice.update({ datawalletVersion: deviceDatawalletVersion })
         }
