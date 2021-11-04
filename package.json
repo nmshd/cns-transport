@@ -47,8 +47,7 @@
         "test:performance:kube:stop": "kubectl delete -f ./test/performance/k8s.yaml",
         "test:web:server": "browsertest-runner-debug",
         "test:web": "browsertest-runner -c nbt.json -p 9515",
-        "test:web:min": "browsertest-runner -c nbt.min.json -p 9515",
-        "test:single": "mocha -r ts-node/register -r tsconfig-paths/register ./test/index.single.ts --project ./test/tsconfig.json --exit"
+        "test:web:min": "browsertest-runner -c nbt.min.json -p 9515"
     },
     "dependencies": {
         "@js-soft/docdb-access-abstractions": "1.0.1",
