@@ -14,7 +14,7 @@ export class DatawalletModificationBuilder {
     private category: DatawalletModificationCategory = DatawalletModificationCategory.TechnicalData
     private payload: object = { aProperty: "aValue" }
     private readonly localId = CoreId.from(randomUUID())
-    private datawalletVersion = 0
+    private datawalletVersion = 1
 
     public withType(type: DatawalletModificationType): this {
         this.type = type

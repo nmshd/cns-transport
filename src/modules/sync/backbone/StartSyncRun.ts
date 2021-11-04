@@ -6,7 +6,7 @@ export interface StartSyncRunResponse {
 }
 
 export interface StartSyncRunRequest {
-    type?: SyncRunType
+    type: SyncRunType
     duration?: number
 }
 

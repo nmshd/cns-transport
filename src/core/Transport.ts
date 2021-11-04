@@ -97,8 +97,7 @@ export class Transport {
             throw TransportErrors.general.baseUrlNotSet().logWith(log)
         }
 
-        this._config.supportedDatawalletVersion = Math.floor(this._config.supportedDatawalletVersion)
-        if (this._config.supportedDatawalletVersion < 0) {
+        if (this._config.supportedDatawalletVersion < 1) {
             throw TransportErrors.general.invalidDatawalletVersion().logWith(log)
         }
     }

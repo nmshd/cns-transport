@@ -312,7 +312,7 @@ class Datawallet {
     public insufficientSupportedDatawalletVersion(supportedVersion: number, requiredVersion: number) {
         return new CoreError(
             "error.transport.datawallet.insufficientSupportedDatawalletVersion",
-            `The SupportedDatawalletVersion '${supportedVersion}' too low. Minimum version of '${requiredVersion}' required.`
+            `The SupportedDatawalletVersion '${supportedVersion}' is too low. A minimum version of '${requiredVersion}' is required.`
         )
     }
 

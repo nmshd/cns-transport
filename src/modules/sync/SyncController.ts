@@ -28,7 +28,6 @@ import { WhatToSync } from "./WhatToSync"
 export class SyncController extends TransportController {
     private client: SyncClient
     private syncInfo: IDatabaseMap
-    private readonly supportedDatawalletVersion: number
 
     public constructor(
         parent: AccountController,
@@ -36,7 +35,6 @@ export class SyncController extends TransportController {
         private readonly datawalletEnabled: boolean
     ) {
         super(ControllerName.Sync, parent)
-        this.supportedDatawalletVersion = this.config.supportedDatawalletVersion
     }
 
     public async init(): Promise<SyncController> {
@@ -114,13 +112,16 @@ export class SyncController extends TransportController {
         if (!this.datawalletEnabled) {
             return
         }
+        const identityDatawalletVersion = await this.getIdentityDatawalletVersion()
 
-        const datawalletInfo = (await this.client.getDatawallet()).value
-        const identityDatawalletVersion = datawalletInfo.version
-
-        if (this.supportedDatawalletVersion < identityDatawalletVersion) {
+        if (this.config.supportedDatawalletVersion < identityDatawalletVersion) {
+            // This means that the datawallet of the identity was upgraded by another device with a higher version.
+            // It is necesssary to update the current device.
             throw TransportErrors.datawallet
-                .insufficientSupportedDatawalletVersion(this.supportedDatawalletVersion, identityDatawalletVersion)
+                .insufficientSupportedDatawalletVersion(
+                    this.config.supportedDatawalletVersion,
+                    identityDatawalletVersion
+                )
                 .logWith(this.log)
         }
 
@@ -136,7 +137,10 @@ export class SyncController extends TransportController {
             if (!(e instanceof RequestError) || e.code !== outdatedErrorCode) throw e
 
             throw TransportErrors.datawallet
-                .insufficientSupportedDatawalletVersion(this.supportedDatawalletVersion, identityDatawalletVersion)
+                .insufficientSupportedDatawalletVersion(
+                    this.config.supportedDatawalletVersion,
+                    identityDatawalletVersion
+                )
                 .logWith(this.log)
         }
 
@@ -146,26 +150,32 @@ export class SyncController extends TransportController {
     }
 
     private async checkDatawalletVersion(identityDatawalletVersion: number) {
-        if (this.supportedDatawalletVersion < identityDatawalletVersion) {
+        if (this.config.supportedDatawalletVersion < identityDatawalletVersion) {
             throw TransportErrors.datawallet
-                .insufficientSupportedDatawalletVersion(this.supportedDatawalletVersion, identityDatawalletVersion)
+                .insufficientSupportedDatawalletVersion(
+                    this.config.supportedDatawalletVersion,
+                    identityDatawalletVersion
+                )
                 .logWith(this.log)
         }
 
-        if (this.supportedDatawalletVersion > identityDatawalletVersion) {
-            await this.upgradeIdentityDatawalletVersion(identityDatawalletVersion, this.supportedDatawalletVersion)
+        if (this.config.supportedDatawalletVersion > identityDatawalletVersion) {
+            await this.upgradeIdentityDatawalletVersion(
+                identityDatawalletVersion,
+                this.config.supportedDatawalletVersion
+            )
         }
 
         const deviceDatawalletVersion = this.parent.activeDevice.device.datawalletVersion ?? 0
-        if (deviceDatawalletVersion !== identityDatawalletVersion) {
-            await this.upgradeDeviceDatawalletVersion(deviceDatawalletVersion, this.supportedDatawalletVersion)
+        if (deviceDatawalletVersion < identityDatawalletVersion) {
+            await this.upgradeDeviceDatawalletVersion(deviceDatawalletVersion, this.config.supportedDatawalletVersion)
         }
     }
 
     private async upgradeIdentityDatawalletVersion(identityDatawalletVersion: number, targetDatawalletVersion: number) {
         if (identityDatawalletVersion === targetDatawalletVersion) return
 
-        if (this.supportedDatawalletVersion < targetDatawalletVersion) {
+        if (this.config.supportedDatawalletVersion < targetDatawalletVersion) {
             throw TransportErrors.datawallet
                 .insufficientSupportedDatawalletVersion(targetDatawalletVersion, identityDatawalletVersion)
                 .logWith(this.log)
@@ -199,7 +209,7 @@ export class SyncController extends TransportController {
     private async upgradeDeviceDatawalletVersion(deviceDatawalletVersion: number, targetDatawalletVersion: number) {
         if (deviceDatawalletVersion === targetDatawalletVersion) return
 
-        if (this.supportedDatawalletVersion < targetDatawalletVersion) {
+        if (this.config.supportedDatawalletVersion < targetDatawalletVersion) {
             throw TransportErrors.datawallet
                 .insufficientSupportedDatawalletVersion(targetDatawalletVersion, deviceDatawalletVersion)
                 .logWith(this.log)
@@ -337,6 +347,11 @@ export class SyncController extends TransportController {
     public async setInititalDatawalletVersion(version: number): Promise<void> {
         await this.startDatawalletVersionUpgradeSyncRun()
         await this.finalizeDatawalletVersionUpgradeSyncRun(version)
+    }
+
+    private async getIdentityDatawalletVersion() {
+        const datawalletInfo = (await this.client.getDatawallet()).value
+        return datawalletInfo.version
     }
 
     private async startExternalEventsSyncRun(): Promise<boolean> {
