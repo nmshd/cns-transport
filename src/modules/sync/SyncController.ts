@@ -83,29 +83,41 @@ export class SyncController extends TransportController {
             return await this.syncDatawallet()
         }
 
-        const syncRunWasStarted = await this.startExternalEventsSyncRun()
-        if (!syncRunWasStarted) {
-            await this.syncDatawallet()
-            await this.setLastCompletedSyncTime()
-            return new ChangedItems()
-        }
+        const externalEventSyncResult = await this.syncExternalEvents()
 
-        await this.applyIncomingDatawalletModifications()
-        const result = await this.applyIncomingExternalEvents()
-        await this.finalizeExternalEventsSyncRun(result.results)
         await this.setLastCompletedSyncTime()
 
-        if (result.results.some((r) => r.errorCode !== undefined)) {
+        if (externalEventSyncResult.externalEventResults.some((r) => r.errorCode !== undefined)) {
             throw new CoreError(
                 "error.transport.errorWhileApplyingExternalEvents",
-                result.results
+                externalEventSyncResult.externalEventResults
                     .filter((r) => r.errorCode !== undefined)
                     .map((r) => r.errorCode)
                     .join(" | ")
             ).logWith(this.log)
         }
 
-        return result.changedItems
+        return externalEventSyncResult.changedItems
+    }
+
+    private async syncExternalEvents(): Promise<{
+        externalEventResults: FinalizeSyncRunRequestExternalEventResult[]
+        changedItems: ChangedItems
+    }> {
+        const syncRunWasStarted = await this.startExternalEventsSyncRun()
+        if (!syncRunWasStarted) {
+            await this.syncDatawallet()
+            await this.setLastCompletedSyncTime()
+            return {
+                changedItems: new ChangedItems(),
+                externalEventResults: []
+            }
+        }
+
+        await this.applyIncomingDatawalletModifications()
+        const result = await this.applyIncomingExternalEvents()
+        await this.finalizeExternalEventsSyncRun(result.externalEventResults)
+        return result
     }
 
     private async syncDatawallet() {
@@ -388,7 +400,10 @@ export class SyncController extends TransportController {
         )
         await externalEventProcessor.execute()
 
-        return { results: externalEventProcessor.results, changedItems: externalEventProcessor.changedItems }
+        return {
+            externalEventResults: externalEventProcessor.results,
+            changedItems: externalEventProcessor.changedItems
+        }
     }
 
     private async finalizeExternalEventsSyncRun(
