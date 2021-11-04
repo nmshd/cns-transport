@@ -115,7 +115,14 @@ export class SyncController extends TransportController {
             return
         }
 
-        const identityDatawalletVersion = await this.checkDatawalletVersion()
+        const datawalletInfo = (await this.client.getDatawallet()).value
+        const identityDatawalletVersion = datawalletInfo.version
+
+        if (this.supportedDatawalletVersion < identityDatawalletVersion) {
+            throw TransportErrors.datawallet
+                .insufficientSupportedDatawalletVersion(this.supportedDatawalletVersion, identityDatawalletVersion)
+                .logWith(this.log)
+        }
 
         this.log.trace("Synchronization of Datawallet events started...")
 
@@ -134,12 +141,11 @@ export class SyncController extends TransportController {
         }
 
         this.log.trace("Synchronization of Datawallet events ended...")
+
+        await this.checkDatawalletVersion(identityDatawalletVersion)
     }
 
-    private async checkDatawalletVersion(): Promise<number> {
-        const datawalletInfo = (await this.client.getDatawallet()).value
-        const identityDatawalletVersion = datawalletInfo.version
-
+    private async checkDatawalletVersion(identityDatawalletVersion: number) {
         if (this.supportedDatawalletVersion < identityDatawalletVersion) {
             throw TransportErrors.datawallet
                 .insufficientSupportedDatawalletVersion(this.supportedDatawalletVersion, identityDatawalletVersion)
