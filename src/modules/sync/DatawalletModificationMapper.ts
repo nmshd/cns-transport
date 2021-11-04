@@ -73,7 +73,8 @@ export class DatawalletModificationMapper {
             payloadCategory: datawalletModification.payloadCategory,
             collection: datawalletModification.collection,
             type: datawalletModification.type,
-            encryptedPayload: encryptedPayload
+            encryptedPayload: encryptedPayload,
+            datawalletVersion: datawalletModification.datawalletVersion ?? 0
         }
     }
 }
