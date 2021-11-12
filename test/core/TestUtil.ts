@@ -16,7 +16,6 @@ import {
     File,
     ISendFileParameters,
     Message,
-    Realm,
     Relationship,
     RelationshipStatus,
     RelationshipTemplate,
@@ -208,7 +207,7 @@ export class TestUtil {
         const randomId = Math.random().toString(36).substring(7)
         const db: IDatabaseCollectionProvider = await transport.createDatabase(`${prefix}-${randomId}`)
 
-        const accountController: AccountController = new AccountController(transport, Realm.Prod, db, transport.config)
+        const accountController: AccountController = new AccountController(transport, db, transport.config)
         await accountController.init()
 
         return accountController
@@ -219,13 +218,8 @@ export class TestUtil {
         deviceSharedSecret: DeviceSharedSecret
     ): Promise<AccountController> {
         const randomId = Math.random().toString(36).substring(7)
-        const db: IDatabaseCollectionProvider = await transport.createDatabase(`acc-${randomId}`)
-        const accountController: AccountController = new AccountController(
-            transport,
-            deviceSharedSecret.identity.realm,
-            db,
-            transport.config
-        )
+        const db = await transport.createDatabase(`acc-${randomId}`)
+        const accountController = new AccountController(transport, db, transport.config)
         await accountController.init(deviceSharedSecret)
 
         return accountController

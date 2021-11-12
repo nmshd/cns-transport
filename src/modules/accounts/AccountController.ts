@@ -95,7 +95,6 @@ export class AccountController {
 
     public constructor(
         private readonly _transport: Transport,
-        private readonly _realm: Realm,
         private readonly _db: IDatabaseCollectionProvider,
         private readonly _config: IConfig
     ) {
@@ -131,7 +130,7 @@ export class AccountController {
             if (!deviceSharedSecret) {
                 // Identity creation
                 this._log.trace("No account information found. Creating new account...")
-                const result = await this.createIdentityAndDevice(this._realm)
+                const result = await this.createIdentityAndDevice(this.config.realm)
 
                 identityCreated = true
                 device = result.device
