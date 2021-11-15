@@ -1,3 +1,4 @@
+export * from "./Authenticator"
 export * from "./BackboneIds"
 export * from "./ClientResult"
 export * from "./Paginator"
