@@ -28,6 +28,7 @@ import { WhatToSync } from "./WhatToSync"
 export class SyncController extends TransportController {
     private client: SyncClient
     private syncInfo: IDatabaseMap
+    private readonly cacheFetcher: CacheFetcher
 
     public constructor(
         parent: AccountController,
@@ -35,6 +36,14 @@ export class SyncController extends TransportController {
         private readonly datawalletEnabled: boolean
     ) {
         super(ControllerName.Sync, parent)
+
+        this.cacheFetcher = new CacheFetcher(
+            this.parent.files,
+            this.parent.messages,
+            this.parent.relationshipTemplates,
+            this.parent.relationships,
+            this.parent.tokens
+        )
     }
 
     public async init(): Promise<SyncController> {
@@ -264,13 +273,7 @@ export class SyncController extends TransportController {
 
         const datawalletModificationsProcessor = new DatawalletModificationsProcessor(
             incomingModifications,
-            new CacheFetcher(
-                this.parent.files,
-                this.parent.messages,
-                this.parent.relationshipTemplates,
-                this.parent.relationships,
-                this.parent.tokens
-            ),
+            this.cacheFetcher,
             this._db,
             TransportLoggerFactory.getLogger(DatawalletModificationsProcessor)
         )
