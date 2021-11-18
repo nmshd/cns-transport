@@ -10,7 +10,7 @@ import {
 } from "@nmshd/transport"
 import itParam from "mocha-param"
 import { instance, mock, verify } from "ts-mockito"
-import { AbstractTest } from "../../core/AbstractTest"
+import { AbstractTest } from "../../testHelpers/AbstractTest"
 import { ACacheableSynchronizedCollectionItem } from "./data/ACacheableSynchronizedCollectionItem"
 import { ASynchronizedCollectionItem } from "./data/ASynchronizedCollectionItem"
 import { FakeDatabaseCollection } from "./fakes/FakeDatabaseCollection"

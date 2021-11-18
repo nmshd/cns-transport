@@ -3,7 +3,7 @@ import { ILoggerFactory } from "@js-soft/logging-abstractions"
 import { CoreDate, IConfigOverwrite, RelationshipStatus } from "@nmshd/transport"
 import chai, { expect } from "chai"
 import chaiExclude from "chai-exclude"
-import { AbstractTest, TestUtil } from "../../core"
+import { AbstractTest, TestUtil } from "../../testHelpers"
 
 chai.use(chaiExclude)
 

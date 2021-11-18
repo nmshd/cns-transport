@@ -2,9 +2,9 @@ import { ILogger } from "@js-soft/logging-abstractions"
 import { AccountController, CoreDate, Transport, TransportController } from "@nmshd/transport"
 import { expect } from "chai"
 import { mock } from "ts-mockito"
-import { AbstractTest } from "../AbstractTest"
+import { AbstractTest } from "../../testHelpers/AbstractTest"
+import { TestUtil } from "../../testHelpers/TestUtil"
 import { RequestInterceptor } from "../RequestInterceptor"
-import { TestUtil } from "../TestUtil"
 
 export class AuthenticationTest extends AbstractTest {
     public run(): void {

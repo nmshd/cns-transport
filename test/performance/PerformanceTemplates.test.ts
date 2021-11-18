@@ -1,7 +1,7 @@
 import { AccountController, CoreDate, RelationshipTemplate, Transport } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest } from "../core/AbstractTest"
-import { TestUtil } from "../core/TestUtil"
+import { AbstractTest } from "../testHelpers/AbstractTest"
+import { TestUtil } from "../testHelpers/TestUtil"
 
 export class PerformanceTemplates extends AbstractTest {
     private async createTemplate(from: AccountController) {

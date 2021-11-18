@@ -1,6 +1,6 @@
 import { AccountController, Transport } from "@nmshd/transport"
-import { AbstractTest } from "../AbstractTest"
-import { TestUtil } from "../TestUtil"
+import { AbstractTest } from "../../testHelpers/AbstractTest"
+import { TestUtil } from "../../testHelpers/TestUtil"
 
 export class RESTClientTest extends AbstractTest {
     public run(): void {

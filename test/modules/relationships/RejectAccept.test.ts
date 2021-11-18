@@ -1,7 +1,7 @@
 import { AccountController, Transport } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest } from "../../core/AbstractTest"
-import { TestUtil } from "../../core/TestUtil"
+import { AbstractTest } from "../../testHelpers/AbstractTest"
+import { TestUtil } from "../../testHelpers/TestUtil"
 
 export class RejectAcceptTest extends AbstractTest {
     public run(): void {

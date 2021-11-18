@@ -2,7 +2,7 @@ import { IDatabaseConnection } from "@js-soft/docdb-access-abstractions"
 import { ILoggerFactory } from "@js-soft/logging-abstractions"
 import { CoreDate, IConfigOverwrite } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest, TestUtil } from "../../core"
+import { AbstractTest, TestUtil } from "../../testHelpers"
 
 export class SyncControllerErrorTest extends AbstractTest {
     public constructor(config: IConfigOverwrite, connection: IDatabaseConnection, loggerFactory: ILoggerFactory) {

@@ -1,16 +1,8 @@
 import { CoreBuffer } from "@nmshd/crypto"
-import { AccountController, FileClient, IPaginationDataSource, Paginator, Transport } from "@nmshd/transport"
+import { AccountController, FileClient, Paginator, Transport } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest } from "../AbstractTest"
-import { TestUtil } from "../TestUtil"
-
-class FakePaginationDataSource<T> implements IPaginationDataSource<T> {
-    public constructor(private readonly pages: T[][]) {}
-
-    public getPage(pageNumber: number): Promise<T[]> {
-        return Promise.resolve(this.pages[pageNumber - 1])
-    }
-}
+import { AbstractTest, TestUtil } from "../../testHelpers"
+import { FakePaginationDataSource } from "../../testHelpers/FakePaginationDataSource"
 
 export class PaginatorTest extends AbstractTest {
     public run(): void {

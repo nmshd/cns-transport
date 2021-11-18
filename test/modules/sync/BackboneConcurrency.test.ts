@@ -16,7 +16,7 @@ import chai, { expect } from "chai"
 import chaiQuantifiers from "chai-quantifiers"
 import { StartSyncRunResponse, StartSyncRunStatus } from "../../../src/modules/sync/backbone/StartSyncRun"
 import { SyncClient } from "../../../src/modules/sync/backbone/SyncClient"
-import { AbstractTest, TestUtil } from "../../core"
+import { AbstractTest, TestUtil } from "../../testHelpers"
 
 chai.use(chaiQuantifiers)
 
