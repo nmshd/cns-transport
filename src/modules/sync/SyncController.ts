@@ -27,10 +27,23 @@ import { WhatToSync } from "./WhatToSync"
 
 export class SyncController extends TransportController {
     private syncInfo: IDatabaseMap
-    private cacheFetcher: CacheFetcher
     private readonly client: ISyncClient
     private readonly deviceMigrations: DeviceMigrations
     private readonly identityMigrations: IdentityMigrations
+
+    private _cacheFetcher?: CacheFetcher
+    private get cacheFetcher() {
+        if (!this._cacheFetcher) {
+            this._cacheFetcher = new CacheFetcher(
+                this.parent.files,
+                this.parent.messages,
+                this.parent.relationshipTemplates,
+                this.parent.relationships,
+                this.parent.tokens
+            )
+        }
+        return this._cacheFetcher
+    }
 
     public constructor(
         parent: AccountController,
@@ -48,14 +61,6 @@ export class SyncController extends TransportController {
         await super.init()
 
         this.syncInfo = await this.db.getMap("SyncInfo")
-
-        this.cacheFetcher = new CacheFetcher(
-            this.parent.files,
-            this.parent.messages,
-            this.parent.relationshipTemplates,
-            this.parent.relationships,
-            this.parent.tokens
-        )
 
         return this
     }
