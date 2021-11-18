@@ -17,7 +17,38 @@ import { GetDatawalletResponse } from "./GetDatawallet"
 import { GetDatawalletModificationsRequest } from "./GetDatawalletModifications"
 import { StartSyncRunRequest, StartSyncRunResponse } from "./StartSyncRun"
 
-export class SyncClient extends RESTClientAuthenticate {
+export interface ISyncClient {
+    startSyncRun(request?: StartSyncRunRequest): Promise<ClientResult<StartSyncRunResponse>>
+
+    finalizeExternalEventSync(
+        id: string,
+        request: FinalizeExternalEventSyncRequest
+    ): Promise<ClientResult<FinalizeExternalEventSyncResponse>>
+
+    finalizeExternalEventSync(
+        id: string,
+        request: FinalizeExternalEventSyncRequest
+    ): Promise<ClientResult<FinalizeExternalEventSyncResponse>>
+
+    finalizeDatawalletVersionUpgrade(
+        id: string,
+        request: FinalizeDatawalletVersionUpgradeRequest
+    ): Promise<ClientResult<FinalizeDatawalletVersionUpgradeResponse>>
+
+    getExternalEventsOfSyncRun(syncRunId: string): Promise<ClientResult<Paginator<BackboneExternalEvent>>>
+
+    getDatawallet(): Promise<ClientResult<GetDatawalletResponse>>
+
+    getDatawalletModifications(
+        request: GetDatawalletModificationsRequest
+    ): Promise<ClientResult<Paginator<BackboneDatawalletModification>>>
+
+    createDatawalletModifications(
+        request: CreateDatawalletModificationsRequest
+    ): Promise<ClientResult<CreateDatawalletModificationsResponse>>
+}
+
+export class SyncClient extends RESTClientAuthenticate implements ISyncClient {
     public constructor(config: IConfig, authenticator: Authenticator) {
         super(config, authenticator, {
             headers: {

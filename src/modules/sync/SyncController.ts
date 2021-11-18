@@ -29,6 +29,7 @@ export class SyncController extends TransportController {
     private client: SyncClient
     private syncInfo: IDatabaseMap
     private readonly cacheFetcher: CacheFetcher
+    private readonly client: ISyncClient
 
     public constructor(
         parent: AccountController,
