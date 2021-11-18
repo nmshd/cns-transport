@@ -365,11 +365,6 @@ export class SyncController extends TransportController {
     }
 
     public async setInititalDatawalletVersion(version: number): Promise<void> {
-        if ((await this.unpushedDatawalletModifications.count()) > 0) {
-            throw new Error(
-                "There are already Datawallet Modifications in the Datawallet. You need to set the initial Datawallet Version before creating any Modifications."
-            )
-        }
         await this.startDatawalletVersionUpgradeSyncRun()
         await this.finalizeDatawalletVersionUpgradeSyncRun(version)
     }
