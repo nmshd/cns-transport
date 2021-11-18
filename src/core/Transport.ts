@@ -51,7 +51,7 @@ export class Transport {
         return this._config
     }
 
-    private readonly defaultConfig: IConfig = {
+    private static readonly defaultConfig: IConfig = {
         supportedDatawalletVersion: 1,
         debug: false,
         platformClientId: "",
@@ -80,7 +80,7 @@ export class Transport {
         loggerFactory: ILoggerFactory = new SimpleLoggerFactory()
     ) {
         this.databaseConnection = databaseConnection
-        this._config = _.defaultsDeep({}, customConfig, this.defaultConfig)
+        this._config = _.defaultsDeep({}, customConfig, Transport.defaultConfig)
 
         TransportLoggerFactory.init(loggerFactory)
         log = TransportLoggerFactory.getLogger(Transport)
