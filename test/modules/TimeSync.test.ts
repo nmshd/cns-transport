@@ -1,7 +1,6 @@
 import { AccountController, CoreDate, Transport } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest } from "../testHelpers/AbstractTest"
-import { TestUtil } from "../testHelpers/TestUtil"
+import { AbstractTest, TestUtil } from "../testHelpers"
 
 export class TimeSyncTest extends AbstractTest {
     public run(): void {

@@ -14,8 +14,7 @@ import {
     Transport
 } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest } from "../../testHelpers/AbstractTest"
-import { TestUtil } from "../../testHelpers/TestUtil"
+import { AbstractTest, TestUtil } from "../../testHelpers"
 
 export class RelationshipsControllerTest extends AbstractTest {
     public run(): void {

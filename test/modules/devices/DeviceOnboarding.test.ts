@@ -11,8 +11,7 @@ import {
 import { expect } from "chai"
 import { AppDeviceTest } from "../../core/AppDeviceTest"
 import { DeviceTestParameters } from "../../core/DeviceTestParameters"
-import { AbstractTest } from "../../testHelpers/AbstractTest"
-import { TestUtil } from "../../testHelpers/TestUtil"
+import { AbstractTest, TestUtil } from "../../testHelpers"
 
 export class DeviceOnboardingTest extends AbstractTest {
     public run(): void {

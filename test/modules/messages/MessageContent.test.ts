@@ -2,7 +2,7 @@ import { ISerializableAsync, JSONWrapperAsync, SerializableAsync, serialize, typ
 import { AccountController, CoreAddress, ICoreAddress, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { TestUtil } from "../../core"
-import { AbstractTest } from "../../testHelpers/AbstractTest"
+import { AbstractTest } from "../../testHelpers"
 
 export class MessageContentTest extends AbstractTest {
     public run(): void {

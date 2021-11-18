@@ -1,8 +1,7 @@
 import { JSONWrapperAsync, SerializableAsync } from "@js-soft/ts-serval"
 import { AccountController, RelationshipChangeRequest, Transport } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest } from "../../testHelpers/AbstractTest"
-import { TestUtil } from "../../testHelpers/TestUtil"
+import { AbstractTest, TestUtil } from "../../testHelpers"
 
 export class RelationshipsCustomContentTest extends AbstractTest {
     public run(): void {

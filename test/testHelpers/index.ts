@@ -1,3 +1,5 @@
 export * from "./AbstractTest"
 export * from "./FakePaginationDataSource"
+export * from "./FakeSyncClient"
+export * from "./RequestInterceptor"
 export * from "./TestUtil"

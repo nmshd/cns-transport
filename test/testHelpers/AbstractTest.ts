@@ -2,7 +2,7 @@ import { IDatabaseConnection } from "@js-soft/docdb-access-abstractions"
 import { ILogger, ILoggerFactory } from "@js-soft/logging-abstractions"
 import { AccountController, IConfigOverwrite, Transport } from "@nmshd/transport"
 import { DurationLike } from "luxon"
-import { TestUtil } from "../testHelpers/TestUtil"
+import { TestUtil } from "../testHelpers"
 
 export abstract class AbstractTest {
     protected logger: ILogger

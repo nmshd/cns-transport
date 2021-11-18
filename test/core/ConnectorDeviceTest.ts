@@ -1,6 +1,6 @@
 import { ILogger } from "@js-soft/logging-abstractions"
 import { Realm, Transport } from "@nmshd/transport"
-import { TestUtil } from "../testHelpers/TestUtil"
+import { TestUtil } from "../testHelpers"
 import { DeviceTestParameters } from "./DeviceTestParameters"
 
 export class ConnectorDeviceTest {

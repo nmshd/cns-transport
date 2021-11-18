@@ -1,8 +1,7 @@
 import { CoreBuffer } from "@nmshd/crypto"
 import { AccountController, FileClient, Paginator, Transport } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest, TestUtil } from "../../testHelpers"
-import { FakePaginationDataSource } from "../../testHelpers/FakePaginationDataSource"
+import { AbstractTest, FakePaginationDataSource, TestUtil } from "../../testHelpers"
 
 export class PaginatorTest extends AbstractTest {
     public run(): void {
