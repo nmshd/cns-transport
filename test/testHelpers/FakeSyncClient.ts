@@ -24,6 +24,7 @@ export class FakeSyncClient implements ISyncClient {
     public getDatawalletModificationsRequest?: GetDatawalletModificationsRequest
     public finalizeDatawalletVersionUpgradeRequest?: FinalizeDatawalletVersionUpgradeRequest
     public startSyncRunRequest?: StartSyncRunRequest | undefined
+
     public startSyncRun(request?: StartSyncRunRequest): Promise<ClientResult<StartSyncRunResponse>> {
         this.startSyncRunRequest = request
 

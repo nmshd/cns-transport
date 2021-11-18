@@ -34,6 +34,7 @@ export class SyncControllerTest extends AbstractTest {
                     container.getSyncClient = () => syncClient
                 })
 
+                expect(syncClient.finalizeDatawalletVersionUpgradeRequest).to.exist
                 expect(syncClient.finalizeDatawalletVersionUpgradeRequest!.newDatawalletVersion).to.equal(
                     account.config.supportedDatawalletVersion
                 )
@@ -54,6 +55,8 @@ export class SyncControllerTest extends AbstractTest {
 
                 await account.syncDatawallet()
 
+                expect(syncClient.createDatawalletModificationsRequest).to.exist
+                expect(syncClient.createDatawalletModificationsRequest!.modifications.length).to.be.greaterThan(0)
                 for (const modification of syncClient.createDatawalletModificationsRequest!.modifications) {
                     expect(modification.datawalletVersion).to.equal(account.config.supportedDatawalletVersion)
                 }

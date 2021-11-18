@@ -36,14 +36,18 @@ import { IdentityController } from "./IdentityController"
 import { IdentityUtil } from "./IdentityUtil"
 
 export class DependencyContainer {
-    public constructor(private readonly accountController: AccountController, private readonly config: IConfig) {}
+    private readonly authenticator: Authenticator
+
+    public constructor(private readonly accountController: AccountController, private readonly config: IConfig) {
+        this.authenticator = new Authenticator(this.accountController)
+    }
 
     public getSyncClient(): ISyncClient {
         return new SyncClient(this.config, this.getAuthenticator())
     }
 
     public getAuthenticator(): Authenticator {
-        return new Authenticator(this.accountController)
+        return this.authenticator
     }
 }
 

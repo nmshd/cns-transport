@@ -52,7 +52,8 @@ export class SyncController extends TransportController {
     ) {
         super(ControllerName.Sync, parent)
 
-        this.client = parent.dependencyContainer.getSyncClient()
+        this.client = this.parent.dependencyContainer.getSyncClient()
+
         this.identityMigrations = new IdentityMigrations(this.parent)
         this.deviceMigrations = new DeviceMigrations(this.parent)
     }
