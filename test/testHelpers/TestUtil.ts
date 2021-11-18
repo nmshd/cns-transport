@@ -222,6 +222,18 @@ export class TestUtil {
         return accountController
     }
 
+    public static defineMigrationToVersion(version: number, account: AccountController): void {
+        // @ts-expect-error
+        account.synchronization.deviceMigrations[`v${version}`] = () => {
+            /* no migration logic */
+        }
+
+        // @ts-expect-error
+        account.synchronization.identityMigrations[`v${version}`] = () => {
+            /* no migration logic */
+        }
+    }
+
     public static async onboardDevice(
         transport: Transport,
         deviceSharedSecret: DeviceSharedSecret
