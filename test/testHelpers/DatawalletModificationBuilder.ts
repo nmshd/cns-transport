@@ -2,9 +2,9 @@ import {
     CoreId,
     DatawalletModification,
     DatawalletModificationCategory,
-    DatawalletModificationType
+    DatawalletModificationType,
+    Random
 } from "@nmshd/transport"
-import { randomUUID } from "crypto"
 import { uniqueId } from "lodash"
 
 export class DatawalletModificationBuilder {
@@ -13,7 +13,7 @@ export class DatawalletModificationBuilder {
     private objectIdentifier: CoreId = CoreId.from(uniqueId())
     private category: DatawalletModificationCategory = DatawalletModificationCategory.TechnicalData
     private payload: object = { aProperty: "aValue" }
-    private readonly localId = CoreId.from(randomUUID())
+    private readonly localId = CoreId.from(Random.uuid())
     private datawalletVersion = 1
 
     public withType(type: DatawalletModificationType): this {
