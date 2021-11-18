@@ -1,22 +1,21 @@
-import { ClientResult, CoreDate, CoreId, Paginator } from "@nmshd/transport"
-import { BackboneDatawalletModification } from "../../src/modules/sync/backbone/BackboneDatawalletModification"
-import { BackboneExternalEvent } from "../../src/modules/sync/backbone/BackboneExternalEvent"
 import {
+    BackboneDatawalletModification,
+    BackboneExternalEvent,
+    ClientResult,
+    CoreDate,
+    CoreId,
     CreateDatawalletModificationsRequest,
-    CreateDatawalletModificationsResponse
-} from "../../src/modules/sync/backbone/CreateDatawalletModifications"
-import {
+    CreateDatawalletModificationsResponse,
     FinalizeDatawalletVersionUpgradeRequest,
     FinalizeDatawalletVersionUpgradeResponse,
-    FinalizeExternalEventSyncRequest
-} from "../../src/modules/sync/backbone/FinalizeSyncRun"
-import { GetDatawalletResponse } from "../../src/modules/sync/backbone/GetDatawallet"
-import { GetDatawalletModificationsRequest } from "../../src/modules/sync/backbone/GetDatawalletModifications"
-import {
+    FinalizeExternalEventSyncRequest,
+    GetDatawalletModificationsRequest,
+    Paginator,
     StartSyncRunRequest,
     StartSyncRunResponse,
     StartSyncRunStatus
-} from "../../src/modules/sync/backbone/StartSyncRun"
+} from "@nmshd/transport"
+import { GetDatawalletResponse } from "../../src/modules/sync/backbone/GetDatawallet"
 import { ISyncClient } from "../../src/modules/sync/backbone/SyncClient"
 import { FakePaginationDataSource } from "./FakePaginationDataSource"
 
