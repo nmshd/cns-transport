@@ -30,5 +30,5 @@ export interface FinalizeDatawalletVersionUpgradeResponse {
         id: string
         index: number
         createdAt: string
-    }
+    }[]
 }
