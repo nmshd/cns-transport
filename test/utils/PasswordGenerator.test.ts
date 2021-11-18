@@ -1,7 +1,7 @@
 import { PasswordGenerator } from "@nmshd/transport"
 import { expect } from "chai"
 import { TestUtil } from "../core"
-import { AbstractUnitTest } from "./AbstractUnitTest"
+import { AbstractUnitTest } from "../testHelpers/AbstractUnitTest"
 
 export class PasswordGeneratorTest extends AbstractUnitTest {
     public run(): void {

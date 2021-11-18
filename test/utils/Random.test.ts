@@ -1,6 +1,6 @@
 import { Random, RandomCharacterRange } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractUnitTest } from "./AbstractUnitTest"
+import { AbstractUnitTest } from "../testHelpers/AbstractUnitTest"
 
 export class RandomTest extends AbstractUnitTest {
     public run(): void {

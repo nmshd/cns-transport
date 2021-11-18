@@ -1,7 +1,7 @@
 import { CoreBuffer, CryptoSignatureKeypair } from "@nmshd/crypto"
 import { CoreCrypto } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractUnitTest } from "./AbstractUnitTest"
+import { AbstractUnitTest } from "../testHelpers/AbstractUnitTest"
 
 export class CryptoTest extends AbstractUnitTest {
     public run(): void {
