@@ -9,6 +9,7 @@ import {
     FinalizeDatawalletVersionUpgradeRequest,
     FinalizeDatawalletVersionUpgradeResponse,
     FinalizeExternalEventSyncRequest,
+    FinalizeExternalEventSyncResponse,
     GetDatawalletModificationsRequest,
     GetDatawalletResponse,
     ISyncClient,
@@ -47,9 +48,7 @@ export class FakeSyncClient implements ISyncClient {
     public finalizeExternalEventSync(
         _id: string,
         _request: FinalizeExternalEventSyncRequest
-    ): Promise<
-        ClientResult<import("../../src/modules/sync/backbone/FinalizeSyncRun").FinalizeExternalEventSyncResponse>
-    > {
+    ): Promise<ClientResult<FinalizeExternalEventSyncResponse>> {
         throw new Error("Method not implemented.")
     }
 
