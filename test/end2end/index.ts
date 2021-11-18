@@ -1,1 +1,1 @@
-export * from "./End2End"
+export * from "./End2End.test"
