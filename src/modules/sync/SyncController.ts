@@ -15,7 +15,7 @@ import { BackboneSyncRun } from "./backbone/BackboneSyncRun"
 import { CreateDatawalletModificationsRequestItem } from "./backbone/CreateDatawalletModifications"
 import { FinalizeSyncRunRequestExternalEventResult } from "./backbone/FinalizeSyncRun"
 import { StartSyncRunStatus, SyncRunType } from "./backbone/StartSyncRun"
-import { SyncClient } from "./backbone/SyncClient"
+import { ISyncClient } from "./backbone/SyncClient"
 import { ChangedItems } from "./ChangedItems"
 import { DatawalletModificationMapper } from "./DatawalletModificationMapper"
 import { CacheFetcher, DatawalletModificationsProcessor } from "./DatawalletModificationsProcessor"
@@ -26,10 +26,11 @@ import { IdentityMigrations } from "./migrations/IdentityMigrations"
 import { WhatToSync } from "./WhatToSync"
 
 export class SyncController extends TransportController {
-    private client: SyncClient
     private syncInfo: IDatabaseMap
     private readonly cacheFetcher: CacheFetcher
     private readonly client: ISyncClient
+    private readonly deviceMigrations: DeviceMigrations
+    private readonly identityMigrations: IdentityMigrations
 
     public constructor(
         parent: AccountController,
@@ -39,6 +40,9 @@ export class SyncController extends TransportController {
         super(ControllerName.Sync, parent)
 
         this.client = parent.dependencyContainer.getSyncClient()
+        this.identityMigrations = new IdentityMigrations(this.parent)
+        this.deviceMigrations = new DeviceMigrations(this.parent)
+
         this.cacheFetcher = new CacheFetcher(
             this.parent.files,
             this.parent.messages,
@@ -51,7 +55,6 @@ export class SyncController extends TransportController {
     public async init(): Promise<SyncController> {
         await super.init()
 
-        this.client = new SyncClient(this.config, this.parent.authenticator)
         this.syncInfo = await this.db.getMap("SyncInfo")
 
         return this
@@ -210,20 +213,19 @@ export class SyncController extends TransportController {
                 .logWith(this.log)
         }
 
-        const identityMigrations = new IdentityMigrations(this.parent)
         while (identityDatawalletVersion < targetDatawalletVersion) {
             identityDatawalletVersion++
 
             await this.startDatawalletVersionUpgradeSyncRun()
 
-            const migrationFunction = (identityMigrations as any)[`v${identityDatawalletVersion}`] as
+            const migrationFunction = (this.identityMigrations as any)[`v${identityDatawalletVersion}`] as
                 | Function
                 | undefined
             if (!migrationFunction) {
                 throw TransportErrors.datawallet.noMigrationAvailable(identityDatawalletVersion).logWith(this.log)
             }
 
-            await migrationFunction.call(identityMigrations)
+            await migrationFunction.call(this.identityMigrations)
 
             await this.finalizeDatawalletVersionUpgradeSyncRun(identityDatawalletVersion)
         }
@@ -244,16 +246,17 @@ export class SyncController extends TransportController {
                 .logWith(this.log)
         }
 
-        const deviceMigrations = new DeviceMigrations(this.parent)
         while (deviceDatawalletVersion < targetDatawalletVersion) {
             deviceDatawalletVersion++
 
-            const migrationFunction = (deviceMigrations as any)[`v${deviceDatawalletVersion}`] as Function | undefined
+            const migrationFunction = (this.deviceMigrations as any)[`v${deviceDatawalletVersion}`] as
+                | Function
+                | undefined
             if (!migrationFunction) {
                 throw TransportErrors.datawallet.noMigrationAvailable(deviceDatawalletVersion).logWith(this.log)
             }
 
-            await migrationFunction.call(deviceMigrations)
+            await migrationFunction.call(this.deviceMigrations)
 
             await this.parent.activeDevice.update({ datawalletVersion: deviceDatawalletVersion })
         }
