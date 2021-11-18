@@ -1,5 +1,11 @@
 export * from "./AbstractTest"
+export * from "./AbstractUnitTest"
+export * from "./AppDeviceTest"
+export * from "./ConnectorDeviceTest"
+export * from "./DeviceTestParameters"
 export * from "./FakePaginationDataSource"
 export * from "./FakeSyncClient"
+export * from "./LogInterceptor"
 export * from "./RequestInterceptor"
 export * from "./TestUtil"
+
