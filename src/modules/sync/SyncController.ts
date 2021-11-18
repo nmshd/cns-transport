@@ -27,7 +27,7 @@ import { WhatToSync } from "./WhatToSync"
 
 export class SyncController extends TransportController {
     private syncInfo: IDatabaseMap
-    private readonly cacheFetcher: CacheFetcher
+    private cacheFetcher: CacheFetcher
     private readonly client: ISyncClient
     private readonly deviceMigrations: DeviceMigrations
     private readonly identityMigrations: IdentityMigrations
@@ -42,6 +42,12 @@ export class SyncController extends TransportController {
         this.client = parent.dependencyContainer.getSyncClient()
         this.identityMigrations = new IdentityMigrations(this.parent)
         this.deviceMigrations = new DeviceMigrations(this.parent)
+    }
+
+    public async init(): Promise<SyncController> {
+        await super.init()
+
+        this.syncInfo = await this.db.getMap("SyncInfo")
 
         this.cacheFetcher = new CacheFetcher(
             this.parent.files,
@@ -50,12 +56,6 @@ export class SyncController extends TransportController {
             this.parent.relationships,
             this.parent.tokens
         )
-    }
-
-    public async init(): Promise<SyncController> {
-        await super.init()
-
-        this.syncInfo = await this.db.getMap("SyncInfo")
 
         return this
     }

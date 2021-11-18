@@ -203,11 +203,6 @@ export class AccountController {
     private async initControllers() {
         this._log.trace("Initializing controllers...")
 
-        this.synchronization = await new SyncController(
-            this,
-            this.unpushedDatawalletModifications,
-            this.config.datawalletEnabled
-        ).init()
         this.relationshipSecrets = await new RelationshipSecretController(this).init()
         this.devices = await new DevicesController(this).init()
         this.certificates = await new CertificateController(this).init()
@@ -220,6 +215,12 @@ export class AccountController {
         this.relationshipTemplates = await new RelationshipTemplateController(this, this.relationshipSecrets).init()
         this.messages = await new MessageController(this).init()
         this.tokens = await new TokenController(this).init()
+
+        this.synchronization = await new SyncController(
+            this,
+            this.unpushedDatawalletModifications,
+            this.config.datawalletEnabled
+        ).init()
 
         this._log.trace("Initialization of controllers finished.")
     }
