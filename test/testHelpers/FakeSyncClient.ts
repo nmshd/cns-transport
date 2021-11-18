@@ -10,13 +10,13 @@ import {
     FinalizeDatawalletVersionUpgradeResponse,
     FinalizeExternalEventSyncRequest,
     GetDatawalletModificationsRequest,
+    GetDatawalletResponse,
+    ISyncClient,
     Paginator,
     StartSyncRunRequest,
     StartSyncRunResponse,
     StartSyncRunStatus
 } from "@nmshd/transport"
-import { GetDatawalletResponse } from "../../src/modules/sync/backbone/GetDatawallet"
-import { ISyncClient } from "../../src/modules/sync/backbone/SyncClient"
 import { FakePaginationDataSource } from "./FakePaginationDataSource"
 
 export class FakeSyncClient implements ISyncClient {
