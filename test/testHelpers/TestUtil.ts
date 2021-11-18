@@ -12,6 +12,7 @@ import {
     CoreAddress,
     CoreDate,
     CoreId,
+    DependencyContainer,
     DeviceSharedSecret,
     File,
     ISendFileParameters,
@@ -204,11 +205,18 @@ export class TestUtil {
         return accounts
     }
 
-    public static async createAccount(transport: Transport, prefix: string): Promise<AccountController> {
+    public static async createAccount(
+        transport: Transport,
+        prefix: string,
+        setupDependencies?: (container: DependencyContainer) => void
+    ): Promise<AccountController> {
         const randomId = Math.random().toString(36).substring(7)
         const db: IDatabaseCollectionProvider = await transport.createDatabase(`${prefix}-${randomId}`)
 
         const accountController: AccountController = new AccountController(transport, Realm.Prod, db, transport.config)
+
+        if (setupDependencies) setupDependencies(accountController.dependencyContainer)
+
         await accountController.init()
 
         return accountController

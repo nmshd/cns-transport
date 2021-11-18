@@ -38,6 +38,7 @@ export class SyncController extends TransportController {
     ) {
         super(ControllerName.Sync, parent)
 
+        this.client = parent.dependencyContainer.getSyncClient()
         this.cacheFetcher = new CacheFetcher(
             this.parent.files,
             this.parent.messages,
