@@ -3,8 +3,8 @@ import { AccountController, CoreDate, Transport, TransportController } from "@nm
 import { expect } from "chai"
 import { mock } from "ts-mockito"
 import { AbstractTest } from "../../testHelpers/AbstractTest"
+import { RequestInterceptor } from "../../testHelpers/RequestInterceptor"
 import { TestUtil } from "../../testHelpers/TestUtil"
-import { RequestInterceptor } from "../RequestInterceptor"
 
 export class AuthenticationTest extends AbstractTest {
     public run(): void {
