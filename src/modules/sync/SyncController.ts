@@ -127,7 +127,6 @@ export class SyncController extends TransportController {
         const syncRunWasStarted = await this.startExternalEventsSyncRun()
         if (!syncRunWasStarted) {
             await this.syncDatawallet()
-            await this.setLastCompletedSyncTime()
             return {
                 changedItems: new ChangedItems(),
                 externalEventResults: []
