@@ -13,6 +13,23 @@
             "globals": ["Logger", "loki", "TSServal", "NMSHDCrypto", "NMSHDTransport", "NMSHDTest"]
         }
     ],
-    "proxies": [],
+    "proxies": [
+        {
+            "local": "/svc-local",
+            "remote": "http://localhost"
+        },
+        {
+            "local": "/svc-dev",
+            "remote": "http://dev.enmeshed.eu"
+        },
+        {
+            "local": "/svc-stage",
+            "remote": "https://stage.enmeshed.eu"
+        },
+        {
+            "local": "/svc-prod",
+            "remote": "https://prod.enmeshed.eu"
+        }
+    ],
     "additionalScripts": []
 }
