@@ -5,14 +5,13 @@ import { ILoggerFactory } from "@js-soft/logging-abstractions"
 import { sleep } from "@js-soft/ts-utils"
 import {
     AccountController,
-    ClientResult,
     CreateDatawalletModificationsRequestItem,
-    IConfigOverwrite
+    IConfigOverwrite,
+    SyncClient,
+    SyncRunType
 } from "@nmshd/transport"
 import chai, { expect } from "chai"
 import chaiQuantifiers from "chai-quantifiers"
-import { StartSyncRunResponse, SyncRunType } from "../../../src/modules/sync/backbone/StartSyncRun"
-import { SyncClient } from "../../../src/modules/sync/backbone/SyncClient"
 import { AbstractTest, TestUtil } from "../../testHelpers"
 
 chai.use(chaiQuantifiers)
@@ -74,17 +73,16 @@ export class BackboneConcurrencyTests extends AbstractTest {
                 )
                 const startSyncRunResults = await Promise.all(startSyncRunPromises)
 
-                const successes = startSyncRunResults.filter((r) => r.isSuccess)
-                const errors = startSyncRunResults.filter((r) => r.isError)
+                const successResults = startSyncRunResults.filter((r) => r.isSuccess)
+                const errorResults = startSyncRunResults.filter((r) => r.isError)
 
-                expect(successes).to.have.lengthOf(1)
-                expect(errors).to.have.lengthOf(numberOfDevices - 1)
+                expect(successResults).to.have.lengthOf(1)
+                expect(errorResults).to.have.lengthOf(numberOfDevices - 1)
 
-                expect(errors).to.containAll(
-                    (e: ClientResult<StartSyncRunResponse>) =>
-                        e.error.code ===
-                        "error.platform.validation.syncRun.cannotStartSyncRunWhenAnotherSyncRunIsRunning"
-                )
+                const code = "error.platform.validation.syncRun.cannotStartSyncRunWhenAnotherSyncRunIsRunning"
+                for (const result of errorResults) {
+                    expect(result.error.code).to.equal(code)
+                }
             })
         })
     }
