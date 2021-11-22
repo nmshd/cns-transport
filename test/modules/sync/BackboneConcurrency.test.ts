@@ -16,7 +16,7 @@ import { AbstractTest, TestUtil } from "../../testHelpers"
 
 chai.use(chaiQuantifiers)
 
-export class BackboneConcurrencyTests extends AbstractTest {
+export class BackboneConcurrencyTest extends AbstractTest {
     public constructor(config: IConfigOverwrite, connection: IDatabaseConnection, loggerFactory: ILoggerFactory) {
         super({ ...config, datawalletEnabled: true }, connection, loggerFactory)
     }
@@ -28,9 +28,9 @@ export class BackboneConcurrencyTests extends AbstractTest {
             this.timeout("200s")
 
             it("should not allow pushing datawallet modifications during active sync run", async function () {
-                const a1 = await that.createIdentityWithOneDevice(BackboneConcurrencyTests.name)
+                const a1 = await that.createIdentityWithOneDevice(BackboneConcurrencyTest.name)
                 const { device1: b1, device2: b2 } = await that.createIdentityWithTwoDevices(
-                    BackboneConcurrencyTests.name
+                    BackboneConcurrencyTest.name
                 )
                 const syncClientB1 = createSyncClient(b1)
                 const syncClientB2 = createSyncClient(b2)
@@ -54,11 +54,11 @@ export class BackboneConcurrencyTests extends AbstractTest {
                 )
             })
 
-            it.only("should only start one sync run on multiple calls", async function () {
-                const a1 = await that.createIdentityWithOneDevice(BackboneConcurrencyTests.name)
+            it("should only start one sync run on multiple calls", async function () {
+                const a1 = await that.createIdentityWithOneDevice(BackboneConcurrencyTest.name)
 
-                const numberOfDevices = 20
-                const b = await that.createIdentityWithNDevices(BackboneConcurrencyTests.name, numberOfDevices)
+                const numberOfDevices = 10
+                const b = await that.createIdentityWithNDevices(BackboneConcurrencyTest.name, numberOfDevices)
                 const b1 = b[0]
 
                 await TestUtil.addRelationship(a1, b1)
