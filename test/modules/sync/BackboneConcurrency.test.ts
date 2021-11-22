@@ -7,6 +7,7 @@ import {
     AccountController,
     CreateDatawalletModificationsRequestItem,
     IConfigOverwrite,
+    StartSyncRunStatus,
     SyncClient,
     SyncRunType
 } from "@nmshd/transport"
@@ -64,20 +65,28 @@ export class BackboneConcurrencyTest extends AbstractTest {
                 await TestUtil.addRelationship(a1, b1)
                 await TestUtil.sendMessage(a1, b1)
 
-                await sleep(2000)
+                await sleep(3000)
 
                 const startSyncRunPromises = b.map((bn) =>
                     createSyncClient(bn).startSyncRun({
                         type: SyncRunType.ExternalEventSync
                     })
                 )
+
                 const startSyncRunResults = await Promise.all(startSyncRunPromises)
 
-                const successResults = startSyncRunResults.filter((r) => r.isSuccess)
+                const successResults = startSyncRunResults.filter(
+                    (r) => r.isSuccess && r.value.status === StartSyncRunStatus.Created
+                )
+                const noNewEventsResults = startSyncRunResults.filter(
+                    (r) => r.isSuccess && r.value.status === StartSyncRunStatus.NoNewEvents
+                )
                 const errorResults = startSyncRunResults.filter((r) => r.isError)
 
                 expect(successResults).to.have.lengthOf(1)
-                expect(errorResults).to.have.lengthOf(numberOfDevices - 1)
+                expect(errorResults).to.have.lengthOf(
+                    numberOfDevices - successResults.length - noNewEventsResults.length
+                )
 
                 const code = "error.platform.validation.syncRun.cannotStartSyncRunWhenAnotherSyncRunIsRunning"
                 for (const result of errorResults) {
