@@ -30,6 +30,7 @@ import {
     TokenReferenceTest,
     TokenSyncTest
 } from "./modules"
+import { BackboneConcurrencyTests } from "./modules/sync/BackboneConcurrency.test"
 import { CryptoTest, DateTest, IdentityGeneratorTest, PasswordGeneratorTest, RandomTest, ReflectionTest } from "./utils"
 
 export * from "./end2end"
@@ -66,6 +67,7 @@ export class Test {
         databaseConnection: IDatabaseConnection,
         loggerFactory: ILoggerFactory
     ): void {
+        new BackboneConcurrencyTests(config, databaseConnection, loggerFactory).run()
         new AccountControllerTest(config, databaseConnection, loggerFactory).run()
         new MessageSyncTest(config, databaseConnection, loggerFactory).run()
         new TokenSyncTest(config, databaseConnection, loggerFactory).run()

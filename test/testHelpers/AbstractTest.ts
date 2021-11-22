@@ -47,4 +47,33 @@ export abstract class AbstractTest {
         const deviceAccount = await TestUtil.createAccount(transport, accountPrefix)
         return deviceAccount
     }
+
+    protected async createIdentityWithNDevices(accountPrefix: string, n: number): Promise<AccountController[]> {
+        const transport: Transport = new Transport(this.connection, this.config, this.loggerFactory)
+        await transport.init()
+        const device1Account = await TestUtil.createAccount(transport, accountPrefix)
+
+        const devices = [device1Account]
+
+        for (let i = 0; i < n - 1; i++) {
+            const device2 = await device1Account.devices.sendDevice({ name: `Device${i + 2}` })
+            const sharedSecret = await device1Account.activeDevice.secrets.createDeviceSharedSecret(
+                device2,
+                n + 1,
+                true
+            )
+            await device1Account.syncDatawallet()
+
+            // Create Device2 Controller
+            const device2Account = await TestUtil.onboardDevice(transport, sharedSecret)
+
+            devices.push(device2Account)
+        }
+
+        for (const device of devices) {
+            await device.syncDatawallet()
+        }
+
+        return devices
+    }
 }

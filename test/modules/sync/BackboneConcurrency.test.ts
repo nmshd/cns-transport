@@ -1,39 +1,38 @@
-/* eslint-disable jest/no-commented-out-tests */
 // TODO: JSSNMSHDD-2491 (find a good place for this tests)
 
-/*
-
+import { IDatabaseConnection } from "@js-soft/docdb-access-abstractions"
+import { ILoggerFactory } from "@js-soft/logging-abstractions"
+import { sleep } from "@js-soft/ts-utils"
 import {
     AccountController,
     ClientResult,
     CreateDatawalletModificationsRequestItem,
-    IConfigOverwrite,
-    ILoggerFactory
+    IConfigOverwrite
 } from "@nmshd/transport"
-import { IDatabaseConnection } from "@js-soft/docdb-access-abstractions"
-import { sleep } from "@js-soft/ts-utils"
 import chai, { expect } from "chai"
 import chaiQuantifiers from "chai-quantifiers"
-import { StartSyncRunResponse, StartSyncRunStatus } from "../../../src/modules/sync/backbone/StartSyncRun"
+import { StartSyncRunResponse, SyncRunType } from "../../../src/modules/sync/backbone/StartSyncRun"
 import { SyncClient } from "../../../src/modules/sync/backbone/SyncClient"
 import { AbstractTest, TestUtil } from "../../testHelpers"
 
 chai.use(chaiQuantifiers)
 
 export class BackboneConcurrencyTests extends AbstractTest {
-    constructor(config: IConfigOverwrite, connection: IDatabaseConnection, loggerFactory: ILoggerFactory) {
+    public constructor(config: IConfigOverwrite, connection: IDatabaseConnection, loggerFactory: ILoggerFactory) {
         super({ ...config, datawalletEnabled: true }, connection, loggerFactory)
     }
 
-    public async run() {
+    public run(): void {
         const that = this
 
-         describe("MessageSync", async function () {
+        describe("BackboneConcurrency", function () {
             this.timeout("200s")
 
-            it("should not allow pushing datawallet modifications during active sync run", async function() {
-                const a1 = await that.createIdentityWithOneDevice()
-                const { device1: b1, device2: b2 } = await that.createIdentityWithTwoDevices()
+            it("should not allow pushing datawallet modifications during active sync run", async function () {
+                const a1 = await that.createIdentityWithOneDevice(BackboneConcurrencyTests.name)
+                const { device1: b1, device2: b2 } = await that.createIdentityWithTwoDevices(
+                    BackboneConcurrencyTests.name
+                )
                 const syncClientB1 = createSyncClient(b1)
                 const syncClientB2 = createSyncClient(b2)
 
@@ -42,9 +41,12 @@ export class BackboneConcurrencyTests extends AbstractTest {
 
                 await sleep(2000)
 
-                await syncClientB1.startSyncRun()
+                const localIndex = await (b1 as any).synchronization.getLocalDatawalletModificationIndex()
+
+                await syncClientB1.startSyncRun({ type: SyncRunType.ExternalEventSync })
                 const resultOfCreate = await syncClientB2.createDatawalletModifications({
-                    modifications: [new CreateDatawalletModificationsRequestItemBuilder().build()]
+                    modifications: [new CreateDatawalletModificationsRequestItemBuilder().build()],
+                    localIndex
                 })
 
                 expect(resultOfCreate.isError).to.be.true
@@ -53,83 +55,11 @@ export class BackboneConcurrencyTests extends AbstractTest {
                 )
             })
 
-            it(`while finalization of a sync run is in progress, an incoming start sync
-            run request should wait for finalization to finish`, async () => {
-                let successfulStarts = 0
-                let successfulFinalizations = 0
+            it.only("should only start one sync run on multiple calls", async function () {
+                const a1 = await that.createIdentityWithOneDevice(BackboneConcurrencyTests.name)
 
-                const runTest = async () => {
-                    const a1 = await that.createIdentityWithOneDevice()
-                    const { device1: b1, device2: b2 } = await that.createIdentityWithTwoDevices()
-                    const syncClientB1 = createSyncClient(b1)
-                    const syncClientB2 = createSyncClient(b2)
-
-                    await TestUtil.addRelationship(a1, b1)
-                    await TestUtil.sendMessage(a1, b1)
-
-                    await sleep(2000)
-
-                    const startedSyncRun = (await syncClientB1.startSyncRun()).value!.syncRun
-                    const externalEventsOfSyncRun = await syncClientB1.getAllExternalEventsOfSyncRun(startedSyncRun.id)
-
-                    await sleep(10000)
-
-                    const finalizeSyncRunPromise = syncClientB1.finalizeSyncRun(startedSyncRun.id, {
-                        datawalletModifications: [],
-                        externalEventResults: externalEventsOfSyncRun.map((e) => ({ externalEventId: e.id }))
-                    })
-                    await sleep(10)
-                    const startSyncRunPromise = syncClientB2.startSyncRun()
-
-                    const finalizeSyncRunResult = await finalizeSyncRunPromise
-                    const startSyncRunResult = await startSyncRunPromise
-
-                    if (finalizeSyncRunResult.isSuccess) {
-                        successfulFinalizations++
-                        // When finalization was successful, this means that the request was started before the
-                        // request for starting a new sync run. This means that the request for starting a new
-                        // sync run waits until the finalization is finished. Therefore the request is successful.
-                        // But since the previous one has processed all external events, no new sync run is started.
-                        expect(startSyncRunResult.isSuccess).to.be.true
-                        expect(startSyncRunResult.value.status).to.equal("NoNewEvents")
-                    }
-
-                    if (
-                        startSyncRunResult.isSuccess &&
-                        startSyncRunResult.value.status === StartSyncRunStatus.Created
-                    ) {
-                        successfulStarts++
-                        // When a new sync run was started, this means that the old one was canceled.
-                        // Therefore the finalization request should have failed.
-                        expect(finalizeSyncRunResult.isError).to.be.true
-                        expect(finalizeSyncRunResult.error.code).to.equal(
-                            "error.platform.validation.syncRun.syncRunAlreadyFinalized"
-                        )
-                    }
-                }
-
-                await Promise.all([
-                    runTest(),
-                    runTest(),
-                    runTest(),
-                    runTest(),
-                    runTest(),
-                    runTest(),
-                    runTest(),
-                    runTest(),
-                    runTest(),
-                    runTest()
-                ])
-
-                console.log("Successful starts:", successfulStarts)
-                console.log("Successful finalizations:", successfulFinalizations)
-            })
-
-            it("should only start one sync run on multiple calls", async function() {
-                const a1 = await that.createIdentityWithOneDevice()
-
-                const numberOfDevices = 10
-                const b = await that.createIdentityWithNDevices(numberOfDevices)
+                const numberOfDevices = 20
+                const b = await that.createIdentityWithNDevices(BackboneConcurrencyTests.name, numberOfDevices)
                 const b1 = b[0]
 
                 await TestUtil.addRelationship(a1, b1)
@@ -137,7 +67,11 @@ export class BackboneConcurrencyTests extends AbstractTest {
 
                 await sleep(2000)
 
-                const startSyncRunPromises = b.map((bn) => createSyncClient(bn).startSyncRun())
+                const startSyncRunPromises = b.map((bn) =>
+                    createSyncClient(bn).startSyncRun({
+                        type: SyncRunType.ExternalEventSync
+                    })
+                )
                 const startSyncRunResults = await Promise.all(startSyncRunPromises)
 
                 const successes = startSyncRunResults.filter((r) => r.isSuccess)
@@ -157,11 +91,11 @@ export class BackboneConcurrencyTests extends AbstractTest {
 }
 
 class CreateDatawalletModificationsRequestItemBuilder {
-    private collection = "aCollection"
-    private objectIdentifier = "anIdentifier"
-    private type = "Create"
-    private encryptedPayload = "AAAA"
-    private payloadCategory = "technicalData"
+    private readonly collection = "aCollection"
+    private readonly objectIdentifier = "anIdentifier"
+    private readonly type = "Create"
+    private readonly encryptedPayload = "AAAA"
+    private readonly payloadCategory = "technicalData"
 
     public build(): CreateDatawalletModificationsRequestItem {
         return {
@@ -169,7 +103,8 @@ class CreateDatawalletModificationsRequestItemBuilder {
             objectIdentifier: this.objectIdentifier,
             type: this.type,
             encryptedPayload: this.encryptedPayload,
-            payloadCategory: this.payloadCategory
+            payloadCategory: this.payloadCategory,
+            datawalletVersion: 1
         }
     }
 }
@@ -179,7 +114,7 @@ function createSyncClient(accountController: AccountController) {
 }
 
 class TestableSyncClient extends SyncClient {
-    constructor(accountController: AccountController) {
+    public constructor(accountController: AccountController) {
         super(accountController.config, accountController.authenticator)
     }
 
@@ -187,5 +122,3 @@ class TestableSyncClient extends SyncClient {
         return await (await this.getExternalEventsOfSyncRun(id)).value.collect()
     }
 }
-
-*/
