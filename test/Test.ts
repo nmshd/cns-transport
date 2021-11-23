@@ -43,8 +43,7 @@ export enum BackboneEnvironment {
 }
 
 export class Test {
-    // TODO: set to stage before deployment
-    public static readonly currentEnvironment = BackboneEnvironment.Dev
+    public static readonly currentEnvironment = BackboneEnvironment.Stage
     public static readonly config: IConfigOverwrite = {
         baseUrl: Test.currentEnvironment,
         debug: true,
