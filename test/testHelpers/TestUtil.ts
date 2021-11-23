@@ -254,28 +254,9 @@ export class TestUtil {
             maxNumberOfRelationships: 1
         })
 
-        const templateToken = await TokenContentRelationshipTemplate.from({
-            templateId: templateFrom.id,
-            secretKey: templateFrom.secretKey
-        })
-
-        const token = await from.tokens.sendToken({
-            content: templateToken,
-            expiresAt: CoreDate.utc().add({ hours: 12 }),
-            ephemeral: false
-        })
-
-        const tokenRef = await token.truncate()
-
-        const receivedToken = await to.tokens.loadPeerTokenByTruncated(tokenRef, false)
-
-        if (!(receivedToken.cache!.content instanceof TokenContentRelationshipTemplate)) {
-            throw new Error("token content not instanceof TokenContentRelationshipTemplate")
-        }
-
         const templateTo = await to.relationshipTemplates.loadPeerRelationshipTemplate(
-            receivedToken.cache!.content.templateId,
-            receivedToken.cache!.content.secretKey
+            templateFrom.id,
+            templateFrom.secretKey
         )
 
         await to.relationships.sendRelationship({
@@ -313,28 +294,9 @@ export class TestUtil {
             maxNumberOfRelationships: 1
         })
 
-        const templateToken = await TokenContentRelationshipTemplate.from({
-            templateId: templateFrom.id,
-            secretKey: templateFrom.secretKey
-        })
-
-        const token = await from.tokens.sendToken({
-            content: templateToken,
-            expiresAt: CoreDate.utc().add({ hours: 12 }),
-            ephemeral: false
-        })
-
-        const tokenRef = await token.truncate()
-
-        const receivedToken = await to.tokens.loadPeerTokenByTruncated(tokenRef, false)
-
-        if (!(receivedToken.cache!.content instanceof TokenContentRelationshipTemplate)) {
-            throw new Error("token content not instanceof TokenContentRelationshipTemplate")
-        }
-
         const templateTo = await to.relationshipTemplates.loadPeerRelationshipTemplate(
-            receivedToken.cache!.content.templateId,
-            receivedToken.cache!.content.secretKey
+            templateFrom.id,
+            templateFrom.secretKey
         )
 
         const relRequest = await to.relationships.sendRelationship({
