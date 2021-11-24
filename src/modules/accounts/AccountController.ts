@@ -42,7 +42,6 @@ export interface DependencyOverrides {
 export class AccountController {
     private readonly _authenticator: Authenticator
     private unpushedDatawalletModifications: IDatabaseCollection
-    public dependencyOverrides: DependencyOverrides
 
     public get authenticator(): Authenticator {
         return this._authenticator
@@ -103,7 +102,7 @@ export class AccountController {
         private readonly _transport: Transport,
         private readonly _db: IDatabaseCollectionProvider,
         private readonly _config: IConfig,
-        public readonly serviceOverrides?: DependencyOverrides
+        public readonly dependencyOverrides: DependencyOverrides = {}
     ) {
         this._authenticator = new Authenticator(this)
         this._log = TransportLoggerFactory.getLogger(ControllerName.Account)
