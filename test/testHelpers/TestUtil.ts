@@ -12,7 +12,7 @@ import {
     CoreAddress,
     CoreDate,
     CoreId,
-    DependencyContainer,
+    DependencyOverrides,
     DeviceSharedSecret,
     File,
     ISendFileParameters,
@@ -207,14 +207,17 @@ export class TestUtil {
     public static async createAccount(
         transport: Transport,
         prefix: string,
-        setupDependencies?: (container: DependencyContainer) => void
+        dependencyOverrides?: DependencyOverrides
     ): Promise<AccountController> {
         const randomId = Math.random().toString(36).substring(7)
         const db: IDatabaseCollectionProvider = await transport.createDatabase(`${prefix}-${randomId}`)
 
-        const accountController: AccountController = new AccountController(transport, db, transport.config)
-
-        if (setupDependencies) setupDependencies(accountController.dependencyContainer)
+        const accountController: AccountController = new AccountController(
+            transport,
+            db,
+            transport.config,
+            dependencyOverrides
+        )
 
         await accountController.init()
 

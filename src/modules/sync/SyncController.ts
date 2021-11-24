@@ -15,7 +15,7 @@ import { BackboneSyncRun } from "./backbone/BackboneSyncRun"
 import { CreateDatawalletModificationsRequestItem } from "./backbone/CreateDatawalletModifications"
 import { FinalizeSyncRunRequestExternalEventResult } from "./backbone/FinalizeSyncRun"
 import { StartSyncRunStatus, SyncRunType } from "./backbone/StartSyncRun"
-import { ISyncClient } from "./backbone/SyncClient"
+import { ISyncClient, SyncClient } from "./backbone/SyncClient"
 import { ChangedItems } from "./ChangedItems"
 import { DatawalletModificationMapper } from "./DatawalletModificationMapper"
 import { CacheFetcher, DatawalletModificationsProcessor } from "./DatawalletModificationsProcessor"
@@ -52,7 +52,8 @@ export class SyncController extends TransportController {
     ) {
         super(ControllerName.Sync, parent)
 
-        this.client = this.parent.dependencyContainer.getSyncClient()
+        this.client =
+            this.parent.dependencyOverrides.syncClient ?? new SyncClient(this.config, this.parent.authenticator)
 
         this.identityMigrations = new IdentityMigrations(this.parent)
         this.deviceMigrations = new DeviceMigrations(this.parent)

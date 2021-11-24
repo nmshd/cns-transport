@@ -30,9 +30,7 @@ export class SyncControllerTest extends AbstractTest {
             it("creating a new identity sets the identityDatawalletVersion to the supportedDatawalletVersion", async function () {
                 const syncClient = new FakeSyncClient()
 
-                const account = await TestUtil.createAccount(transport, SyncControllerTest.name, (container) => {
-                    container.getSyncClient = () => syncClient
-                })
+                const account = await TestUtil.createAccount(transport, SyncControllerTest.name, { syncClient })
 
                 expect(syncClient.finalizeDatawalletVersionUpgradeRequest).to.exist
                 expect(syncClient.finalizeDatawalletVersionUpgradeRequest!.newDatawalletVersion).to.equal(
@@ -43,9 +41,7 @@ export class SyncControllerTest extends AbstractTest {
             it("all datawallet modifications are created with the configured supportedDatawalletVersion", async function () {
                 const syncClient = new FakeSyncClient()
 
-                const account = await TestUtil.createAccount(transport, SyncControllerTest.name, (container) => {
-                    container.getSyncClient = () => syncClient
-                })
+                const account = await TestUtil.createAccount(transport, SyncControllerTest.name, { syncClient })
 
                 await account.tokens.sendToken({
                     content: { someProperty: "someValue" },
@@ -65,9 +61,7 @@ export class SyncControllerTest extends AbstractTest {
             it("syncDatawallet upgrades identityDatawalletVersion to supportedDatawalletVersion", async function () {
                 const syncClient = new FakeSyncClient()
 
-                const account = await TestUtil.createAccount(transport, SyncControllerTest.name, (container) => {
-                    container.getSyncClient = () => syncClient
-                })
+                const account = await TestUtil.createAccount(transport, SyncControllerTest.name, { syncClient })
 
                 TestUtil.defineMigrationToVersion(2, account)
 

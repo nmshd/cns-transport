@@ -25,7 +25,7 @@ import { RelationshipsController } from "../relationships/RelationshipsControlle
 import { RelationshipSecretController } from "../relationships/RelationshipSecretController"
 import { RelationshipTemplateController } from "../relationshipTemplates/RelationshipTemplateController"
 import { SecretController } from "../secrets/SecretController"
-import { ISyncClient, SyncClient } from "../sync/backbone/SyncClient"
+import { ISyncClient } from "../sync/backbone/SyncClient"
 import { ChangedItems } from "../sync/ChangedItems"
 import { SyncController } from "../sync/SyncController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
@@ -35,26 +35,14 @@ import { Identity, IdentityType, Realm } from "./data/Identity"
 import { IdentityController } from "./IdentityController"
 import { IdentityUtil } from "./IdentityUtil"
 
-export class DependencyContainer {
-    private readonly authenticator: Authenticator
-
-    public constructor(private readonly accountController: AccountController, private readonly config: IConfig) {
-        this.authenticator = new Authenticator(this.accountController)
-    }
-
-    public getSyncClient(): ISyncClient {
-        return new SyncClient(this.config, this.getAuthenticator())
-    }
-
-    public getAuthenticator(): Authenticator {
-        return this.authenticator
-    }
+export interface DependencyOverrides {
+    syncClient?: ISyncClient
 }
 
 export class AccountController {
-    private _authenticator: Authenticator
+    private readonly _authenticator: Authenticator
     private unpushedDatawalletModifications: IDatabaseCollection
-    public dependencyContainer: DependencyContainer
+    public dependencyOverrides: DependencyOverrides
 
     public get authenticator(): Authenticator {
         return this._authenticator
@@ -79,7 +67,7 @@ export class AccountController {
     public tokens: TokenController
 
     private relationshipSecrets: RelationshipSecretController
-    private _log: ILogger
+    private readonly _log: ILogger
 
     public get config(): IConfig {
         return this._config
@@ -114,16 +102,15 @@ export class AccountController {
     public constructor(
         private readonly _transport: Transport,
         private readonly _db: IDatabaseCollectionProvider,
-        private readonly _config: IConfig
+        private readonly _config: IConfig,
+        public readonly serviceOverrides?: DependencyOverrides
     ) {
-        this.dependencyContainer = new DependencyContainer(this, this._config)
+        this._authenticator = new Authenticator(this)
+        this._log = TransportLoggerFactory.getLogger(ControllerName.Account)
     }
 
     // TODO: JSSNMSHDD-2487 (last login date)
     public async init(deviceSharedSecret?: DeviceSharedSecret): Promise<AccountController> {
-        this._authenticator = this.dependencyContainer.getAuthenticator()
-        this._log = TransportLoggerFactory.getLogger(ControllerName.Account)
-
         this.info = await this.db.getMap("AccountInfo")
         this.unpushedDatawalletModifications = await this.db.getCollection(
             DbCollectionName.UnpushedDatawalletModifications
