@@ -48,7 +48,7 @@ export class RelationshipTemplateController extends TransportController {
 
         const templateContent = await RelationshipTemplateContent.from({
             content: parameters.content,
-            identity: this.parent.identity,
+            identity: this.parent.identity.identity,
             templateKey: templateKey
         })
 
@@ -79,7 +79,7 @@ export class RelationshipTemplateController extends TransportController {
             createdBy: this.parent.identity.address,
             createdByDevice: this.parent.activeDevice.id,
             expiresAt: parameters.expiresAt,
-            identity: this.parent.identity,
+            identity: this.parent.identity.identity,
             maxNumberOfRelationships: parameters.maxNumberOfRelationships ?? undefined,
             templateKey: templateKey
         })

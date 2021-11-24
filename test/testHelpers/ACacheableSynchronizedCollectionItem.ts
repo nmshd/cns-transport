@@ -2,6 +2,10 @@ import { serialize, validate } from "@js-soft/ts-serval"
 import { CoreDate, CoreId, CoreSynchronizable, ICoreDate, ICoreSerializableAsync } from "@nmshd/transport"
 import { nameof } from "ts-simple-nameof"
 
+export interface ICachedACacheableSynchronizedCollectionItem {
+    someCacheProperty: string
+}
+
 export interface IACacheableSynchronizedCollectionItem extends ICoreSerializableAsync {
     id: CoreId
 
@@ -9,6 +13,10 @@ export interface IACacheableSynchronizedCollectionItem extends ICoreSerializable
 
     cache?: ICachedACacheableSynchronizedCollectionItem
     cachedAt?: ICoreDate
+}
+
+export class CachedACacheableSynchronizedCollectionItem implements ICachedACacheableSynchronizedCollectionItem {
+    public someCacheProperty: string
 }
 
 export class ACacheableSynchronizedCollectionItem
@@ -38,12 +46,4 @@ export class ACacheableSynchronizedCollectionItem
     ): Promise<ACacheableSynchronizedCollectionItem> {
         return await super.fromT(value, ACacheableSynchronizedCollectionItem)
     }
-}
-
-export interface ICachedACacheableSynchronizedCollectionItem {
-    someCacheProperty: string
-}
-
-export class CachedACacheableSynchronizedCollectionItem implements ICachedACacheableSynchronizedCollectionItem {
-    public someCacheProperty: string
 }

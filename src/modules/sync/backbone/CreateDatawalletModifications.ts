@@ -9,6 +9,7 @@ export interface CreateDatawalletModificationsRequestItem {
     collection: string
     type: string
     encryptedPayload?: string
+    datawalletVersion: number
 }
 
 export interface CreateDatawalletModificationsResponse {

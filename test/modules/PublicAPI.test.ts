@@ -19,8 +19,7 @@ import {
 } from "@nmshd/transport"
 import { expect } from "chai"
 import { nameof } from "ts-simple-nameof"
-import { AbstractTest } from "../core/AbstractTest"
-import { TestUtil } from "../core/TestUtil"
+import { AbstractTest, TestUtil } from "../testHelpers"
 
 export class PublicAPITest extends AbstractTest {
     public run(): void {

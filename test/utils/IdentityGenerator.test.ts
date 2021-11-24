@@ -1,7 +1,7 @@
 import { CoreBuffer, CryptoSignatureAlgorithm, CryptoSignatureKeypair, CryptoSignaturePublicKey } from "@nmshd/crypto"
 import { CoreCrypto, IdentityUtil } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractUnitTest } from "./AbstractUnitTest"
+import { AbstractUnitTest } from "../testHelpers"
 
 export class IdentityGeneratorTest extends AbstractUnitTest {
     public run(): void {

@@ -10,11 +10,13 @@ import {
 } from "@nmshd/transport"
 import itParam from "mocha-param"
 import { instance, mock, verify } from "ts-mockito"
-import { AbstractTest } from "../../core/AbstractTest"
-import { ACacheableSynchronizedCollectionItem } from "./data/ACacheableSynchronizedCollectionItem"
-import { ASynchronizedCollectionItem } from "./data/ASynchronizedCollectionItem"
-import { FakeDatabaseCollection } from "./fakes/FakeDatabaseCollection"
-import { objectWith } from "./fakes/PartialObjectMatcher"
+import {
+    AbstractTest,
+    ACacheableSynchronizedCollectionItem,
+    ASynchronizedCollectionItem,
+    FakeDatabaseCollection,
+    objectWith
+} from "../../testHelpers"
 
 export class SynchronizedCollectionTest extends AbstractTest {
     public run(): void {
@@ -30,6 +32,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
 
                 synchronizedCollection = new SynchronizedCollection(
                     parentCollection,
+                    1,
                     instance(datawalletModificationsCollectionMock)
                 )
             })

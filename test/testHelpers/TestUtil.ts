@@ -12,6 +12,7 @@ import {
     CoreAddress,
     CoreDate,
     CoreId,
+    DependencyOverrides,
     DeviceSharedSecret,
     File,
     ISendFileParameters,
@@ -203,14 +204,36 @@ export class TestUtil {
         return accounts
     }
 
-    public static async createAccount(transport: Transport, prefix: string): Promise<AccountController> {
+    public static async createAccount(
+        transport: Transport,
+        prefix: string,
+        dependencyOverrides?: DependencyOverrides
+    ): Promise<AccountController> {
         const randomId = Math.random().toString(36).substring(7)
         const db: IDatabaseCollectionProvider = await transport.createDatabase(`${prefix}-${randomId}`)
 
-        const accountController: AccountController = new AccountController(transport, db, transport.config)
+        const accountController: AccountController = new AccountController(
+            transport,
+            db,
+            transport.config,
+            dependencyOverrides
+        )
+
         await accountController.init()
 
         return accountController
+    }
+
+    public static defineMigrationToVersion(version: number, account: AccountController): void {
+        // @ts-expect-error
+        account.synchronization.deviceMigrations[`v${version}`] = () => {
+            /* no migration logic */
+        }
+
+        // @ts-expect-error
+        account.synchronization.identityMigrations[`v${version}`] = () => {
+            /* no migration logic */
+        }
     }
 
     public static async onboardDevice(
@@ -234,28 +257,9 @@ export class TestUtil {
             maxNumberOfRelationships: 1
         })
 
-        const templateToken = await TokenContentRelationshipTemplate.from({
-            templateId: templateFrom.id,
-            secretKey: templateFrom.secretKey
-        })
-
-        const token = await from.tokens.sendToken({
-            content: templateToken,
-            expiresAt: CoreDate.utc().add({ hours: 12 }),
-            ephemeral: false
-        })
-
-        const tokenRef = await token.truncate()
-
-        const receivedToken = await to.tokens.loadPeerTokenByTruncated(tokenRef, false)
-
-        if (!(receivedToken.cache!.content instanceof TokenContentRelationshipTemplate)) {
-            throw new Error("token content not instanceof TokenContentRelationshipTemplate")
-        }
-
         const templateTo = await to.relationshipTemplates.loadPeerRelationshipTemplate(
-            receivedToken.cache!.content.templateId,
-            receivedToken.cache!.content.secretKey
+            templateFrom.id,
+            templateFrom.secretKey
         )
 
         await to.relationships.sendRelationship({
@@ -293,28 +297,9 @@ export class TestUtil {
             maxNumberOfRelationships: 1
         })
 
-        const templateToken = await TokenContentRelationshipTemplate.from({
-            templateId: templateFrom.id,
-            secretKey: templateFrom.secretKey
-        })
-
-        const token = await from.tokens.sendToken({
-            content: templateToken,
-            expiresAt: CoreDate.utc().add({ hours: 12 }),
-            ephemeral: false
-        })
-
-        const tokenRef = await token.truncate()
-
-        const receivedToken = await to.tokens.loadPeerTokenByTruncated(tokenRef, false)
-
-        if (!(receivedToken.cache!.content instanceof TokenContentRelationshipTemplate)) {
-            throw new Error("token content not instanceof TokenContentRelationshipTemplate")
-        }
-
         const templateTo = await to.relationshipTemplates.loadPeerRelationshipTemplate(
-            receivedToken.cache!.content.templateId,
-            receivedToken.cache!.content.secretKey
+            templateFrom.id,
+            templateFrom.secretKey
         )
 
         const relRequest = await to.relationships.sendRelationship({

@@ -44,7 +44,7 @@ import {
     TokenContentRelationshipTemplate
 } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractUnitTest } from "./AbstractUnitTest"
+import { AbstractUnitTest } from "../testHelpers"
 
 export class ReflectionTest extends AbstractUnitTest {
     public static cryptoClassNames: string[] = [

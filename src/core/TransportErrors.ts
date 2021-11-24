@@ -308,6 +308,27 @@ class Datawallet {
                 throw new Error(`Given type '${type}' is not supported.`)
         }
     }
+
+    public insufficientSupportedDatawalletVersion(supportedVersion: number, requiredVersion: number) {
+        return new CoreError(
+            "error.transport.datawallet.insufficientSupportedDatawalletVersion",
+            `The SupportedDatawalletVersion '${supportedVersion}' is too low. A minimum version of '${requiredVersion}' is required.`
+        )
+    }
+
+    public currentBiggerThanTarget(current: number, target: number) {
+        return new CoreError(
+            "error.transport.datawallet.currentBiggerThanTarget",
+            `The current datawallet version '${current}' is bigger than the target version '${target}'.`
+        )
+    }
+
+    public noMigrationAvailable(version: number) {
+        return new CoreError(
+            "error.core.datawallet.noMigrationAvailable",
+            `There is no migration available for the datawallet version '${version}'.`
+        )
+    }
 }
 
 class Files {
@@ -359,6 +380,13 @@ class Tokens {
 }
 
 class General {
+    public invalidDatawalletVersion() {
+        return new CoreError(
+            "error.transport.general.invalidDatawalletVersion",
+            "The given identity version is invalid. The value must be 0 or higher."
+        )
+    }
+
     public baseUrlNotSet() {
         return new CoreError("error.transport.general.baseUrlNotSet", "The baseUrl was not set.")
     }

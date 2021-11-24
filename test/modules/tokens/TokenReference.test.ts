@@ -1,7 +1,7 @@
 import { CryptoEncryption, CryptoSecretKey } from "@nmshd/crypto"
 import { CoreId, CoreSerializableAsync, TokenReference } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest } from "../../core/AbstractTest"
+import { AbstractTest } from "../../testHelpers"
 
 export class TokenReferenceTest extends AbstractTest {
     public run(): void {

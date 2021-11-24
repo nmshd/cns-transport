@@ -9,10 +9,7 @@ import {
     DeviceSharedSecret
 } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractTest } from "../../core/AbstractTest"
-import { AppDeviceTest } from "../../core/AppDeviceTest"
-import { DeviceTestParameters } from "../../core/DeviceTestParameters"
-import { TestUtil } from "../../core/TestUtil"
+import { AbstractTest, AppDeviceTest, DeviceTestParameters, TestUtil } from "../../testHelpers"
 
 export class DeviceOnboardingTest extends AbstractTest {
     public run(): void {

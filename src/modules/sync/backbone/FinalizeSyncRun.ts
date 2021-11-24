@@ -1,24 +1,34 @@
-export interface FinalizeSyncRunRequest {
+import { CreateDatawalletModificationsRequestItem } from "./CreateDatawalletModifications"
+
+export interface FinalizeExternalEventSyncRequest {
     externalEventResults: FinalizeSyncRunRequestExternalEventResult[]
-    datawalletModifications: FinalizeSyncRunRequestDatawalletModification[]
+    datawalletModifications: CreateDatawalletModificationsRequestItem[]
 }
-export interface FinalizeSyncRunRequestDatawalletModification {
-    objectIdentifier?: string
-    payloadCategory?: string
-    collection: string
-    type: string
-    encryptedPayload?: string
+
+export interface FinalizeDatawalletVersionUpgradeRequest {
+    newDatawalletVersion: number
+    datawalletModifications?: CreateDatawalletModificationsRequestItem[]
 }
+
 export interface FinalizeSyncRunRequestExternalEventResult {
     externalEventId: string
     errorCode?: string
 }
 
-export interface FinalizeSyncRunResponse {
+export interface FinalizeExternalEventSyncResponse {
     newDatawalletModificationIndex: number
     datawalletModifications: {
         id: string
         index: number
         createdAt: string
     }
+}
+
+export interface FinalizeDatawalletVersionUpgradeResponse {
+    newDatawalletVersion: number
+    datawalletModifications: {
+        id: string
+        index: number
+        createdAt: string
+    }[]
 }

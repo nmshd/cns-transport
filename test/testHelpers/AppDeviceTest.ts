@@ -1,7 +1,7 @@
 import { ILogger } from "@js-soft/logging-abstractions"
 import { AccountController, DeviceSharedSecret, Transport } from "@nmshd/transport"
+import { TestUtil } from "."
 import { DeviceTestParameters } from "./DeviceTestParameters"
-import { TestUtil } from "./TestUtil"
 
 export class AppDeviceTest {
     protected parameters: DeviceTestParameters

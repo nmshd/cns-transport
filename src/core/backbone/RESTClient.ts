@@ -93,7 +93,7 @@ export class RESTClient {
         }
 
         if (this.config.platformAdditionalHeaders) {
-            defaults.headers = this.config.platformAdditionalHeaders
+            defaults.headers = _.defaultsDeep({}, defaults.headers, this.config.platformAdditionalHeaders)
         }
 
         if (typeof Agent !== "undefined" && typeof HTTPSAgent !== "undefined") {

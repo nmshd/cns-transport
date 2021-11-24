@@ -5,6 +5,7 @@ import { ControllerName, CoreAddress, CoreDate, CoreId, IConfig, Transport, Tran
 import { Authenticator } from "../../core/backbone/Authenticator"
 import { CoreCrypto } from "../../core/CoreCrypto"
 import { DbCollectionName } from "../../core/DbCollectionName"
+import { DependencyOverrides } from "../../core/DependencyOverrides"
 import { TransportLoggerFactory } from "../../core/TransportLoggerFactory"
 import { PasswordGenerator } from "../../util"
 import { CertificateController } from "../certificates/CertificateController"
@@ -96,7 +97,8 @@ export class AccountController {
     public constructor(
         private readonly _transport: Transport,
         private readonly _db: IDatabaseCollectionProvider,
-        private readonly _config: IConfig
+        private readonly _config: IConfig,
+        private readonly dependencyOverrides: DependencyOverrides = {}
     ) {
         this._authenticator = new Authenticator(this)
         this._log = TransportLoggerFactory.getLogger(ControllerName.Account)
@@ -165,6 +167,7 @@ export class AccountController {
 
         if (identityCreated) {
             await this.devices.addExistingDevice(device!)
+            await this.synchronization.setInititalDatawalletVersion(this._config.supportedDatawalletVersion)
         } else if (deviceUpdated) {
             await this.syncDatawallet()
             await this.devices.update(device!)
@@ -185,11 +188,6 @@ export class AccountController {
     private async initControllers() {
         this._log.trace("Initializing controllers...")
 
-        this.synchronization = await new SyncController(
-            this,
-            this.unpushedDatawalletModifications,
-            this.config.datawalletEnabled
-        ).init()
         this.relationshipSecrets = await new RelationshipSecretController(this).init()
         this.devices = await new DevicesController(this).init()
         this.certificates = await new CertificateController(this).init()
@@ -202,6 +200,13 @@ export class AccountController {
         this.relationshipTemplates = await new RelationshipTemplateController(this, this.relationshipSecrets).init()
         this.messages = await new MessageController(this).init()
         this.tokens = await new TokenController(this).init()
+
+        this.synchronization = await new SyncController(
+            this,
+            this.dependencyOverrides,
+            this.unpushedDatawalletModifications,
+            this.config.datawalletEnabled
+        ).init()
 
         this._log.trace("Initialization of controllers finished.")
     }
@@ -317,7 +322,8 @@ export class AccountController {
             publicKey: deviceKeypair.publicKey,
             type: deviceInfo.type,
             certificate: "",
-            username: deviceResponse.device.username
+            username: deviceResponse.device.username,
+            datawalletVersion: this._config.supportedDatawalletVersion
         })
 
         // Initialize required controllers
@@ -428,9 +434,13 @@ export class AccountController {
     public async getSynchronizedCollection(collectionName: string): Promise<SynchronizedCollection> {
         const collection = await this.db.getCollection(collectionName)
         if (!this.config.datawalletEnabled) {
-            return new SynchronizedCollection(collection)
+            return new SynchronizedCollection(collection, this.config.supportedDatawalletVersion)
         }
 
-        return new SynchronizedCollection(collection, this.unpushedDatawalletModifications)
+        return new SynchronizedCollection(
+            collection,
+            this.config.supportedDatawalletVersion,
+            this.unpushedDatawalletModifications
+        )
     }
 }

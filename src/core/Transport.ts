@@ -13,6 +13,7 @@ import { TransportLoggerFactory } from "./TransportLoggerFactory"
 let log: ILogger
 
 export interface IConfig {
+    supportedDatawalletVersion: number
     debug: boolean
     platformClientId: string
     platformClientSecret: string
@@ -21,7 +22,6 @@ export interface IConfig {
     platformMaxUnencryptedFileSize: number
     platformAdditionalHeaders?: Record<string, string>
     baseUrl: string
-    useGateway: boolean
     realm: Realm
     datawalletEnabled: boolean
     httpAgent: AgentOptions
@@ -37,7 +37,6 @@ export interface IConfigOverwrite {
     platformMaxUnencryptedFileSize?: number
     platformAdditionalHeaders?: object
     baseUrl: string
-    useGateway?: boolean
     realm?: Realm
     datawalletEnabled?: boolean
     httpAgent?: AgentOptions
@@ -52,7 +51,8 @@ export class Transport {
         return this._config
     }
 
-    private readonly defaultConfig: IConfig = {
+    private static readonly defaultConfig: IConfig = {
+        supportedDatawalletVersion: 1,
         debug: false,
         platformClientId: "",
         platformClientSecret: "",
@@ -60,7 +60,6 @@ export class Transport {
         platformMaxRedirects: 10,
         platformMaxUnencryptedFileSize: 10 * 1024 * 1024,
         baseUrl: "",
-        useGateway: true,
         realm: Realm.Prod,
         datawalletEnabled: false,
         httpAgent: {
@@ -81,7 +80,7 @@ export class Transport {
         loggerFactory: ILoggerFactory = new SimpleLoggerFactory()
     ) {
         this.databaseConnection = databaseConnection
-        this._config = _.defaultsDeep({}, customConfig, this.defaultConfig)
+        this._config = _.defaultsDeep({}, customConfig, Transport.defaultConfig)
 
         TransportLoggerFactory.init(loggerFactory)
         log = TransportLoggerFactory.getLogger(Transport)
@@ -96,6 +95,10 @@ export class Transport {
 
         if (!this._config.baseUrl) {
             throw TransportErrors.general.baseUrlNotSet().logWith(log)
+        }
+
+        if (this._config.supportedDatawalletVersion < 1) {
+            throw TransportErrors.general.invalidDatawalletVersion().logWith(log)
         }
     }
 

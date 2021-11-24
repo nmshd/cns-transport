@@ -8,4 +8,5 @@ export interface BackboneDatawalletModification {
     collection: string
     type: string
     encryptedPayload: string | null
+    datawalletVersion: number
 }

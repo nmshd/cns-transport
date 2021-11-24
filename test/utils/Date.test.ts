@@ -1,6 +1,6 @@
 import { CoreDate } from "@nmshd/transport"
 import { expect } from "chai"
-import { AbstractUnitTest } from "./AbstractUnitTest"
+import { AbstractUnitTest } from "../testHelpers"
 
 export class DateTest extends AbstractUnitTest {
     public run(): void {

@@ -10,7 +10,8 @@ import {
 export class DatawalletModificationMapper {
     public static async fromBackboneDatawalletModification(
         backboneDatawalletModification: BackboneDatawalletModification,
-        decryptedPayload: object | undefined
+        decryptedPayload: object | undefined,
+        datawalletVersion: number
     ): Promise<DatawalletModification> {
         let type: DatawalletModificationType
 
@@ -58,7 +59,8 @@ export class DatawalletModificationMapper {
             payloadCategory: payloadCategory,
             collection: backboneDatawalletModification.collection,
             type: type,
-            payload: decryptedPayload
+            payload: decryptedPayload,
+            datawalletVersion: datawalletVersion
         })
     }
 
@@ -71,7 +73,8 @@ export class DatawalletModificationMapper {
             payloadCategory: datawalletModification.payloadCategory,
             collection: datawalletModification.collection,
             type: datawalletModification.type,
-            encryptedPayload: encryptedPayload
+            encryptedPayload: encryptedPayload,
+            datawalletVersion: datawalletModification.datawalletVersion ?? 0
         }
     }
 }
