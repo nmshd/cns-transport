@@ -143,8 +143,7 @@ export class RESTClient {
             if (backboneResponseDuration && backboneResponseDuration > 200) {
                 this._logger.warn(backboneMessage)
             } else {
-                // TODO: use debug
-                this._logger.warn(backboneMessage)
+                this._logger.debug(backboneMessage)
             }
 
             // Latency duration
