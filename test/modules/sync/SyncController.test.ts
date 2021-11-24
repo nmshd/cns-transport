@@ -100,7 +100,7 @@ export class SyncControllerTest extends AbstractTest {
 
                 const messages = await recipient.messages.getMessages()
                 expect(messages).to.have.lengthOf(1)
-            }).timeout(15000)
+            }).timeout(25000)
 
             after(async function () {
                 if (sender) await sender.close() // eslint-disable-line @typescript-eslint/no-unnecessary-condition
