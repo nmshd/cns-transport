@@ -48,13 +48,13 @@ export class SyncController extends TransportController {
 
     public constructor(
         parent: AccountController,
-        private readonly dependencyOverrides: DependencyOverrides,
+        dependencyOverrides: DependencyOverrides,
         private readonly unpushedDatawalletModifications: IDatabaseCollection,
         private readonly datawalletEnabled: boolean
     ) {
         super(ControllerName.Sync, parent)
 
-        this.client = this.dependencyOverrides.syncClient ?? new SyncClient(this.config, this.parent.authenticator)
+        this.client = dependencyOverrides.syncClient ?? new SyncClient(this.config, this.parent.authenticator)
 
         this.identityMigrations = new IdentityMigrations(this.parent)
         this.deviceMigrations = new DeviceMigrations(this.parent)
