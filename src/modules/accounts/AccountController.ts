@@ -5,6 +5,7 @@ import { ControllerName, CoreAddress, CoreDate, CoreId, IConfig, Transport, Tran
 import { Authenticator } from "../../core/backbone/Authenticator"
 import { CoreCrypto } from "../../core/CoreCrypto"
 import { DbCollectionName } from "../../core/DbCollectionName"
+import { DependencyOverrides } from "../../core/DependencyOverrides"
 import { TransportLoggerFactory } from "../../core/TransportLoggerFactory"
 import { PasswordGenerator } from "../../util"
 import { CertificateController } from "../certificates/CertificateController"
@@ -25,7 +26,6 @@ import { RelationshipsController } from "../relationships/RelationshipsControlle
 import { RelationshipSecretController } from "../relationships/RelationshipSecretController"
 import { RelationshipTemplateController } from "../relationshipTemplates/RelationshipTemplateController"
 import { SecretController } from "../secrets/SecretController"
-import { ISyncClient } from "../sync/backbone/SyncClient"
 import { ChangedItems } from "../sync/ChangedItems"
 import { SyncController } from "../sync/SyncController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
@@ -34,10 +34,6 @@ import { IdentityClient } from "./backbone/IdentityClient"
 import { Identity, IdentityType, Realm } from "./data/Identity"
 import { IdentityController } from "./IdentityController"
 import { IdentityUtil } from "./IdentityUtil"
-
-export interface DependencyOverrides {
-    syncClient?: ISyncClient
-}
 
 export class AccountController {
     private readonly _authenticator: Authenticator
@@ -102,7 +98,7 @@ export class AccountController {
         private readonly _transport: Transport,
         private readonly _db: IDatabaseCollectionProvider,
         private readonly _config: IConfig,
-        public readonly dependencyOverrides: DependencyOverrides = {}
+        private readonly dependencyOverrides: DependencyOverrides = {}
     ) {
         this._authenticator = new Authenticator(this)
         this._log = TransportLoggerFactory.getLogger(ControllerName.Account)
@@ -207,6 +203,7 @@ export class AccountController {
 
         this.synchronization = await new SyncController(
             this,
+            this.dependencyOverrides,
             this.unpushedDatawalletModifications,
             this.config.datawalletEnabled
         ).init()
