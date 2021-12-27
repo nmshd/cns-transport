@@ -301,7 +301,6 @@ export class AccountController {
 
         const identity = await Identity.from({
             address: CoreAddress.from(deviceResponse.address),
-            createdAt: CoreDate.from(deviceResponse.createdAt),
             realm: realm,
             publicKey: identityKeypair.publicKey
         })

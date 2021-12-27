@@ -1,5 +1,5 @@
 import { CoreBuffer, CryptoSignature, CryptoSignaturePrivateKey, CryptoSignaturePublicKey } from "@nmshd/crypto"
-import { ControllerName, CoreAddress, CoreCrypto, CoreDate, TransportController, TransportErrors } from "../../core"
+import { ControllerName, CoreAddress, CoreCrypto, TransportController, TransportErrors } from "../../core"
 import { AccountController } from "../accounts/AccountController"
 import { DeviceSecretType } from "../devices/DeviceSecretController"
 import { Identity, Realm } from "./data/Identity"
@@ -15,10 +15,6 @@ export class IdentityController extends TransportController {
 
     public get realm(): Realm {
         return this._identity.realm
-    }
-
-    public get createdAt(): CoreDate {
-        return this._identity.createdAt
     }
 
     public get identity(): Identity {
