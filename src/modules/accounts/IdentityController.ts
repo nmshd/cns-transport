@@ -1,8 +1,8 @@
 import { CoreBuffer, CryptoSignature, CryptoSignaturePrivateKey, CryptoSignaturePublicKey } from "@nmshd/crypto"
-import { ControllerName, CoreAddress, CoreCrypto, CoreDate, TransportController, TransportErrors } from "../../core"
+import { ControllerName, CoreAddress, CoreCrypto, TransportController, TransportErrors } from "../../core"
 import { AccountController } from "../accounts/AccountController"
 import { DeviceSecretType } from "../devices/DeviceSecretController"
-import { Identity, IdentityType, Realm } from "./data/Identity"
+import { Identity, Realm } from "./data/Identity"
 
 export class IdentityController extends TransportController {
     public get address(): CoreAddress {
@@ -15,22 +15,6 @@ export class IdentityController extends TransportController {
 
     public get realm(): Realm {
         return this._identity.realm
-    }
-
-    public get name(): string {
-        return this._identity.name
-    }
-
-    public get description(): string {
-        return this._identity.description
-    }
-
-    public get createdAt(): CoreDate {
-        return this._identity.createdAt
-    }
-
-    public get type(): IdentityType {
-        return this._identity.type
     }
 
     public get identity(): Identity {
@@ -57,9 +41,7 @@ export class IdentityController extends TransportController {
         return this.address.equals(address)
     }
 
-    public async update(name: string, description: string): Promise<void> {
-        this.identity.name = name
-        this.identity.description = description
+    public async update(): Promise<void> {
         await this.parent.info.set("identity", this.identity)
     }
 

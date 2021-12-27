@@ -31,7 +31,7 @@ import { SyncController } from "../sync/SyncController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
 import { TokenController } from "../tokens/TokenController"
 import { IdentityClient } from "./backbone/IdentityClient"
-import { Identity, IdentityType, Realm } from "./data/Identity"
+import { Identity, Realm } from "./data/Identity"
 import { IdentityController } from "./IdentityController"
 import { IdentityUtil } from "./IdentityUtil"
 
@@ -301,11 +301,7 @@ export class AccountController {
 
         const identity = await Identity.from({
             address: CoreAddress.from(deviceResponse.address),
-            createdAt: CoreDate.from(deviceResponse.createdAt),
-            description: "",
-            name: "",
             realm: realm,
-            type: IdentityType.UNKNOWN,
             publicKey: identityKeypair.publicKey
         })
 
