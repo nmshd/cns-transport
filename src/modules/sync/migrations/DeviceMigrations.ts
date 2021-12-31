@@ -9,18 +9,28 @@ export class DeviceMigrations {
         const synchronizableToId = (c: CoreSynchronizable) => c.id.toString()
 
         const files = await this.accountController.files.getFiles(query)
-        await this.accountController.files.updateCache(files.map(synchronizableToId))
+        if (files.length > 0) {
+            await this.accountController.files.updateCache(files.map(synchronizableToId))
+        }
 
         const messages = await this.accountController.messages.getMessages(query)
-        await this.accountController.messages.updateCache(messages.map(synchronizableToId))
+        if (messages.length > 0) {
+            await this.accountController.messages.updateCache(messages.map(synchronizableToId))
+        }
 
         const relationships = await this.accountController.relationships.getRelationships(query)
-        await this.accountController.relationships.updateCache(relationships.map(synchronizableToId))
+        if (relationships.length > 0) {
+            await this.accountController.relationships.updateCache(relationships.map(synchronizableToId))
+        }
 
         const templates = await this.accountController.relationshipTemplates.getRelationshipTemplates(query)
-        await this.accountController.relationshipTemplates.updateCache(templates.map(synchronizableToId))
+        if (templates.length > 0) {
+            await this.accountController.relationshipTemplates.updateCache(templates.map(synchronizableToId))
+        }
 
         const tokens = await this.accountController.tokens.getTokens(query)
-        await this.accountController.tokens.updateCache(tokens.map(synchronizableToId))
+        if (tokens.length > 0) {
+            await this.accountController.tokens.updateCache(tokens.map(synchronizableToId))
+        }
     }
 }
