@@ -65,6 +65,10 @@ export class RelationshipsController extends TransportController {
     }
 
     public async updateCache(ids: string[]): Promise<Relationship[]> {
+        if (ids.length < 1) {
+            return []
+        }
+
         const resultItems = (await this.client.getRelationships({ ids })).value
         const promises = []
         for await (const resultItem of resultItems) {
