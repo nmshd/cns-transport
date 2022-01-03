@@ -64,11 +64,37 @@ export class FileController extends TransportController {
     }
 
     public async updateCache(ids: string[]): Promise<File[]> {
+        if (ids.length < 1) {
+            return []
+        }
+
+        const promises = []
+        for (const id of ids) {
+            const result = await this.client.getFile(id)
+            if (result.isError) {
+                if (
+                    result.error.code === "error.transport.recordNotFound" ||
+                    result.error.code === "error.transport.request.notFound"
+                ) {
+                    this.log.warn(`Record id ${id} could not be found on backbone. It might be expired.`, result.error)
+                    continue
+                }
+
+                throw result.error
+            }
+
+            const resultItem = result.value
+            promises.push(this.updateCacheOfExistingFileInDb(resultItem.id, resultItem))
+        }
+
+        /*
+        // TODO: Optimize once backbone handling is clarified
         const resultItems = (await this.client.getFiles({ ids })).value
         const promises = []
         for await (const resultItem of resultItems) {
             promises.push(this.updateCacheOfExistingFileInDb(resultItem.id, resultItem))
         }
+        */
 
         return await Promise.all(promises)
     }

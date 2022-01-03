@@ -80,6 +80,10 @@ export class MessageController extends TransportController {
     }
 
     public async updateCache(ids: string[]): Promise<Message[]> {
+        if (ids.length < 1) {
+            return []
+        }
+
         const paginator = (await this.client.getMessages({ ids })).value
         const promises = []
         for await (const resultItem of paginator) {
