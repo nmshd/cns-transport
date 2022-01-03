@@ -102,7 +102,8 @@ export class TokenController extends TransportController {
             if (result.isError) {
                 if (
                     result.error.code === "error.transport.recordNotFound" ||
-                    result.error.code === "error.transport.request.notFound"
+                    result.error.code === "error.transport.request.notFound" ||
+                    result.error.code === "error.platform.recordNotFound"
                 ) {
                     this.log.warn(`Record id ${id} could not be found on backbone. It might be expired.`, result.error)
                     continue
