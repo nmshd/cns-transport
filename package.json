@@ -68,7 +68,7 @@
     },
     "devDependencies": {
         "@js-soft/docdb-access-loki": "1.0.2",
-        "@js-soft/docdb-access-mongo": "1.0.3",
+        "@js-soft/docdb-access-mongo": "1.0.4",
         "@js-soft/eslint-config-ts": "1.4.2",
         "@js-soft/license-check": "1.0.3",
         "@js-soft/node-logger": "1.0.0",
