@@ -22,7 +22,7 @@ const loggerFactory = new NodeLoggerFactory({
         },
         consoleAppender: {
             type: "stdout",
-            layout: { type: "pattern", pattern: "%[[%p] %c - %m%]" }
+            layout: { type: "pattern", pattern: "%[%d{hh:mm:ss.SSS} - [%p] %c - %m%]" }
         },
         console: {
             type: "logLevelFilter",
