@@ -136,9 +136,19 @@ export class RESTClient {
                 ? Number.parseInt(response.headers["x-response-duration-ms"])
                 : undefined
 
+            const numberOfResponseItems = response.data?.result?.length as number | undefined
+            const numberOfItemsStringFormatted =
+                numberOfResponseItems !== undefined ? ` | items: ${numberOfResponseItems}` : ""
+
+            const statusFormatted = ` | ${response.status}`
+
+            const responseDurationFormatted = ` | X-Response-Duration-ms: ${
+                backboneResponseDuration ? `${backboneResponseDuration}ms` : "unknown"
+            }`
+
             const backboneMessage = `${response.config.method!.toUpperCase()} ${
                 response.request.path
-            } (backbone call): ${backboneResponseDuration ? `${backboneResponseDuration}ms` : "unknown"}`
+            }${statusFormatted}${numberOfItemsStringFormatted}${responseDurationFormatted}`
 
             if (backboneResponseDuration && backboneResponseDuration > 200) {
                 this._logger.warn(backboneMessage)
