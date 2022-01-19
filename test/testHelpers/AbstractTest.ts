@@ -32,8 +32,12 @@ export abstract class AbstractTest {
         const sharedSecret = await device1Account.activeDevice.secrets.createDeviceSharedSecret(device2, 1, true)
         await device1Account.syncDatawallet()
 
+        await this.logAccountCredentials(device1Account)
+
         // Create Device2 Controller
         const device2Account = await TestUtil.onboardDevice(transport, sharedSecret)
+
+        await this.logAccountCredentials(device2Account)
 
         await device1Account.syncEverything()
         await device2Account.syncEverything()
@@ -45,7 +49,15 @@ export abstract class AbstractTest {
         const transport: Transport = new Transport(this.connection, this.config, this.loggerFactory)
         await transport.init()
         const deviceAccount = await TestUtil.createAccount(transport, accountPrefix)
+
+        await this.logAccountCredentials(deviceAccount)
+
         return deviceAccount
+    }
+
+    private async logAccountCredentials(account: AccountController) {
+        const credentials = await account.activeDevice.getCredentials()
+        this.logger.error(`Device credentials: '${credentials.username}'|'${credentials.password}'`)
     }
 
     protected async createIdentityWithNDevices(accountPrefix: string, n: number): Promise<AccountController[]> {
