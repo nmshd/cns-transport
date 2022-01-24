@@ -57,7 +57,7 @@ export abstract class AbstractTest {
 
     private async logAccountCredentials(account: AccountController) {
         const credentials = await account.activeDevice.getCredentials()
-        this.logger.error(`Device credentials: '${credentials.username}'|'${credentials.password}'`)
+        this.logger.info(`Device credentials: '${credentials.username}'|'${credentials.password}'`)
     }
 
     protected async createIdentityWithNDevices(accountPrefix: string, n: number): Promise<AccountController[]> {

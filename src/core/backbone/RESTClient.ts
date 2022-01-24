@@ -136,6 +136,9 @@ export class RESTClient {
                 ? Number.parseInt(response.headers["x-response-duration-ms"])
                 : undefined
 
+            const traceId = response.headers["x-trace-id"]
+            const traceIdFormatted = ` | traceId: ${traceId}`
+
             const numberOfResponseItems = response.data?.result?.length as number | undefined
             const numberOfItemsStringFormatted =
                 numberOfResponseItems !== undefined ? ` | items: ${numberOfResponseItems}` : ""
@@ -148,7 +151,7 @@ export class RESTClient {
 
             const backboneMessage = `${response.config.method!.toUpperCase()} ${
                 response.request.path
-            }${statusFormatted}${numberOfItemsStringFormatted}${responseDurationFormatted}`
+            }${statusFormatted}${numberOfItemsStringFormatted}${traceIdFormatted}${responseDurationFormatted}`
 
             if (backboneResponseDuration && backboneResponseDuration > 200) {
                 this._logger.warn(backboneMessage)
