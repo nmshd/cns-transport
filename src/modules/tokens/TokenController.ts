@@ -125,7 +125,8 @@ export class TokenController extends TransportController {
         }
         */
 
-        return (await Promise.all(promises)).filter((t) => t !== undefined) as Token[]
+        const isToken = (item: Token | undefined): item is Token => !!item
+        return (await Promise.all(promises)).filter(isToken)
     }
 
     public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedToken }[]> {
