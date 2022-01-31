@@ -1,16 +1,16 @@
-import { ISerializableAsync, SerializableAsync } from "@js-soft/ts-serval"
-import { CoreBuffer, CryptoCipher, CryptoSecretKey } from "@nmshd/crypto"
-import { CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializableAsync, TransportErrors } from "../../core"
-import { DbCollectionName } from "../../core/DbCollectionName"
-import { ControllerName, TransportController } from "../../core/TransportController"
-import { AccountController } from "../accounts/AccountController"
-import { SynchronizedCollection } from "../sync/SynchronizedCollection"
-import { BackboneGetTokensResponse } from "./backbone/BackboneGetTokens"
-import { TokenClient } from "./backbone/TokenClient"
-import { CachedToken } from "./local/CachedToken"
-import { ISendTokenParameters, SendTokenParameters } from "./local/SendTokenParameters"
-import { Token } from "./local/Token"
-import { TokenReference } from "./transmission/TokenReference"
+import {ISerializableAsync, SerializableAsync} from "@js-soft/ts-serval"
+import {CoreBuffer, CryptoCipher, CryptoSecretKey} from "@nmshd/crypto"
+import {CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializableAsync, TransportErrors} from "../../core"
+import {DbCollectionName} from "../../core/DbCollectionName"
+import {ControllerName, TransportController} from "../../core/TransportController"
+import {AccountController} from "../accounts/AccountController"
+import {SynchronizedCollection} from "../sync/SynchronizedCollection"
+import {BackboneGetTokensResponse} from "./backbone/BackboneGetTokens"
+import {TokenClient} from "./backbone/TokenClient"
+import {CachedToken} from "./local/CachedToken"
+import {ISendTokenParameters, SendTokenParameters} from "./local/SendTokenParameters"
+import {Token} from "./local/Token"
+import {TokenReference} from "./transmission/TokenReference"
 
 export class TokenController extends TransportController {
     private client: TokenClient
@@ -203,11 +203,16 @@ export class TokenController extends TransportController {
     public async loadPeerToken(id: CoreId, secretKey: CryptoSecretKey, ephemeral: boolean): Promise<Token> {
         const tokenDoc = await this.tokens.read(id.toString())
         if (tokenDoc) {
-            const token = await this.updateCacheOfExistingTokenInDb(id.toString())
+            let token: Token | undefined = await Token.from(tokenDoc)
+            if (token.cache) {
+                return token
+            }
+
+            token = await this.updateCacheOfExistingTokenInDb(id.toString())
             if (!token) {
                 // This should not happen, we only update the cache if we found the tokenDoc
                 throw new Error(
-                    `Tried to update a token (with ID: '${id.toString()}') in the database, that doesn't exist.`
+                    `Tried to update a token (with ID: '${id.toString()}') that doesn't exist in the local database.`
                 )
             }
 
