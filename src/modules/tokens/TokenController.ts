@@ -125,7 +125,8 @@ export class TokenController extends TransportController {
         }
         */
 
-        return await Promise.all(promises)
+        const isToken = (item: Token | undefined): item is Token => !!item
+        return (await Promise.all(promises)).filter(isToken)
     }
 
     public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedToken }[]> {
@@ -146,7 +147,8 @@ export class TokenController extends TransportController {
     private async updateCacheOfExistingTokenInDb(id: string, response?: BackboneGetTokensResponse) {
         const tokenDoc = await this.tokens.read(id)
         if (!tokenDoc) {
-            throw TransportErrors.general.recordNotFound(Token, id).logWith(this._log)
+            TransportErrors.general.recordNotFound(Token, id).logWith(this._log)
+            return
         }
 
         const token = await Token.from(tokenDoc)
@@ -201,7 +203,20 @@ export class TokenController extends TransportController {
     public async loadPeerToken(id: CoreId, secretKey: CryptoSecretKey, ephemeral: boolean): Promise<Token> {
         const tokenDoc = await this.tokens.read(id.toString())
         if (tokenDoc) {
-            return await this.updateCacheOfExistingTokenInDb(id.toString())
+            let token: Token | undefined = await Token.from(tokenDoc)
+            if (token.cache) {
+                return token
+            }
+
+            token = await this.updateCacheOfExistingTokenInDb(id.toString())
+            if (!token) {
+                // This should not happen, we only update the cache if we found the tokenDoc
+                throw new Error(
+                    `Tried to update a token (with ID: '${id.toString()}') that doesn't exist in the local database.`
+                )
+            }
+
+            return token
         }
 
         const token = await Token.from({
