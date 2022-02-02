@@ -438,7 +438,7 @@ export class SyncController extends TransportController {
         await this.deleteUnpushedDatawalletModifications(localModificationIds)
 
         const oldDatawalletModificationIndex = await this.getLocalDatawalletModificationIndex()
-        const newDatawalletModificationIndex = (oldDatawalletModificationIndex || -1) + backboneModifications.length
+        const newDatawalletModificationIndex = (oldDatawalletModificationIndex ?? -1) + backboneModifications.length
         await this.updateLocalDatawalletModificationIndex(newDatawalletModificationIndex)
 
         this.currentSyncRun = undefined
@@ -459,13 +459,13 @@ export class SyncController extends TransportController {
         await this.deleteUnpushedDatawalletModifications(localModificationIds)
 
         const oldDatawalletModificationIndex = await this.getLocalDatawalletModificationIndex()
-        const newDatawalletModificationIndex = (oldDatawalletModificationIndex || -1) + backboneModifications.length
+        const newDatawalletModificationIndex = (oldDatawalletModificationIndex ?? -1) + backboneModifications.length
         await this.updateLocalDatawalletModificationIndex(newDatawalletModificationIndex)
 
         this.currentSyncRun = undefined
     }
 
-    private async getLocalDatawalletModificationIndex() {
+    public async getLocalDatawalletModificationIndex(): Promise<number | undefined> {
         const index = await this.syncInfo.get("localDatawalletModificationIndex")
         return index
     }

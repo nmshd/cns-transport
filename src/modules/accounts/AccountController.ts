@@ -233,6 +233,10 @@ export class AccountController {
         return await this.synchronization.sync("Everything")
     }
 
+    public async getLocalDatawalletModificationIndex(): Promise<number> {
+        return (await this.synchronization.getLocalDatawalletModificationIndex()) ?? 0
+    }
+
     public async getLastCompletedSyncTime(): Promise<CoreDate | undefined> {
         return await this.synchronization.getLastCompletedSyncTime()
     }
