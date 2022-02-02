@@ -101,7 +101,12 @@ export class DevicesController extends TransportController {
 
         const isAdmin = device.isAdmin === true
 
-        const secret = await this.parent.activeDevice.secrets.createDeviceSharedSecret(device, count, isAdmin)
+        const secret = await this.parent.activeDevice.secrets.createDeviceSharedSecret(
+            device,
+            count,
+            isAdmin,
+            await this.parent.getLocalDatawalletModificationIndex()
+        )
         return secret
     }
 

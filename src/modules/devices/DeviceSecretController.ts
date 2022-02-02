@@ -142,7 +142,8 @@ export class DeviceSecretController extends TransportController {
     public async createDeviceSharedSecret(
         device: Device,
         deviceIndex: number,
-        includeIdentityPrivateKey = false
+        includeIdentityPrivateKey = false,
+        numberOfSynchronizationSteps?: number
     ): Promise<DeviceSharedSecret> {
         const synchronizationKey = await this.loadSecret(DeviceSecretType.IdentitySynchronizationMaster)
         if (!synchronizationKey || !(synchronizationKey.secret instanceof CryptoSecretKey)) {
@@ -174,7 +175,8 @@ export class DeviceSecretController extends TransportController {
             identityPrivateKey: identityPrivateKey?.secret as CryptoSignaturePrivateKey,
             username: device.username,
             password: device.initialPassword!,
-            identity: this.parent.identity.identity
+            identity: this.parent.identity.identity,
+            numberOfSynchronizationSteps
         })
 
         // TODO: JSSNMSHDD-2474 (Rollback on error)

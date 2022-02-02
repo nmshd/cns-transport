@@ -16,6 +16,7 @@ export interface IDeviceSharedSecret {
     identity: IIdentity
     password: string
     username: string
+    numberOfSynchronizationSteps?: number
 }
 
 @type("DeviceSharedSecret")
@@ -67,6 +68,10 @@ export class DeviceSharedSecret extends CoreSerializableAsync implements IDevice
     @serialize()
     @validate()
     public password: string
+
+    @serialize()
+    @validate({ nullable: true })
+    public numberOfSynchronizationSteps?: number
 
     public static async from(value: IDeviceSharedSecret): Promise<DeviceSharedSecret> {
         return await super.fromT(value, DeviceSharedSecret)
