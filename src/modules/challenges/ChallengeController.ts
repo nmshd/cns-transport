@@ -24,7 +24,7 @@ export class ChallengeController extends TransportController {
         return this
     }
 
-    private async verifyChallengeLocally(
+    private async validateChallengeLocally(
         challenge: Challenge,
         signedChallenge: ChallengeSigned
     ): Promise<{ isValid: boolean; correspondingRelationship?: Relationship }> {
@@ -35,10 +35,10 @@ export class ChallengeController extends TransportController {
             throw TransportErrors.general.recordNotFound(Relationship, challenge.createdBy.toString())
         }
         const challengeBuffer = CoreBuffer.fromUtf8(signedChallenge.challenge)
-        let verified = false
+        let valid = false
         switch (challenge.type) {
             case ChallengeType.Identity:
-                verified = await this.parent.relationships.verifyIdentity(
+                valid = await this.parent.relationships.verifyIdentity(
                     relationship,
                     challengeBuffer,
                     signedChallenge.signature
@@ -47,15 +47,11 @@ export class ChallengeController extends TransportController {
             case ChallengeType.Device:
                 throw TransportErrors.general.notImplemented().logWith(this._log)
             case ChallengeType.Relationship:
-                verified = await this.parent.relationships.verify(
-                    relationship,
-                    challengeBuffer,
-                    signedChallenge.signature
-                )
+                valid = await this.parent.relationships.verify(relationship, challengeBuffer, signedChallenge.signature)
                 break
         }
 
-        if (!verified) return { isValid: false }
+        if (!valid) return { isValid: false }
 
         return { isValid: true, correspondingRelationship: relationship }
     }
@@ -69,9 +65,7 @@ export class ChallengeController extends TransportController {
         if (challenge.expiresAt.isExpired()) return { isValid: false }
 
         const backboneChallengeResponse = await this.authClient.getChallenge(challenge.id.toString())
-        if (backboneChallengeResponse.isError) {
-            return { isValid: false }
-        }
+        if (backboneChallengeResponse.isError) return { isValid: false }
 
         if (
             (challenge.createdBy && backboneChallengeResponse.value.createdBy !== challenge.createdBy.toString()) ||
@@ -82,7 +76,7 @@ export class ChallengeController extends TransportController {
             return { isValid: false }
         }
 
-        return await this.verifyChallengeLocally(challenge, signedChallenge)
+        return await this.validateChallengeLocally(challenge, signedChallenge)
     }
 
     public async createAccountCreationChallenge(identity: CryptoSignatureKeypair): Promise<ChallengeSigned> {
