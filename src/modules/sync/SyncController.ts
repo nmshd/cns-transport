@@ -274,12 +274,21 @@ export class SyncController extends TransportController {
             localIndex: await this.getLocalDatawalletModificationIndex()
         })
 
-        const encryptedIncomingModifications = await getDatawalletModificationsResult.value.collect()
-        if (encryptedIncomingModifications.length === 0) {
-            return
+        const encryptedIncomingModifications: BackboneDatawalletModification[] = []
+        const incomingModifications: DatawalletModification[] = []
+        for await (const modification of getDatawalletModificationsResult.value) {
+            encryptedIncomingModifications.push(modification)
+
+            const decryptedModification = await this.decryptDatawalletModification(modification)
+            incomingModifications.push(decryptedModification)
         }
 
-        const incomingModifications = await this.decryptDatawalletModifications(encryptedIncomingModifications)
+        // const encryptedIncomingModifications = await getDatawalletModificationsResult.value.collect()
+        // if (encryptedIncomingModifications.length === 0) {
+        //     return
+        // }
+
+        // const incomingModifications = await this.decryptDatawalletModifications(encryptedIncomingModifications)
 
         this.log.trace(`${incomingModifications.length} incoming modifications found`)
 
@@ -300,22 +309,22 @@ export class SyncController extends TransportController {
     private async decryptDatawalletModifications(
         encryptedModifications: BackboneDatawalletModification[]
     ): Promise<DatawalletModification[]> {
-        const decryptedModifications: DatawalletModification[] = []
+        const promises = encryptedModifications.map((m) => this.decryptDatawalletModification(m))
+        return await Promise.all(promises)
+    }
 
-        for (const encryptedModification of encryptedModifications) {
-            const decryptedPayload = await this.parent.activeDevice.secrets.decryptDatawalletModificationPayload(
-                encryptedModification.encryptedPayload,
-                encryptedModification.index
-            )
-            const decryptedModification = await DatawalletModificationMapper.fromBackboneDatawalletModification(
-                encryptedModification,
-                decryptedPayload,
-                this.config.supportedDatawalletVersion
-            )
-            decryptedModifications.push(decryptedModification)
-        }
+    private async decryptDatawalletModification(encryptedModification: BackboneDatawalletModification) {
+        const decryptedPayload = await this.parent.activeDevice.secrets.decryptDatawalletModificationPayload(
+            encryptedModification.encryptedPayload,
+            encryptedModification.index
+        )
+        const decryptedModification = await DatawalletModificationMapper.fromBackboneDatawalletModification(
+            encryptedModification,
+            decryptedPayload,
+            this.config.supportedDatawalletVersion
+        )
 
-        return decryptedModifications
+        return decryptedModification
     }
 
     private async pushLocalDatawalletModifications() {
