@@ -6,12 +6,16 @@ export interface IPaginationDataSource<T> {
 
 export class Paginator<T> implements AsyncIterable<T> {
     private currentItemIndex = 0
+    private processedItems = 0
 
     public constructor(
         private currentPage: T[],
         private readonly paginationProperties: PaginationProperties,
-        private readonly dataSource: IPaginationDataSource<T>
-    ) {}
+        private readonly dataSource: IPaginationDataSource<T>,
+        private readonly progessCallback?: (percentage: number) => void
+    ) {
+        if (progessCallback) progessCallback(0)
+    }
 
     private hasNext() {
         return this.hasNextPage() || this.currentItemIndex < this.currentPage.length
@@ -24,7 +28,18 @@ export class Paginator<T> implements AsyncIterable<T> {
             this.currentPage = await this.nextPage()
         }
 
+        this.processedItems++
+        this.sendProgess()
+
         return this.currentPage[this.currentItemIndex++]
+    }
+
+    private sendProgess() {
+        if (!this.progessCallback) return
+        if (this.processedItems === this.paginationProperties.totalRecords) return this.progessCallback(100)
+
+        if (this.processedItems % 10 !== 0) return
+        this.progessCallback(Math.round((this.processedItems / this.paginationProperties.totalRecords) * 100))
     }
 
     private hasNextPage() {
@@ -52,5 +67,9 @@ export class Paginator<T> implements AsyncIterable<T> {
             next: async () =>
                 this.hasNext() ? { value: await this.next(), done: false } : { value: undefined, done: true }
         }
+    }
+
+    public get totalRecords(): number {
+        return this.paginationProperties.totalRecords
     }
 }
