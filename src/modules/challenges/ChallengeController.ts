@@ -35,10 +35,10 @@ export class ChallengeController extends TransportController {
             throw TransportErrors.general.recordNotFound(Relationship, challenge.createdBy.toString())
         }
         const challengeBuffer = CoreBuffer.fromUtf8(signedChallenge.challenge)
-        let valid = false
+        let isValid = false
         switch (challenge.type) {
             case ChallengeType.Identity:
-                valid = await this.parent.relationships.verifyIdentity(
+                isValid = await this.parent.relationships.verifyIdentity(
                     relationship,
                     challengeBuffer,
                     signedChallenge.signature
@@ -47,11 +47,15 @@ export class ChallengeController extends TransportController {
             case ChallengeType.Device:
                 throw TransportErrors.general.notImplemented().logWith(this._log)
             case ChallengeType.Relationship:
-                valid = await this.parent.relationships.verify(relationship, challengeBuffer, signedChallenge.signature)
+                isValid = await this.parent.relationships.verify(
+                    relationship,
+                    challengeBuffer,
+                    signedChallenge.signature
+                )
                 break
         }
 
-        if (!valid) return { isValid: false }
+        if (!isValid) return { isValid: false }
 
         return { isValid: true, correspondingRelationship: relationship }
     }
