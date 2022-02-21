@@ -7,11 +7,15 @@ import {
     ChallengeType,
     CoreAddress,
     CoreDate,
+    CoreError,
     CoreId,
     Transport
 } from "@nmshd/transport"
-import { expect } from "chai"
+import chai, { expect } from "chai"
+import promisedChai from "chai-as-promised"
 import { AbstractTest, TestUtil } from "../../testHelpers"
+
+chai.use(promisedChai)
 
 export class ChallengesTest extends AbstractTest {
     public run(): void {
@@ -51,14 +55,24 @@ export class ChallengesTest extends AbstractTest {
                 expect(deserializedChallenge.id).instanceOf(CoreId)
             })
 
-            it("recipient should verify a signed challenge", async function () {
+            it("sender should validate the self signed challenge", async function () {
+                const challenge = await sender.challenges.createChallenge()
+                const validationResult = sender.challenges.validateChallenge(challenge)
+
+                // TODO: JSSNMSHDD-2843 (validate own challenges)
+                await expect(validationResult).to.be.rejectedWith(CoreError)
+            })
+
+            it("recipient should validate a signed challenge", async function () {
                 const challenge = await sender.challenges.createChallenge()
                 const serializedChallenge = challenge.serialize(true)
                 const deserializedChallenge = (await SerializableAsync.deserializeUnknown(
                     serializedChallenge
                 )) as ChallengeSigned
-                const relationship = await recipient.challenges.checkChallenge(deserializedChallenge)
-                expect(relationship).to.exist
+                const validationResult = await recipient.challenges.validateChallenge(deserializedChallenge)
+                expect(validationResult).to.exist
+                expect(validationResult.isValid).to.be.true
+                expect(validationResult.correspondingRelationship).to.exist
             })
 
             after(async function () {

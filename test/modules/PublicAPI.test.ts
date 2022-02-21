@@ -80,7 +80,7 @@ export class PublicAPITest extends AbstractTest {
 
         publicFunctions[ChallengeController.name] = [
             nameof<ChallengeController>((r) => r.init),
-            nameof<ChallengeController>((r) => r.checkChallenge),
+            nameof<ChallengeController>((r) => r.validateChallenge),
             nameof<ChallengeController>((r) => r.createAccountCreationChallenge),
             nameof<ChallengeController>((r) => r.createChallenge)
         ]
