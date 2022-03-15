@@ -24,22 +24,21 @@ export class ChallengeController extends TransportController {
         return this
     }
 
-    private async verifyChallengeLocally(
+    private async validateChallengeLocally(
         challenge: Challenge,
         signedChallenge: ChallengeSigned
-    ): Promise<Relationship | undefined> {
-        if (!challenge.createdBy) {
-            return
-        }
+    ): Promise<{ isValid: boolean; correspondingRelationship?: Relationship }> {
+        if (!challenge.createdBy) return { isValid: false }
+
         const relationship = await this.parent.relationships.getActiveRelationshipToIdentity(challenge.createdBy)
         if (!relationship) {
             throw TransportErrors.general.recordNotFound(Relationship, challenge.createdBy.toString())
         }
         const challengeBuffer = CoreBuffer.fromUtf8(signedChallenge.challenge)
-        let verified = false
+        let isValid = false
         switch (challenge.type) {
             case ChallengeType.Identity:
-                verified = await this.parent.relationships.verifyIdentity(
+                isValid = await this.parent.relationships.verifyIdentity(
                     relationship,
                     challengeBuffer,
                     signedChallenge.signature
@@ -48,7 +47,7 @@ export class ChallengeController extends TransportController {
             case ChallengeType.Device:
                 throw TransportErrors.general.notImplemented().logWith(this._log)
             case ChallengeType.Relationship:
-                verified = await this.parent.relationships.verify(
+                isValid = await this.parent.relationships.verify(
                     relationship,
                     challengeBuffer,
                     signedChallenge.signature
@@ -56,41 +55,32 @@ export class ChallengeController extends TransportController {
                 break
         }
 
-        if (!verified) {
-            return
-        }
-        return relationship
+        if (!isValid) return { isValid: false }
+
+        return { isValid: true, correspondingRelationship: relationship }
     }
 
-    public async checkChallenge(
+    public async validateChallenge(
         signedChallenge: ChallengeSigned,
         requiredType?: ChallengeType
-    ): Promise<Relationship | undefined> {
+    ): Promise<{ isValid: boolean; correspondingRelationship?: Relationship }> {
         const challenge = await Challenge.deserialize(signedChallenge.challenge)
-        if (requiredType && challenge.type !== requiredType) {
-            return
-        }
+        if (requiredType && challenge.type !== requiredType) return { isValid: false }
+        if (challenge.expiresAt.isExpired()) return { isValid: false }
 
-        if (challenge.expiresAt.isExpired()) {
-            return
-        }
-
-        const [relationship, response] = await Promise.all([
-            this.verifyChallengeLocally(challenge, signedChallenge),
-            this.authClient.getChallenge(challenge.id.toString())
-        ])
+        const backboneChallengeResponse = await this.authClient.getChallenge(challenge.id.toString())
+        if (backboneChallengeResponse.isError) return { isValid: false }
 
         if (
-            !relationship ||
-            (challenge.createdBy && response.value.createdBy !== challenge.createdBy.toString()) ||
+            (challenge.createdBy && backboneChallengeResponse.value.createdBy !== challenge.createdBy.toString()) ||
             // TODO: JSSNMSHDD-2472 (Reenable check once the backbone returns with same timestamp)
             // response.expiresAt !== challenge.expiresAt.toString() ||
-            response.value.id !== challenge.id.toString()
+            backboneChallengeResponse.value.id !== challenge.id.toString()
         ) {
-            return
+            return { isValid: false }
         }
 
-        return relationship
+        return await this.validateChallengeLocally(challenge, signedChallenge)
     }
 
     public async createAccountCreationChallenge(identity: CryptoSignatureKeypair): Promise<ChallengeSigned> {
