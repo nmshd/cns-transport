@@ -54,9 +54,12 @@ export class Paginator<T> implements AsyncIterable<T> {
 
     public async collect(): Promise<T[]> {
         const collection = this.currentPage
+        this.progessCallback?.(this.pagePercentage)
 
         while (this.hasNextPage()) {
             collection.push(...(await this.nextPage()))
+
+            this.progessCallback?.(this.pagePercentage)
         }
 
         return collection
@@ -67,6 +70,10 @@ export class Paginator<T> implements AsyncIterable<T> {
             next: async () =>
                 this.hasNext() ? { value: await this.next(), done: false } : { value: undefined, done: true }
         }
+    }
+
+    public get pagePercentage(): number {
+        return Math.round((this.paginationProperties.pageNumber / this.paginationProperties.totalPages) * 100)
     }
 
     public get totalRecords(): number {
