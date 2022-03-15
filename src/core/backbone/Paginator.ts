@@ -4,6 +4,8 @@ export interface IPaginationDataSource<T> {
     getPage(pageNumber: number): Promise<T[]>
 }
 
+export type PaginatorPercentageCallback = (percentage: number) => void
+
 export class Paginator<T> implements AsyncIterable<T> {
     private currentItemIndex = 0
     private processedItems = 0
@@ -12,7 +14,7 @@ export class Paginator<T> implements AsyncIterable<T> {
         private currentPage: T[],
         private readonly paginationProperties: PaginationProperties,
         private readonly dataSource: IPaginationDataSource<T>,
-        private readonly progessCallback?: (percentage: number) => void
+        private readonly progessCallback?: PaginatorPercentageCallback
     ) {
         if (progessCallback) progessCallback(0)
     }

@@ -3,7 +3,7 @@ import _ from "lodash"
 import { IConfig } from "../Transport"
 import { Authenticator } from "./Authenticator"
 import { ClientResult } from "./ClientResult"
-import { Paginator } from "./Paginator"
+import { Paginator, PaginatorPercentageCallback } from "./Paginator"
 import { RequestError } from "./RequestError"
 import { RESTClient } from "./RESTClient"
 
@@ -49,10 +49,11 @@ export class RESTClientAuthenticate extends RESTClient {
     public async getPaged<T>(
         path: string,
         params: any = {},
-        config: AxiosRequestConfig = {}
+        config: AxiosRequestConfig = {},
+        progessCallback?: PaginatorPercentageCallback
     ): Promise<ClientResult<Paginator<T>>> {
         return await this.runAuthenticated(async (token) => {
-            return await super.getPaged(path, params, this.buildAuthenticatedConfig(token, config))
+            return await super.getPaged(path, params, this.buildAuthenticatedConfig(token, config), progessCallback)
         })
     }
 
