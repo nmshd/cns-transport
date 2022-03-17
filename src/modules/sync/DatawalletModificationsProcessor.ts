@@ -36,7 +36,7 @@ export class DatawalletModificationsProcessor {
         private readonly cacheFetcher: CacheFetcher,
         private readonly collectionProvider: IDatabaseCollectionProvider,
         private readonly logger: ILogger,
-        private readonly percentageCallback?: SyncPercentageCallback
+        private readonly syncCallback?: SyncPercentageCallback
     ) {
         const modificationsGroupedByType = _.groupBy(modifications, (m) => m.type)
 
@@ -224,7 +224,7 @@ export class DatawalletModificationsProcessor {
     private sendProgess() {
         this.currentItem++
         const percentage = Math.round((this.currentItem / this.totalItems) * 100)
-        this.percentageCallback?.(percentage, DatawalletSyncStep.DatawalletSyncProcessing)
+        this.syncCallback?.(percentage, DatawalletSyncStep.DatawalletSyncProcessing)
     }
 }
 
