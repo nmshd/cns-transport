@@ -21,18 +21,22 @@ import { CachedToken } from "../tokens/local/CachedToken"
 import { Token } from "../tokens/local/Token"
 import { TokenController } from "../tokens/TokenController"
 import { DatawalletModification, DatawalletModificationType } from "./local/DatawalletModification"
+import { DatawalletSyncStep, SyncPercentageCallback } from "./SyncDatawalletCallback"
 
 export class DatawalletModificationsProcessor {
     private readonly creates: DatawalletModification[]
     private readonly updates: DatawalletModification[]
     private readonly deletes: DatawalletModification[]
     private readonly cacheChanges: DatawalletModification[]
+    private readonly totalItems: number
+    private currentItem = 0
 
     public constructor(
         modifications: DatawalletModification[],
         private readonly cacheFetcher: CacheFetcher,
         private readonly collectionProvider: IDatabaseCollectionProvider,
-        private readonly logger: ILogger
+        private readonly logger: ILogger,
+        private readonly percentageCallback?: SyncPercentageCallback
     ) {
         const modificationsGroupedByType = _.groupBy(modifications, (m) => m.type)
 
@@ -40,6 +44,8 @@ export class DatawalletModificationsProcessor {
         this.updates = modificationsGroupedByType[DatawalletModificationType.Update] ?? []
         this.deletes = modificationsGroupedByType[DatawalletModificationType.Delete] ?? []
         this.cacheChanges = modificationsGroupedByType[DatawalletModificationType.CacheChanged] ?? []
+
+        this.totalItems = this.creates.length + this.updates.length + this.deletes.length + this.cacheChanges.length
     }
 
     private readonly collectionsWithCacheableItems: string[] = [
@@ -97,6 +103,7 @@ export class DatawalletModificationsProcessor {
             }
 
             await targetCollection.create(newObject)
+            this.sendProgess()
         }
     }
 
@@ -117,6 +124,7 @@ export class DatawalletModificationsProcessor {
             const newObject = { ...oldObject.toJSON(), ...updateModification.payload }
 
             await targetCollection.update(oldDoc, newObject)
+            this.sendProgess()
         }
     }
 
@@ -196,6 +204,7 @@ export class DatawalletModificationsProcessor {
                 const item = await CoreSerializableAsync.fromT(itemDoc, constructorOfT)
                 item.setCache(c.cache)
                 await collection.update(itemDoc, item)
+                this.sendProgess()
             })
         )
     }
@@ -208,7 +217,14 @@ export class DatawalletModificationsProcessor {
         for (const deleteModification of this.deletes) {
             const targetCollection = await this.collectionProvider.getCollection(deleteModification.collection)
             await targetCollection.delete({ id: deleteModification.objectIdentifier })
+            this.sendProgess()
         }
+    }
+
+    private sendProgess() {
+        this.currentItem++
+        const percentage = Math.round((this.currentItem / this.totalItems) * 100)
+        this.percentageCallback?.(percentage, DatawalletSyncStep.DatawalletSyncProcessing)
     }
 }
 
