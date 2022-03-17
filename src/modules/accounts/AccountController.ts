@@ -28,6 +28,7 @@ import { RelationshipTemplateController } from "../relationshipTemplates/Relatio
 import { SecretController } from "../secrets/SecretController"
 import { ChangedItems } from "../sync/ChangedItems"
 import { SyncController } from "../sync/SyncController"
+import { SyncPercentageCallback } from "../sync/SyncDatawalletCallback"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
 import { TokenController } from "../tokens/TokenController"
 import { IdentityClient } from "./backbone/IdentityClient"
@@ -221,16 +222,16 @@ export class AccountController {
         await this.syncDatawallet()
     }
 
-    public async syncDatawallet(force = false): Promise<void> {
+    public async syncDatawallet(force = false, syncCallback?: SyncPercentageCallback): Promise<void> {
         if (!force && !this.autoSync) {
             return
         }
 
-        return await this.synchronization.sync("OnlyDatawallet")
+        return await this.synchronization.sync("OnlyDatawallet", syncCallback)
     }
 
-    public async syncEverything(): Promise<ChangedItems> {
-        return await this.synchronization.sync("Everything")
+    public async syncEverything(syncCallback?: SyncPercentageCallback): Promise<ChangedItems> {
+        return await this.synchronization.sync("Everything", syncCallback)
     }
 
     public async getLastCompletedSyncTime(): Promise<CoreDate | undefined> {
