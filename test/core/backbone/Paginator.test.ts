@@ -1,5 +1,5 @@
 import { CoreBuffer } from "@nmshd/crypto"
-import { AccountController, FileClient, Paginator, Transport } from "@nmshd/transport"
+import { AccountController, FileClient, Paginator, PaginatorPercentageCallback, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest, FakePaginationDataSource, TestUtil } from "../../testHelpers"
 
@@ -55,7 +55,7 @@ export class PaginatorTest extends AbstractTest {
             })
 
             describe("Unit", function () {
-                const createPaginator = (pages: number[][], progressCallback?: (percentage: number) => void) => {
+                const createPaginator = (pages: number[][], progressCallback?: PaginatorPercentageCallback) => {
                     const totalRecords = pages.flat().length
 
                     return new Paginator<number>(
@@ -151,7 +151,7 @@ export class PaginatorTest extends AbstractTest {
                     expect(items).to.have.lengthOf(3)
                 })
 
-                it.only("should call the paginator callback with 20 items", async function () {
+                it("should call the paginator callback with 20 items", async function () {
                     const percentages: number[] = []
 
                     const paginator = createPaginator(
@@ -167,7 +167,7 @@ export class PaginatorTest extends AbstractTest {
                     expect(percentages).to.deep.equal([0, 50, 100])
                 })
 
-                it.only("should call the paginator callback with 19 items", async function () {
+                it("should call the paginator callback with 19 items", async function () {
                     const percentages: number[] = []
 
                     const paginator = createPaginator(
@@ -183,7 +183,7 @@ export class PaginatorTest extends AbstractTest {
                     expect(percentages).to.deep.equal([0, 53, 100])
                 })
 
-                it.only("should call the paginator callback with 199 items", async function () {
+                it("should call the paginator callback with 199 items", async function () {
                     const percentages: number[] = []
 
                     const paginator = createPaginator(
