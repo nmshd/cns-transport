@@ -24,6 +24,7 @@ import { ExternalEventsProcessor } from "./ExternalEventsProcessor"
 import { DatawalletModification } from "./local/DatawalletModification"
 import { DeviceMigrations } from "./migrations/DeviceMigrations"
 import { IdentityMigrations } from "./migrations/IdentityMigrations"
+import { DatawalletSyncStep, SyncPercentageCallback } from "./SyncDatawalletCallback"
 import { WhatToSync } from "./WhatToSync"
 
 export class SyncController extends TransportController {
@@ -72,21 +73,23 @@ export class SyncController extends TransportController {
     private currentSyncRun?: BackboneSyncRun
 
     // TODO: JSSNMSHDD-2475 (return changed items from syncDatawallet)
-    public async sync(): Promise<ChangedItems>
-    public async sync(whatToSync: "OnlyDatawallet"): Promise<void>
-    public async sync(whatToSync: "Everything"): Promise<ChangedItems>
-    public async sync(whatToSync: WhatToSync): Promise<ChangedItems | void>
-    public async sync(whatToSync: WhatToSync = "Everything"): Promise<ChangedItems | void> {
+    public async sync(whatToSync: "OnlyDatawallet", syncCallback?: SyncPercentageCallback): Promise<void>
+    public async sync(whatToSync: "Everything", syncCallback?: SyncPercentageCallback): Promise<ChangedItems>
+    public async sync(whatToSync: WhatToSync, syncCallback?: SyncPercentageCallback): Promise<ChangedItems | void>
+    public async sync(
+        whatToSync: WhatToSync = "Everything",
+        syncCallback?: SyncPercentageCallback
+    ): Promise<ChangedItems | void> {
         if (this.currentSync?.includes(whatToSync)) {
             return await this.currentSync.promise
         }
 
         if (this.currentSync && !this.currentSync.includes(whatToSync)) {
             await this.currentSync.promise
-            return await this.sync(whatToSync)
+            return await this.sync(whatToSync, syncCallback)
         }
 
-        const syncPromise = this._sync(whatToSync)
+        const syncPromise = this._sync(whatToSync, syncCallback)
         this.currentSync = new LocalSyncRun(syncPromise, whatToSync)
 
         try {
@@ -100,12 +103,16 @@ export class SyncController extends TransportController {
         }
     }
 
-    private async _sync(whatToSync: WhatToSync): Promise<ChangedItems | void> {
+    private async _sync(whatToSync: WhatToSync, syncCallback?: SyncPercentageCallback): Promise<ChangedItems | void> {
+        syncCallback?.(0, DatawalletSyncStep.Sync)
+
         if (whatToSync === "OnlyDatawallet") {
-            return await this.syncDatawallet()
+            const value = await this.syncDatawallet(syncCallback)
+            syncCallback?.(0, DatawalletSyncStep.Sync)
+            return value
         }
 
-        const externalEventSyncResult = await this.syncExternalEvents()
+        const externalEventSyncResult = await this.syncExternalEvents(syncCallback)
 
         await this.setLastCompletedSyncTime()
 
@@ -119,16 +126,18 @@ export class SyncController extends TransportController {
             ).logWith(this.log)
         }
 
+        syncCallback?.(0, DatawalletSyncStep.Sync)
+
         return externalEventSyncResult.changedItems
     }
 
-    private async syncExternalEvents(): Promise<{
+    private async syncExternalEvents(syncCallback?: SyncPercentageCallback): Promise<{
         externalEventResults: FinalizeSyncRunRequestExternalEventResult[]
         changedItems: ChangedItems
     }> {
         const syncRunWasStarted = await this.startExternalEventsSyncRun()
         if (!syncRunWasStarted) {
-            await this.syncDatawallet()
+            await this.syncDatawallet(syncCallback)
             return {
                 changedItems: new ChangedItems(),
                 externalEventResults: []
@@ -141,7 +150,7 @@ export class SyncController extends TransportController {
         return result
     }
 
-    private async syncDatawallet() {
+    private async syncDatawallet(syncCallback?: SyncPercentageCallback) {
         if (!this.datawalletEnabled) {
             return
         }
@@ -161,7 +170,7 @@ export class SyncController extends TransportController {
         this.log.trace("Synchronization of Datawallet events started...")
 
         try {
-            await this.applyIncomingDatawalletModifications()
+            await this.applyIncomingDatawalletModifications(syncCallback)
             await this.pushLocalDatawalletModifications()
 
             await this.setLastCompletedDatawalletSyncTime()
@@ -269,26 +278,28 @@ export class SyncController extends TransportController {
         }
     }
 
-    private async applyIncomingDatawalletModifications() {
-        const getDatawalletModificationsResult = await this.client.getDatawalletModifications({
-            localIndex: await this.getLocalDatawalletModificationIndex()
-        })
+    private async applyIncomingDatawalletModifications(percentageCallback?: SyncPercentageCallback) {
+        percentageCallback?.(0, "sync:datawallet")
 
-        const encryptedIncomingModifications: BackboneDatawalletModification[] = []
-        const incomingModifications: DatawalletModification[] = []
-        for await (const modification of getDatawalletModificationsResult.value) {
-            encryptedIncomingModifications.push(modification)
+        const paginatorCallback = percentageCallback
+            ? (percentage: number) => percentageCallback(percentage, DatawalletSyncStep.DatawalletSyncDownloading)
+            : undefined
 
-            const decryptedModification = await this.decryptDatawalletModification(modification)
-            incomingModifications.push(decryptedModification)
+        const getDatawalletModificationsResult = await this.client.getDatawalletModifications(
+            { localIndex: await this.getLocalDatawalletModificationIndex() },
+            paginatorCallback
+        )
+
+        const encryptedIncomingModifications = await getDatawalletModificationsResult.value.collect()
+        if (encryptedIncomingModifications.length === 0) {
+            percentageCallback?.(100, "sync:datawallet")
+            return
         }
 
-        // const encryptedIncomingModifications = await getDatawalletModificationsResult.value.collect()
-        // if (encryptedIncomingModifications.length === 0) {
-        //     return
-        // }
-
-        // const incomingModifications = await this.decryptDatawalletModifications(encryptedIncomingModifications)
+        const incomingModifications = await this.decryptDatawalletModifications(
+            encryptedIncomingModifications,
+            percentageCallback
+        )
 
         this.log.trace(`${incomingModifications.length} incoming modifications found`)
 
@@ -296,7 +307,8 @@ export class SyncController extends TransportController {
             incomingModifications,
             this.cacheFetcher,
             this._db,
-            TransportLoggerFactory.getLogger(DatawalletModificationsProcessor)
+            TransportLoggerFactory.getLogger(DatawalletModificationsProcessor),
+            percentageCallback
         )
 
         await datawalletModificationsProcessor.execute()
@@ -304,13 +316,38 @@ export class SyncController extends TransportController {
         this.log.trace(`${incomingModifications.length} incoming modifications executed`, incomingModifications)
 
         await this.updateLocalDatawalletModificationIndex(encryptedIncomingModifications.sort(descending)[0].index)
+
+        percentageCallback?.(100, "sync:datawallet")
+    }
+
+    private async promiseAllWithProgess<T>(promises: Promise<T>[], callback: (percentage: number) => void) {
+        callback(0)
+
+        let d = 0
+        callback(0)
+        for (const p of promises) {
+            // eslint-disable-next-line no-loop-func,no-void
+            void p.then(() => {
+                d++
+
+                const percentage = (d * 100) / promises.length
+                if (percentage !== 100) callback(percentage)
+            })
+        }
+
+        const value = await Promise.all(promises)
+        callback(100)
+        return value
     }
 
     private async decryptDatawalletModifications(
-        encryptedModifications: BackboneDatawalletModification[]
+        encryptedModifications: BackboneDatawalletModification[],
+        syncCallback?: SyncPercentageCallback
     ): Promise<DatawalletModification[]> {
         const promises = encryptedModifications.map((m) => this.decryptDatawalletModification(m))
-        return await Promise.all(promises)
+        return await this.promiseAllWithProgess(promises, (percentage) => {
+            syncCallback?.(percentage, DatawalletSyncStep.DatawalletSyncDecryption)
+        })
     }
 
     private async decryptDatawalletModification(encryptedModification: BackboneDatawalletModification) {
