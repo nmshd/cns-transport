@@ -21,7 +21,7 @@ import { CachedToken } from "../tokens/local/CachedToken"
 import { Token } from "../tokens/local/Token"
 import { TokenController } from "../tokens/TokenController"
 import { DatawalletModification, DatawalletModificationType } from "./local/DatawalletModification"
-import { SyncPercentageCallback, SyncStep } from "./SyncDatawalletCallback"
+import { SyncPercentageCallback, SyncStep } from "./SyncCallback"
 
 export class DatawalletModificationsProcessor {
     private readonly creates: DatawalletModification[]

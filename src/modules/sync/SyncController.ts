@@ -24,7 +24,7 @@ import { ExternalEventsProcessor } from "./ExternalEventsProcessor"
 import { DatawalletModification } from "./local/DatawalletModification"
 import { DeviceMigrations } from "./migrations/DeviceMigrations"
 import { IdentityMigrations } from "./migrations/IdentityMigrations"
-import { SyncPercentageCallback, SyncStep } from "./SyncDatawalletCallback"
+import { SyncPercentageCallback, SyncStep } from "./SyncCallback"
 import { WhatToSync } from "./WhatToSync"
 
 export class SyncController extends TransportController {

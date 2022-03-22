@@ -5,7 +5,7 @@ import { RelationshipsController } from "../relationships/RelationshipsControlle
 import { BackboneExternalEvent } from "./backbone/BackboneExternalEvent"
 import { FinalizeSyncRunRequestExternalEventResult } from "./backbone/FinalizeSyncRun"
 import { ChangedItems } from "./ChangedItems"
-import { SyncPercentageCallback, SyncStep } from "./SyncDatawalletCallback"
+import { SyncPercentageCallback, SyncStep } from "./SyncCallback"
 
 export class ExternalEventsProcessor {
     private readonly log: ILogger
