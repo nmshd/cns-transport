@@ -21,7 +21,7 @@ import { CachedToken } from "../tokens/local/CachedToken"
 import { Token } from "../tokens/local/Token"
 import { TokenController } from "../tokens/TokenController"
 import { DatawalletModification, DatawalletModificationType } from "./local/DatawalletModification"
-import { DatawalletSyncStep, SyncPercentageCallback } from "./SyncDatawalletCallback"
+import { SyncPercentageCallback, SyncStep } from "./SyncDatawalletCallback"
 
 export class DatawalletModificationsProcessor {
     private readonly creates: DatawalletModification[]
@@ -57,7 +57,7 @@ export class DatawalletModificationsProcessor {
     ]
 
     public async execute(): Promise<void> {
-        this.syncCallback?.(0, DatawalletSyncStep.DatawalletSyncProcessing)
+        this.syncCallback?.(0, SyncStep.DatawalletSyncProcessing)
 
         await this.applyCreates()
         await this.applyUpdates()
@@ -67,7 +67,7 @@ export class DatawalletModificationsProcessor {
         // cache-fills are optimized by the backbone, so it is possible that the processedItemCount is
         // lower than the total number of items - in this case the 100% callback is triggered here
         if (this.processedItemCount !== this.totalItems) {
-            this.syncCallback?.(100, DatawalletSyncStep.DatawalletSyncProcessing)
+            this.syncCallback?.(100, SyncStep.DatawalletSyncProcessing)
         }
     }
 
@@ -237,7 +237,7 @@ export class DatawalletModificationsProcessor {
         if (!this.syncCallback) return
 
         const percentage = Math.round((this.processedItemCount / this.totalItems) * 100)
-        this.syncCallback(percentage, DatawalletSyncStep.DatawalletSyncProcessing)
+        this.syncCallback(percentage, SyncStep.DatawalletSyncProcessing)
     }
 }
 

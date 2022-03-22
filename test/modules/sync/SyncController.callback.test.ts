@@ -42,7 +42,7 @@ export class SyncControllerCallbackTest extends AbstractTest {
                     events.push({ percentage, process })
                 })
 
-                expect(events).to.have.lengthOf(24)
+                expect(events).to.have.lengthOf(29)
 
                 const grouped = _.groupBy(events, "process")
                 for (const key in grouped) {

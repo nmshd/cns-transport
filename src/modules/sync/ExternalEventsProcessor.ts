@@ -5,16 +5,19 @@ import { RelationshipsController } from "../relationships/RelationshipsControlle
 import { BackboneExternalEvent } from "./backbone/BackboneExternalEvent"
 import { FinalizeSyncRunRequestExternalEventResult } from "./backbone/FinalizeSyncRun"
 import { ChangedItems } from "./ChangedItems"
+import { SyncPercentageCallback, SyncStep } from "./SyncDatawalletCallback"
 
 export class ExternalEventsProcessor {
     private readonly log: ILogger
     public readonly changedItems: ChangedItems = new ChangedItems()
     public readonly results: FinalizeSyncRunRequestExternalEventResult[] = []
+    private processedItemCount = 0
 
     public constructor(
         private readonly messagesController: MessageController,
         private readonly relationshipsController: RelationshipsController,
-        private readonly externalEvents: BackboneExternalEvent[]
+        private readonly externalEvents: BackboneExternalEvent[],
+        private readonly syncCallback?: SyncPercentageCallback
     ) {
         this.log = TransportLoggerFactory.getLogger(ExternalEventsProcessor)
     }
@@ -58,6 +61,8 @@ export class ExternalEventsProcessor {
                     externalEventId: externalEvent.id,
                     errorCode: errorCode
                 })
+            } finally {
+                this.sendProgess()
             }
         }
     }
@@ -91,5 +96,13 @@ export class ExternalEventsProcessor {
         const newMessagePayload = externalEvent.payload as { id: string }
         const newMessage = await this.messagesController.loadPeerMessage(CoreId.from(newMessagePayload.id))
         this.changedItems.addMessage(newMessage)
+    }
+
+    private sendProgess() {
+        this.processedItemCount++
+        if (!this.syncCallback) return
+
+        const percentage = Math.round((this.processedItemCount / this.externalEvents.length) * 100)
+        this.syncCallback(percentage, SyncStep.ExternalEventsProcessing)
     }
 }

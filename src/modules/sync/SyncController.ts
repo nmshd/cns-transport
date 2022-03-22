@@ -24,7 +24,7 @@ import { ExternalEventsProcessor } from "./ExternalEventsProcessor"
 import { DatawalletModification } from "./local/DatawalletModification"
 import { DeviceMigrations } from "./migrations/DeviceMigrations"
 import { IdentityMigrations } from "./migrations/IdentityMigrations"
-import { DatawalletSyncStep, SyncPercentageCallback } from "./SyncDatawalletCallback"
+import { SyncPercentageCallback, SyncStep } from "./SyncDatawalletCallback"
 import { WhatToSync } from "./WhatToSync"
 
 export class SyncController extends TransportController {
@@ -104,11 +104,11 @@ export class SyncController extends TransportController {
     }
 
     private async _sync(whatToSync: WhatToSync, syncCallback?: SyncPercentageCallback): Promise<ChangedItems | void> {
-        syncCallback?.(0, DatawalletSyncStep.Sync)
+        syncCallback?.(0, SyncStep.Sync)
 
         if (whatToSync === "OnlyDatawallet") {
             const value = await this.syncDatawallet(syncCallback)
-            syncCallback?.(100, DatawalletSyncStep.Sync)
+            syncCallback?.(100, SyncStep.Sync)
             return value
         }
 
@@ -126,7 +126,7 @@ export class SyncController extends TransportController {
             ).logWith(this.log)
         }
 
-        syncCallback?.(100, DatawalletSyncStep.Sync)
+        syncCallback?.(100, SyncStep.Sync)
 
         return externalEventSyncResult.changedItems
     }
@@ -145,7 +145,7 @@ export class SyncController extends TransportController {
         }
 
         await this.applyIncomingDatawalletModifications(syncCallback)
-        const result = await this.applyIncomingExternalEvents()
+        const result = await this.applyIncomingExternalEvents(syncCallback)
         await this.finalizeExternalEventsSyncRun(result.externalEventResults)
         return result
     }
@@ -279,10 +279,10 @@ export class SyncController extends TransportController {
     }
 
     private async applyIncomingDatawalletModifications(percentageCallback?: SyncPercentageCallback) {
-        percentageCallback?.(0, DatawalletSyncStep.DatawalletSync)
+        percentageCallback?.(0, SyncStep.DatawalletSync)
 
         const paginatorCallback = percentageCallback
-            ? (percentage: number) => percentageCallback(percentage, DatawalletSyncStep.DatawalletSyncDownloading)
+            ? (percentage: number) => percentageCallback(percentage, SyncStep.DatawalletSyncDownloading)
             : undefined
 
         const getDatawalletModificationsResult = await this.client.getDatawalletModifications(
@@ -292,7 +292,7 @@ export class SyncController extends TransportController {
 
         const encryptedIncomingModifications = await getDatawalletModificationsResult.value.collect()
         if (encryptedIncomingModifications.length === 0) {
-            percentageCallback?.(100, DatawalletSyncStep.DatawalletSync)
+            percentageCallback?.(100, SyncStep.DatawalletSync)
             return
         }
 
@@ -317,7 +317,7 @@ export class SyncController extends TransportController {
 
         await this.updateLocalDatawalletModificationIndex(encryptedIncomingModifications.sort(descending)[0].index)
 
-        percentageCallback?.(100, DatawalletSyncStep.DatawalletSync)
+        percentageCallback?.(100, SyncStep.DatawalletSync)
     }
 
     private async promiseAllWithProgess<T>(promises: Promise<T>[], callback: (percentage: number) => void) {
@@ -345,7 +345,7 @@ export class SyncController extends TransportController {
         if (!syncCallback) return await Promise.all(promises)
 
         return await this.promiseAllWithProgess(promises, (p: number) => {
-            syncCallback(p, DatawalletSyncStep.DatawalletSyncDecryption)
+            syncCallback(p, SyncStep.DatawalletSyncDecryption)
         })
     }
 
@@ -444,8 +444,16 @@ export class SyncController extends TransportController {
         return this.currentSyncRun !== undefined
     }
 
-    private async applyIncomingExternalEvents() {
-        const getExternalEventsResult = await this.client.getExternalEventsOfSyncRun(this.currentSyncRun!.id.toString())
+    private async applyIncomingExternalEvents(syncCallback?: SyncPercentageCallback) {
+        syncCallback?.(0, SyncStep.ExternalEventSync)
+
+        const callback = syncCallback
+            ? (p: number) => syncCallback(p, SyncStep.ExternalEventSyncDownloading)
+            : undefined
+        const getExternalEventsResult = await this.client.getExternalEventsOfSyncRun(
+            this.currentSyncRun!.id.toString(),
+            callback
+        )
 
         if (getExternalEventsResult.isError) {
             throw getExternalEventsResult.error
@@ -456,9 +464,12 @@ export class SyncController extends TransportController {
         const externalEventProcessor = new ExternalEventsProcessor(
             this.parent.messages,
             this.parent.relationships,
-            externalEvents
+            externalEvents,
+            syncCallback
         )
         await externalEventProcessor.execute()
+
+        syncCallback?.(100, SyncStep.ExternalEventSync)
 
         return {
             externalEventResults: externalEventProcessor.results,

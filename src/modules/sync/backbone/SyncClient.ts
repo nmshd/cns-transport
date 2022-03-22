@@ -35,7 +35,10 @@ export interface ISyncClient {
         request: FinalizeDatawalletVersionUpgradeRequest
     ): Promise<ClientResult<FinalizeDatawalletVersionUpgradeResponse>>
 
-    getExternalEventsOfSyncRun(syncRunId: string): Promise<ClientResult<Paginator<BackboneExternalEvent>>>
+    getExternalEventsOfSyncRun(
+        syncRunId: string,
+        progessCallback?: PaginatorPercentageCallback
+    ): Promise<ClientResult<Paginator<BackboneExternalEvent>>>
 
     getDatawallet(): Promise<ClientResult<GetDatawalletResponse>>
 
@@ -83,9 +86,15 @@ export class SyncClient extends RESTClientAuthenticate implements ISyncClient {
     }
 
     public async getExternalEventsOfSyncRun(
-        syncRunId: string
+        syncRunId: string,
+        progessCallback?: PaginatorPercentageCallback
     ): Promise<ClientResult<Paginator<BackboneExternalEvent>>> {
-        return await this.getPaged<BackboneExternalEvent>(`/api/v1/SyncRuns/${syncRunId}/ExternalEvents`, {})
+        return await this.getPaged<BackboneExternalEvent>(
+            `/api/v1/SyncRuns/${syncRunId}/ExternalEvents`,
+            {},
+            undefined,
+            progessCallback
+        )
     }
 
     public async getDatawallet(): Promise<ClientResult<GetDatawalletResponse>> {
