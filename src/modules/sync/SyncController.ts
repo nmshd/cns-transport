@@ -108,7 +108,7 @@ export class SyncController extends TransportController {
 
         if (whatToSync === "OnlyDatawallet") {
             const value = await this.syncDatawallet(syncCallback)
-            syncCallback?.(0, DatawalletSyncStep.Sync)
+            syncCallback?.(100, DatawalletSyncStep.Sync)
             return value
         }
 
@@ -126,7 +126,7 @@ export class SyncController extends TransportController {
             ).logWith(this.log)
         }
 
-        syncCallback?.(0, DatawalletSyncStep.Sync)
+        syncCallback?.(100, DatawalletSyncStep.Sync)
 
         return externalEventSyncResult.changedItems
     }
