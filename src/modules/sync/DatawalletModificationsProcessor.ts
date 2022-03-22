@@ -205,6 +205,8 @@ export class DatawalletModificationsProcessor {
         collectionName: DbCollectionName,
         constructorOfT: new () => T
     ) {
+        if (caches.length < 1) return
+
         const collection = await this.collectionProvider.getCollection(collectionName)
 
         await Promise.all(
