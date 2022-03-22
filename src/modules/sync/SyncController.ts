@@ -323,21 +323,18 @@ export class SyncController extends TransportController {
     private async promiseAllWithProgess<T>(promises: Promise<T>[], callback: (percentage: number) => void) {
         callback(0)
 
-        let d = 0
-        callback(0)
-        for (const p of promises) {
+        let processedItemCount = 0
+        for (const promise of promises) {
             // eslint-disable-next-line no-loop-func,no-void
-            void p.then(() => {
-                d++
+            void promise.then(() => {
+                processedItemCount++
 
-                const percentage = (d * 100) / promises.length
-                if (percentage !== 100) callback(percentage)
+                const percentage = Math.round((processedItemCount / promises.length) * 100)
+                callback(percentage)
             })
         }
 
-        const value = await Promise.all(promises)
-        callback(100)
-        return value
+        return await Promise.all(promises)
     }
 
     private async decryptDatawalletModifications(
