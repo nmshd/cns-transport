@@ -144,7 +144,7 @@ export class SyncController extends TransportController {
             }
         }
 
-        await this.applyIncomingDatawalletModifications()
+        await this.applyIncomingDatawalletModifications(syncCallback)
         const result = await this.applyIncomingExternalEvents()
         await this.finalizeExternalEventsSyncRun(result.externalEventResults)
         return result
@@ -279,7 +279,7 @@ export class SyncController extends TransportController {
     }
 
     private async applyIncomingDatawalletModifications(percentageCallback?: SyncPercentageCallback) {
-        percentageCallback?.(0, "sync:datawallet")
+        percentageCallback?.(0, DatawalletSyncStep.DatawalletSync)
 
         const paginatorCallback = percentageCallback
             ? (percentage: number) => percentageCallback(percentage, DatawalletSyncStep.DatawalletSyncDownloading)
@@ -292,7 +292,7 @@ export class SyncController extends TransportController {
 
         const encryptedIncomingModifications = await getDatawalletModificationsResult.value.collect()
         if (encryptedIncomingModifications.length === 0) {
-            percentageCallback?.(100, "sync:datawallet")
+            percentageCallback?.(100, DatawalletSyncStep.DatawalletSync)
             return
         }
 
@@ -317,7 +317,7 @@ export class SyncController extends TransportController {
 
         await this.updateLocalDatawalletModificationIndex(encryptedIncomingModifications.sort(descending)[0].index)
 
-        percentageCallback?.(100, "sync:datawallet")
+        percentageCallback?.(100, DatawalletSyncStep.DatawalletSync)
     }
 
     private async promiseAllWithProgess<T>(promises: Promise<T>[], callback: (percentage: number) => void) {
