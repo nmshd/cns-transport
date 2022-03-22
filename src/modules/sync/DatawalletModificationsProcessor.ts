@@ -57,10 +57,18 @@ export class DatawalletModificationsProcessor {
     ]
 
     public async execute(): Promise<void> {
+        this.syncCallback?.(0, DatawalletSyncStep.DatawalletSyncProcessing)
+
         await this.applyCreates()
         await this.applyUpdates()
         await this.applyCacheChanges()
         await this.applyDeletes()
+
+        // cache-fills are optimized by the backbone, so it is possible that the processedItemCount is
+        // lower than the total number of items - in this case the 100% callback is triggered here
+        if (this.processedItemCount !== this.totalItems) {
+            this.syncCallback?.(100, DatawalletSyncStep.DatawalletSyncProcessing)
+        }
     }
 
     private async applyCreates() {
