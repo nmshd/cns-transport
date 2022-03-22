@@ -23,6 +23,7 @@ import {
     RelationshipSyncTest,
     RelationshipTemplateControllerTest,
     SecretControllerTest,
+    SyncControllerCallbackTest,
     SyncControllerTest,
     TimeSyncTest,
     TokenContentTest,
@@ -71,6 +72,7 @@ export class Test {
         new FileSyncTest(config, databaseConnection, loggerFactory).run()
         new RelationshipSyncTest(config, databaseConnection, loggerFactory).run()
         new SyncControllerTest(config, databaseConnection, loggerFactory).run()
+        new SyncControllerCallbackTest(config, databaseConnection, loggerFactory).run()
         new MessageContentTest(config, databaseConnection, loggerFactory).run()
         new TimeSyncTest(config, databaseConnection, loggerFactory).run()
         new DeviceOnboardingTest(config, databaseConnection, loggerFactory).run()
