@@ -23,6 +23,7 @@ export class ExternalEventsProcessor {
     }
 
     public async execute(): Promise<void> {
+        this.syncCallback?.(0, SyncStep.ExternalEventsProcessing)
         for (const externalEvent of this.externalEvents) {
             try {
                 switch (externalEvent.type) {
