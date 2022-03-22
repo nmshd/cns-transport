@@ -342,8 +342,10 @@ export class SyncController extends TransportController {
         syncCallback?: SyncPercentageCallback
     ): Promise<DatawalletModification[]> {
         const promises = encryptedModifications.map((m) => this.decryptDatawalletModification(m))
-        return await this.promiseAllWithProgess(promises, (percentage) => {
-            syncCallback?.(percentage, DatawalletSyncStep.DatawalletSyncDecryption)
+        if (!syncCallback) return await Promise.all(promises)
+
+        return await this.promiseAllWithProgess(promises, (p: number) => {
+            syncCallback(p, DatawalletSyncStep.DatawalletSyncDecryption)
         })
     }
 
