@@ -108,6 +108,7 @@ export class DatawalletModificationsProcessor {
                 })
 
                 this.cacheChanges.push(modification)
+                this.totalItems++
             }
 
             await targetCollection.create(newObject)
