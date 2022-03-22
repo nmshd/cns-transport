@@ -42,13 +42,13 @@ export class SyncControllerCallbackTest extends AbstractTest {
                     events.push({ percentage, process })
                 })
 
-                expect(events).to.have.lengthOf(29)
+                expect(events).to.have.lengthOf(30)
 
                 const grouped = _.groupBy(events, "process")
                 for (const key in grouped) {
                     const percentages = grouped[key].map((e) => e.percentage)
-                    expect(percentages).contain(0)
-                    expect(percentages).contain(100)
+                    expect(percentages).to.contain(0)
+                    expect(percentages).to.contain(100)
                 }
             }).timeout(150000)
 
