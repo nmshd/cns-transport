@@ -28,8 +28,8 @@ export class DatawalletModificationsProcessor {
     private readonly updates: DatawalletModification[]
     private readonly deletes: DatawalletModification[]
     private readonly cacheChanges: DatawalletModification[]
-    private readonly totalItems: number
-    private currentItem = 0
+    private totalItems: number
+    private processedItemCount = 0
 
     public constructor(
         modifications: DatawalletModification[],
@@ -233,9 +233,11 @@ export class DatawalletModificationsProcessor {
     }
 
     private sendProgess() {
-        this.currentItem++
-        const percentage = Math.round((this.currentItem / this.totalItems) * 100)
-        this.syncCallback?.(percentage, DatawalletSyncStep.DatawalletSyncProcessing)
+        this.processedItemCount++
+        if (!this.syncCallback) return
+
+        const percentage = Math.round((this.processedItemCount / this.totalItems) * 100)
+        this.syncCallback(percentage, DatawalletSyncStep.DatawalletSyncProcessing)
     }
 }
 
