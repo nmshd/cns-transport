@@ -8,7 +8,7 @@ export type PaginatorPercentageCallback = (percentage: number) => void
 
 export class Paginator<T> implements AsyncIterable<T> {
     private currentItemIndex = 0
-    private processedItems = 0
+    private processedItemCount = 0
 
     public constructor(
         private currentPage: T[],
@@ -30,7 +30,7 @@ export class Paginator<T> implements AsyncIterable<T> {
             this.currentPage = await this.nextPage()
         }
 
-        this.processedItems++
+        this.processedItemCount++
         this.sendProgess()
 
         return this.currentPage[this.currentItemIndex++]
@@ -38,10 +38,10 @@ export class Paginator<T> implements AsyncIterable<T> {
 
     private sendProgess() {
         if (!this.progessCallback) return
-        if (this.processedItems === this.paginationProperties.totalRecords) return this.progessCallback(100)
+        if (this.processedItemCount === this.paginationProperties.totalRecords) return this.progessCallback(100)
 
-        if (this.processedItems % 10 !== 0) return
-        this.progessCallback(Math.round((this.processedItems / this.paginationProperties.totalRecords) * 100))
+        if (this.processedItemCount % 10 !== 0) return
+        this.progessCallback(Math.round((this.processedItemCount / this.paginationProperties.totalRecords) * 100))
     }
 
     private hasNextPage() {
