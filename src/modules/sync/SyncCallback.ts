@@ -1,6 +1,6 @@
 import { ProgressReporter, ProgressReporterStep } from "../../core"
 
-export type SyncPercentageCallback = (percentage: number, process: string) => void
+export type SyncPercentageCallback = (percentage: number, process: SyncStep) => void
 
 export class SyncProgressReporter extends ProgressReporter<SyncStep> {
     public static fromCallback(callback?: SyncPercentageCallback): SyncProgressReporter | undefined {
@@ -17,7 +17,7 @@ export enum SyncStep {
     DatawalletSyncDownloading = "sync:datawallet:downloading",
     DatawalletSyncDecryption = "sync:datawallet:decrypting",
     DatawalletSyncProcessing = "sync:datawallet:processing",
-    ExternalEventSync = "sync:externalEvent",
-    ExternalEventSyncDownloading = "sync:externalEvent:downloading",
-    ExternalEventsProcessing = "sync:externalEvent:processing"
+    ExternalEventsSync = "sync:externalEvents",
+    ExternalEventsSyncDownloading = "sync:externalEvents:downloading",
+    ExternalEventsProcessing = "sync:externalEvents:processing"
 }

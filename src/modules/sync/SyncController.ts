@@ -445,9 +445,9 @@ export class SyncController extends TransportController {
     }
 
     private async applyIncomingExternalEvents(reporter?: SyncProgressReporter) {
-        const externalEventStep = reporter?.createStep(SyncStep.ExternalEventSync, 1)
+        const externalEventStep = reporter?.createStep(SyncStep.ExternalEventsSync, 1)
 
-        const downloadingStep = reporter?.createStep(SyncStep.ExternalEventSyncDownloading)
+        const downloadingStep = reporter?.createStep(SyncStep.ExternalEventsSyncDownloading)
         const paginatorCallback = reporter
             ? (percentage: number) => downloadingStep?.manualReport(percentage)
             : undefined

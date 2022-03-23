@@ -3,6 +3,12 @@ import { AccountController, FileClient, Paginator, PaginatorPercentageCallback, 
 import { expect } from "chai"
 import { AbstractTest, FakePaginationDataSource, TestUtil } from "../../testHelpers"
 
+async function itereateThroughAllItemsAsynchronously<T>(paginator: Paginator<T>) {
+    // eslint-disable-next-line no-empty,@typescript-eslint/no-unused-vars
+    for await (const _ of paginator) {
+    }
+}
+
 export class PaginatorTest extends AbstractTest {
     public run(): void {
         const that = this
@@ -162,7 +168,7 @@ export class PaginatorTest extends AbstractTest {
                         (percentage: number) => percentages.push(percentage)
                     )
 
-                    for await (const _item of paginator) expect(_item).to.exist
+                    await itereateThroughAllItemsAsynchronously(paginator)
 
                     expect(percentages).to.deep.equal([0, 50, 100])
                 })
@@ -178,7 +184,7 @@ export class PaginatorTest extends AbstractTest {
                         (percentage: number) => percentages.push(percentage)
                     )
 
-                    for await (const _item of paginator) expect(_item).to.exist
+                    await itereateThroughAllItemsAsynchronously(paginator)
 
                     expect(percentages).to.deep.equal([0, 53, 100])
                 })
@@ -191,9 +197,25 @@ export class PaginatorTest extends AbstractTest {
                         (percentage: number) => percentages.push(percentage)
                     )
 
-                    for await (const _item of paginator) expect(_item).to.exist
+                    await itereateThroughAllItemsAsynchronously(paginator)
 
                     expect(percentages).to.have.lengthOf(21)
+                })
+
+                it("should call the paginator callback by calling collect", async function () {
+                    const percentages: number[] = []
+
+                    const paginator = createPaginator(
+                        [
+                            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                        ],
+                        (percentage: number) => percentages.push(percentage)
+                    )
+
+                    await paginator.collect()
+
+                    expect(percentages).to.deep.equal([0, 50, 100])
                 })
             })
         })

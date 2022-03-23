@@ -25,7 +25,7 @@ export class SyncControllerCallbackTest extends AbstractTest {
 
             this.timeout(150000)
 
-            it("sync should return existing promise when called twice", async function () {
+            it("should execute the callback during syncEverything", async function () {
                 a1 = await that.createIdentityWithOneDevice(SyncControllerCallbackTest.name)
                 const { device1: b1, device2: b2 } = await that.createIdentityWithTwoDevices(
                     SyncControllerCallbackTest.name
