@@ -33,11 +33,7 @@ export class ProgressReporterStep<T extends string> {
     }
 
     public finish(): void {
-        this.progressTo(this.totalNumberOfItems)
-    }
-
-    public finishIfNotFinished(): void {
-        if (this.currentItem < this.totalNumberOfItems) this.finish()
+        if (this.currentItem < this.totalNumberOfItems) this.progressTo(this.totalNumberOfItems)
     }
 
     public manualReport(percentage: number): void {
