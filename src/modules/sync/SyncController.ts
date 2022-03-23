@@ -104,7 +104,7 @@ export class SyncController extends TransportController {
     }
 
     private async _sync(whatToSync: WhatToSync, reporter?: SyncProgressReporter): Promise<ChangedItems | void> {
-        const syncStep = reporter?.newStep(SyncStep.Sync, 1)
+        const syncStep = reporter?.createStep(SyncStep.Sync, 1)
 
         if (whatToSync === "OnlyDatawallet") {
             const value = await this.syncDatawallet(reporter)
@@ -279,9 +279,9 @@ export class SyncController extends TransportController {
     }
 
     private async applyIncomingDatawalletModifications(reporter?: SyncProgressReporter) {
-        const datawalletSyncStep = reporter?.newStep(SyncStep.DatawalletSync, 1)
+        const datawalletSyncStep = reporter?.createStep(SyncStep.DatawalletSync, 1)
 
-        const downloadingStep = reporter?.newStep(SyncStep.DatawalletSyncDownloading)
+        const downloadingStep = reporter?.createStep(SyncStep.DatawalletSyncDownloading)
         const paginatorCallback = reporter
             ? (percentage: number) => downloadingStep?.manualReport(percentage)
             : undefined
@@ -345,7 +345,7 @@ export class SyncController extends TransportController {
         const promises = encryptedModifications.map((m) => this.decryptDatawalletModification(m))
         if (!reporter) return await Promise.all(promises)
 
-        const step = reporter.step(SyncStep.DatawalletSyncDecryption, -1)
+        const step = reporter.createStep(SyncStep.DatawalletSyncDecryption)
         return await this.promiseAllWithProgess(promises, (p: number) => step.manualReport(p))
     }
 
@@ -445,9 +445,9 @@ export class SyncController extends TransportController {
     }
 
     private async applyIncomingExternalEvents(reporter?: SyncProgressReporter) {
-        const externalEventStep = reporter?.newStep(SyncStep.ExternalEventSync, 1)
+        const externalEventStep = reporter?.createStep(SyncStep.ExternalEventSync, 1)
 
-        const downloadingStep = reporter?.newStep(SyncStep.ExternalEventSyncDownloading)
+        const downloadingStep = reporter?.createStep(SyncStep.ExternalEventSyncDownloading)
         const paginatorCallback = reporter
             ? (percentage: number) => downloadingStep?.manualReport(percentage)
             : undefined

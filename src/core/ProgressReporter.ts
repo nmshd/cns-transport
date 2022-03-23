@@ -1,38 +1,8 @@
 export class ProgressReporter<T extends string> {
-    private readonly steps: Record<string, ProgressReporterStep<T> | undefined> = {}
-
     public constructor(private readonly callback: (currentPercentage: number, currentStep: T) => void) {}
 
-    public newStep(stepName: T, totalNumberOfItemsInStep = -1): ProgressReporterStep<T> {
-        return this.addNewStep(stepName, totalNumberOfItemsInStep)
-    }
-
-    public getStep(stepName: T): ProgressReporterStep<T> {
-        const step = this.steps[stepName]
-        if (!step) {
-            throw new Error(
-                `No step with name '${stepName}' was found. Create the step using 'newStelp()' or 'step()'.`
-            )
-        }
-
-        return step
-    }
-
-    public step(stepName: T, totalNumberOfItemsInStep?: number): ProgressReporterStep<T> {
-        const step = this.steps[stepName]
-        if (step) return step
-        if (!totalNumberOfItemsInStep) {
-            throw new Error(
-                `No step with name '${stepName}' was found and parameter 'totalNumberOfItemsInStep' was not provided => cannot create a new step`
-            )
-        }
-        return this.addNewStep(stepName, totalNumberOfItemsInStep)
-    }
-
-    private addNewStep(step: T, totalNumberOfItemsInStep: number) {
-        const newStep = new ProgressReporterStep(step, totalNumberOfItemsInStep, this.callback)
-        this.steps[step] = newStep
-        return newStep
+    public createStep(stepName: T, totalNumberOfItemsInStep = -1): ProgressReporterStep<T> {
+        return new ProgressReporterStep(stepName, totalNumberOfItemsInStep, this.callback)
     }
 }
 export class ProgressReporterStep<T extends string> {

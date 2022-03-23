@@ -20,7 +20,7 @@ export class ExternalEventsProcessor {
         reporter?: SyncProgressReporter
     ) {
         this.log = TransportLoggerFactory.getLogger(ExternalEventsProcessor)
-        this.syncStep = reporter?.newStep(SyncStep.ExternalEventsProcessing, externalEvents.length)
+        this.syncStep = reporter?.createStep(SyncStep.ExternalEventsProcessing, externalEvents.length)
     }
 
     public async execute(): Promise<void> {

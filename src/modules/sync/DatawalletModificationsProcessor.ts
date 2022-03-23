@@ -45,7 +45,7 @@ export class DatawalletModificationsProcessor {
         this.cacheChanges = modificationsGroupedByType[DatawalletModificationType.CacheChanged] ?? []
 
         const totalItems = this.creates.length + this.updates.length + this.deletes.length + this.cacheChanges.length
-        this.syncStep = reporter?.newStep(SyncStep.DatawalletSyncProcessing, totalItems)
+        this.syncStep = reporter?.createStep(SyncStep.DatawalletSyncProcessing, totalItems)
     }
 
     private readonly collectionsWithCacheableItems: string[] = [
