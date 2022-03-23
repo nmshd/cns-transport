@@ -10,7 +10,7 @@ import { IConfig } from "../../core"
 import { TransportLoggerFactory } from "../TransportLoggerFactory"
 import { CoreId } from "../types"
 import { ClientResult } from "./ClientResult"
-import { IPaginationDataSource, Paginator } from "./Paginator"
+import { IPaginationDataSource, Paginator, PaginatorPercentageCallback } from "./Paginator"
 import { PlatformParameters } from "./PlatformParameters"
 import { PaginatedPlatformResponse, PlatformResponse } from "./PlatformResponse"
 import { RequestError } from "./RequestError"
@@ -280,7 +280,8 @@ export class RESTClient {
         path: string,
         response: AxiosResponse<PaginatedPlatformResponse<T[]> | undefined>,
         requestId: string,
-        args: any
+        args: any,
+        progessCallback?: PaginatorPercentageCallback
     ): ClientResult<Paginator<T>> {
         const platformParameters: PlatformParameters = {
             requestTime: response.headers["x-request-time"],
@@ -355,7 +356,12 @@ export class RESTClient {
         }
 
         const paginationDataSource = new RestPaginationDataSource<T>(this, path, args)
-        const paginator = new Paginator<T>(response.data.result, response.data.pagination, paginationDataSource)
+        const paginator = new Paginator<T>(
+            response.data.result,
+            response.data.pagination,
+            paginationDataSource,
+            progessCallback
+        )
 
         return ClientResult.ok<Paginator<T>>(paginator, platformParameters)
     }
@@ -385,14 +391,15 @@ export class RESTClient {
     public async getPaged<T>(
         path: string,
         params: any = {},
-        config?: AxiosRequestConfig
+        config?: AxiosRequestConfig,
+        progessCallback?: PaginatorPercentageCallback
     ): Promise<ClientResult<Paginator<T>>> {
         const id = await this.generateRequestId()
         const conf = _.defaultsDeep({ params: params }, config, this.requestConfig)
 
         try {
             const response = await this.createAxios().get<PlatformResponse<T[]>>(path, conf)
-            return this.getPaginator(path, response, id, params)
+            return this.getPaginator(path, response, id, params, progessCallback)
         } catch (e) {
             const err = RequestError.fromAxiosError("GET", path, e, id)
             this._logger.debug(err)

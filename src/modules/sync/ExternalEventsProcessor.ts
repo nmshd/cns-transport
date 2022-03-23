@@ -5,18 +5,22 @@ import { RelationshipsController } from "../relationships/RelationshipsControlle
 import { BackboneExternalEvent } from "./backbone/BackboneExternalEvent"
 import { FinalizeSyncRunRequestExternalEventResult } from "./backbone/FinalizeSyncRun"
 import { ChangedItems } from "./ChangedItems"
+import { SyncProgressReporter, SyncProgressReporterStep, SyncStep } from "./SyncCallback"
 
 export class ExternalEventsProcessor {
     private readonly log: ILogger
     public readonly changedItems: ChangedItems = new ChangedItems()
     public readonly results: FinalizeSyncRunRequestExternalEventResult[] = []
+    private readonly syncStep: SyncProgressReporterStep
 
     public constructor(
         private readonly messagesController: MessageController,
         private readonly relationshipsController: RelationshipsController,
-        private readonly externalEvents: BackboneExternalEvent[]
+        private readonly externalEvents: BackboneExternalEvent[],
+        reporter: SyncProgressReporter
     ) {
         this.log = TransportLoggerFactory.getLogger(ExternalEventsProcessor)
+        this.syncStep = reporter.createStep(SyncStep.ExternalEventsProcessing, externalEvents.length)
     }
 
     public async execute(): Promise<void> {
@@ -58,6 +62,8 @@ export class ExternalEventsProcessor {
                     externalEventId: externalEvent.id,
                     errorCode: errorCode
                 })
+            } finally {
+                this.syncStep.progress()
             }
         }
     }

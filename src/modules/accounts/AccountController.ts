@@ -27,6 +27,7 @@ import { RelationshipSecretController } from "../relationships/RelationshipSecre
 import { RelationshipTemplateController } from "../relationshipTemplates/RelationshipTemplateController"
 import { SecretController } from "../secrets/SecretController"
 import { ChangedItems } from "../sync/ChangedItems"
+import { SyncProgressCallback, SyncProgressReporter } from "../sync/SyncCallback"
 import { SyncController } from "../sync/SyncController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
 import { TokenController } from "../tokens/TokenController"
@@ -221,16 +222,18 @@ export class AccountController {
         await this.syncDatawallet()
     }
 
-    public async syncDatawallet(force = false): Promise<void> {
+    public async syncDatawallet(force = false, syncProgressCallback?: SyncProgressCallback): Promise<void> {
         if (!force && !this.autoSync) {
             return
         }
 
-        return await this.synchronization.sync("OnlyDatawallet")
+        const reporter = SyncProgressReporter.fromCallback(syncProgressCallback)
+        return await this.synchronization.sync("OnlyDatawallet", reporter)
     }
 
-    public async syncEverything(): Promise<ChangedItems> {
-        return await this.synchronization.sync("Everything")
+    public async syncEverything(syncProgressCallback?: SyncProgressCallback): Promise<ChangedItems> {
+        const reporter = SyncProgressReporter.fromCallback(syncProgressCallback)
+        return await this.synchronization.sync("Everything", reporter)
     }
 
     public async getLastCompletedSyncTime(): Promise<CoreDate | undefined> {

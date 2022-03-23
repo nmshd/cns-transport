@@ -1,4 +1,4 @@
-import { IConfig, Paginator, RESTClientAuthenticate } from "../../../core"
+import { IConfig, Paginator, PaginatorPercentageCallback, RESTClientAuthenticate } from "../../../core"
 import { Authenticator } from "../../../core/backbone/Authenticator"
 import { ClientResult } from "../../../core/backbone/ClientResult"
 import { BackboneDatawalletModification } from "./BackboneDatawalletModification"
@@ -35,12 +35,16 @@ export interface ISyncClient {
         request: FinalizeDatawalletVersionUpgradeRequest
     ): Promise<ClientResult<FinalizeDatawalletVersionUpgradeResponse>>
 
-    getExternalEventsOfSyncRun(syncRunId: string): Promise<ClientResult<Paginator<BackboneExternalEvent>>>
+    getExternalEventsOfSyncRun(
+        syncRunId: string,
+        progessCallback?: PaginatorPercentageCallback
+    ): Promise<ClientResult<Paginator<BackboneExternalEvent>>>
 
     getDatawallet(): Promise<ClientResult<GetDatawalletResponse>>
 
     getDatawalletModifications(
-        request: GetDatawalletModificationsRequest
+        request: GetDatawalletModificationsRequest,
+        progessCallback?: PaginatorPercentageCallback
     ): Promise<ClientResult<Paginator<BackboneDatawalletModification>>>
 
     createDatawalletModifications(
@@ -82,9 +86,15 @@ export class SyncClient extends RESTClientAuthenticate implements ISyncClient {
     }
 
     public async getExternalEventsOfSyncRun(
-        syncRunId: string
+        syncRunId: string,
+        progessCallback?: PaginatorPercentageCallback
     ): Promise<ClientResult<Paginator<BackboneExternalEvent>>> {
-        return await this.getPaged<BackboneExternalEvent>(`/api/v1/SyncRuns/${syncRunId}/ExternalEvents`, {})
+        return await this.getPaged<BackboneExternalEvent>(
+            `/api/v1/SyncRuns/${syncRunId}/ExternalEvents`,
+            {},
+            undefined,
+            progessCallback
+        )
     }
 
     public async getDatawallet(): Promise<ClientResult<GetDatawalletResponse>> {
@@ -92,9 +102,15 @@ export class SyncClient extends RESTClientAuthenticate implements ISyncClient {
     }
 
     public async getDatawalletModifications(
-        request: GetDatawalletModificationsRequest
+        request: GetDatawalletModificationsRequest,
+        progessCallback?: PaginatorPercentageCallback
     ): Promise<ClientResult<Paginator<BackboneDatawalletModification>>> {
-        return await this.getPaged<BackboneDatawalletModification>("/api/v1/Datawallet/Modifications", request)
+        return await this.getPaged<BackboneDatawalletModification>(
+            "/api/v1/Datawallet/Modifications",
+            request,
+            undefined,
+            progessCallback
+        )
     }
 
     public async createDatawalletModifications(

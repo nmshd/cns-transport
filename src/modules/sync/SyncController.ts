@@ -24,6 +24,7 @@ import { ExternalEventsProcessor } from "./ExternalEventsProcessor"
 import { DatawalletModification } from "./local/DatawalletModification"
 import { DeviceMigrations } from "./migrations/DeviceMigrations"
 import { IdentityMigrations } from "./migrations/IdentityMigrations"
+import { SyncProgressReporter, SyncStep } from "./SyncCallback"
 import { WhatToSync } from "./WhatToSync"
 
 export class SyncController extends TransportController {
@@ -72,40 +73,46 @@ export class SyncController extends TransportController {
     private currentSyncRun?: BackboneSyncRun
 
     // TODO: JSSNMSHDD-2475 (return changed items from syncDatawallet)
-    public async sync(): Promise<ChangedItems>
-    public async sync(whatToSync: "OnlyDatawallet"): Promise<void>
-    public async sync(whatToSync: "Everything"): Promise<ChangedItems>
-    public async sync(whatToSync: WhatToSync): Promise<ChangedItems | void>
-    public async sync(whatToSync: WhatToSync = "Everything"): Promise<ChangedItems | void> {
+    public async sync(whatToSync: "OnlyDatawallet", reporter: SyncProgressReporter): Promise<void>
+    public async sync(whatToSync: "Everything", reporter: SyncProgressReporter): Promise<ChangedItems>
+    public async sync(whatToSync: WhatToSync, reporter: SyncProgressReporter): Promise<ChangedItems | void>
+    public async sync(
+        whatToSync: WhatToSync = "Everything",
+        reporter: SyncProgressReporter
+    ): Promise<ChangedItems | void> {
         if (this.currentSync?.includes(whatToSync)) {
             return await this.currentSync.promise
         }
 
         if (this.currentSync && !this.currentSync.includes(whatToSync)) {
             await this.currentSync.promise
-            return await this.sync(whatToSync)
+            return await this.sync(whatToSync, reporter)
         }
 
-        const syncPromise = this._sync(whatToSync)
+        const syncPromise = this._sync(whatToSync, reporter)
         this.currentSync = new LocalSyncRun(syncPromise, whatToSync)
 
         try {
             return await this.currentSync.promise
         } finally {
             if (this.datawalletEnabled && (await this.unpushedDatawalletModifications.exists())) {
-                await this.syncDatawallet().catch((e) => this.log.error(e))
+                await this.syncDatawallet(reporter).catch((e) => this.log.error(e))
             }
 
             this.currentSync = undefined
         }
     }
 
-    private async _sync(whatToSync: WhatToSync): Promise<ChangedItems | void> {
+    private async _sync(whatToSync: WhatToSync, reporter: SyncProgressReporter): Promise<ChangedItems | void> {
+        const syncStep = reporter.createStep(SyncStep.Sync, 1)
+
         if (whatToSync === "OnlyDatawallet") {
-            return await this.syncDatawallet()
+            const value = await this.syncDatawallet(reporter)
+            syncStep.finish()
+            return value
         }
 
-        const externalEventSyncResult = await this.syncExternalEvents()
+        const externalEventSyncResult = await this.syncExternalEvents(reporter)
 
         await this.setLastCompletedSyncTime()
 
@@ -119,29 +126,31 @@ export class SyncController extends TransportController {
             ).logWith(this.log)
         }
 
+        syncStep.finish()
+
         return externalEventSyncResult.changedItems
     }
 
-    private async syncExternalEvents(): Promise<{
+    private async syncExternalEvents(reporter: SyncProgressReporter): Promise<{
         externalEventResults: FinalizeSyncRunRequestExternalEventResult[]
         changedItems: ChangedItems
     }> {
         const syncRunWasStarted = await this.startExternalEventsSyncRun()
         if (!syncRunWasStarted) {
-            await this.syncDatawallet()
+            await this.syncDatawallet(reporter)
             return {
                 changedItems: new ChangedItems(),
                 externalEventResults: []
             }
         }
 
-        await this.applyIncomingDatawalletModifications()
-        const result = await this.applyIncomingExternalEvents()
+        await this.applyIncomingDatawalletModifications(reporter)
+        const result = await this.applyIncomingExternalEvents(reporter)
         await this.finalizeExternalEventsSyncRun(result.externalEventResults)
         return result
     }
 
-    private async syncDatawallet() {
+    private async syncDatawallet(reporter: SyncProgressReporter) {
         if (!this.datawalletEnabled) {
             return
         }
@@ -161,7 +170,7 @@ export class SyncController extends TransportController {
         this.log.trace("Synchronization of Datawallet events started...")
 
         try {
-            await this.applyIncomingDatawalletModifications()
+            await this.applyIncomingDatawalletModifications(reporter)
             await this.pushLocalDatawalletModifications()
 
             await this.setLastCompletedDatawalletSyncTime()
@@ -269,17 +278,25 @@ export class SyncController extends TransportController {
         }
     }
 
-    private async applyIncomingDatawalletModifications() {
-        const getDatawalletModificationsResult = await this.client.getDatawalletModifications({
-            localIndex: await this.getLocalDatawalletModificationIndex()
-        })
+    private async applyIncomingDatawalletModifications(reporter: SyncProgressReporter) {
+        const datawalletSyncStep = reporter.createStep(SyncStep.DatawalletSync, 1)
+
+        const downloadingStep = reporter.createStep(SyncStep.DatawalletSyncDownloading)
+        const getDatawalletModificationsResult = await this.client.getDatawalletModifications(
+            { localIndex: await this.getLocalDatawalletModificationIndex() },
+            (percentage: number) => downloadingStep.manualReport(percentage)
+        )
 
         const encryptedIncomingModifications = await getDatawalletModificationsResult.value.collect()
         if (encryptedIncomingModifications.length === 0) {
+            datawalletSyncStep.finish()
             return
         }
 
-        const incomingModifications = await this.decryptDatawalletModifications(encryptedIncomingModifications)
+        const incomingModifications = await this.decryptDatawalletModifications(
+            encryptedIncomingModifications,
+            reporter
+        )
 
         this.log.trace(`${incomingModifications.length} incoming modifications found`)
 
@@ -287,7 +304,8 @@ export class SyncController extends TransportController {
             incomingModifications,
             this.cacheFetcher,
             this._db,
-            TransportLoggerFactory.getLogger(DatawalletModificationsProcessor)
+            TransportLoggerFactory.getLogger(DatawalletModificationsProcessor),
+            reporter
         )
 
         await datawalletModificationsProcessor.execute()
@@ -295,27 +313,49 @@ export class SyncController extends TransportController {
         this.log.trace(`${incomingModifications.length} incoming modifications executed`, incomingModifications)
 
         await this.updateLocalDatawalletModificationIndex(encryptedIncomingModifications.sort(descending)[0].index)
+
+        datawalletSyncStep.finish()
+    }
+
+    private async promiseAllWithProgess<T>(promises: Promise<T>[], callback: (percentage: number) => void) {
+        callback(0)
+
+        let processedItemCount = 0
+        for (const promise of promises) {
+            // eslint-disable-next-line no-loop-func,no-void
+            void promise.then(() => {
+                processedItemCount++
+
+                const percentage = Math.round((processedItemCount / promises.length) * 100)
+                callback(percentage)
+            })
+        }
+
+        return await Promise.all(promises)
     }
 
     private async decryptDatawalletModifications(
-        encryptedModifications: BackboneDatawalletModification[]
+        encryptedModifications: BackboneDatawalletModification[],
+        reporter: SyncProgressReporter
     ): Promise<DatawalletModification[]> {
-        const decryptedModifications: DatawalletModification[] = []
+        const promises = encryptedModifications.map((m) => this.decryptDatawalletModification(m))
+        const step = reporter.createStep(SyncStep.DatawalletSyncDecryption)
 
-        for (const encryptedModification of encryptedModifications) {
-            const decryptedPayload = await this.parent.activeDevice.secrets.decryptDatawalletModificationPayload(
-                encryptedModification.encryptedPayload,
-                encryptedModification.index
-            )
-            const decryptedModification = await DatawalletModificationMapper.fromBackboneDatawalletModification(
-                encryptedModification,
-                decryptedPayload,
-                this.config.supportedDatawalletVersion
-            )
-            decryptedModifications.push(decryptedModification)
-        }
+        return await this.promiseAllWithProgess(promises, (p: number) => step.manualReport(p))
+    }
 
-        return decryptedModifications
+    private async decryptDatawalletModification(encryptedModification: BackboneDatawalletModification) {
+        const decryptedPayload = await this.parent.activeDevice.secrets.decryptDatawalletModificationPayload(
+            encryptedModification.encryptedPayload,
+            encryptedModification.index
+        )
+        const decryptedModification = await DatawalletModificationMapper.fromBackboneDatawalletModification(
+            encryptedModification,
+            decryptedPayload,
+            this.config.supportedDatawalletVersion
+        )
+
+        return decryptedModification
     }
 
     private async pushLocalDatawalletModifications() {
@@ -399,8 +439,14 @@ export class SyncController extends TransportController {
         return this.currentSyncRun !== undefined
     }
 
-    private async applyIncomingExternalEvents() {
-        const getExternalEventsResult = await this.client.getExternalEventsOfSyncRun(this.currentSyncRun!.id.toString())
+    private async applyIncomingExternalEvents(reporter: SyncProgressReporter) {
+        const externalEventStep = reporter.createStep(SyncStep.ExternalEventsSync, 1)
+
+        const downloadingStep = reporter.createStep(SyncStep.ExternalEventsSyncDownloading)
+        const getExternalEventsResult = await this.client.getExternalEventsOfSyncRun(
+            this.currentSyncRun!.id.toString(),
+            (percentage: number) => downloadingStep.manualReport(percentage)
+        )
 
         if (getExternalEventsResult.isError) {
             throw getExternalEventsResult.error
@@ -411,9 +457,12 @@ export class SyncController extends TransportController {
         const externalEventProcessor = new ExternalEventsProcessor(
             this.parent.messages,
             this.parent.relationships,
-            externalEvents
+            externalEvents,
+            reporter
         )
         await externalEventProcessor.execute()
+
+        externalEventStep.finish()
 
         return {
             externalEventResults: externalEventProcessor.results,
