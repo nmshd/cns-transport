@@ -18,7 +18,7 @@ export class SyncControllerCallbackTest extends AbstractTest {
     public run(): void {
         const that = this
 
-        describe.only("SyncControllerCallback", function () {
+        describe("SyncControllerCallback", function () {
             let a1: AccountController | undefined
             let b1: AccountController | undefined
             let b2: AccountController | undefined
@@ -42,7 +42,6 @@ export class SyncControllerCallbackTest extends AbstractTest {
                     events.push({ percentage, process })
                 })
 
-                console.log(events)
                 expect(events).to.have.lengthOf(30)
 
                 const grouped = _.groupBy(events, "process")
