@@ -27,7 +27,7 @@ import { RelationshipSecretController } from "../relationships/RelationshipSecre
 import { RelationshipTemplateController } from "../relationshipTemplates/RelationshipTemplateController"
 import { SecretController } from "../secrets/SecretController"
 import { ChangedItems } from "../sync/ChangedItems"
-import { SyncPercentageCallback } from "../sync/SyncCallback"
+import { SyncPercentageCallback, SyncProgressReporter } from "../sync/SyncCallback"
 import { SyncController } from "../sync/SyncController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
 import { TokenController } from "../tokens/TokenController"
@@ -227,11 +227,13 @@ export class AccountController {
             return
         }
 
-        return await this.synchronization.sync("OnlyDatawallet", syncCallback)
+        const reporter = SyncProgressReporter.fromCallback(syncCallback)
+        return await this.synchronization.sync("OnlyDatawallet", reporter)
     }
 
     public async syncEverything(syncCallback?: SyncPercentageCallback): Promise<ChangedItems> {
-        return await this.synchronization.sync("Everything", syncCallback)
+        const reporter = SyncProgressReporter.fromCallback(syncCallback)
+        return await this.synchronization.sync("Everything", reporter)
     }
 
     public async getLastCompletedSyncTime(): Promise<CoreDate | undefined> {

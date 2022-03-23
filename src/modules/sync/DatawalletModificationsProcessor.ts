@@ -21,22 +21,21 @@ import { CachedToken } from "../tokens/local/CachedToken"
 import { Token } from "../tokens/local/Token"
 import { TokenController } from "../tokens/TokenController"
 import { DatawalletModification, DatawalletModificationType } from "./local/DatawalletModification"
-import { SyncPercentageCallback, SyncStep } from "./SyncCallback"
+import { SyncProgressReporter, SyncProgressReporterStep, SyncStep } from "./SyncCallback"
 
 export class DatawalletModificationsProcessor {
     private readonly creates: DatawalletModification[]
     private readonly updates: DatawalletModification[]
     private readonly deletes: DatawalletModification[]
     private readonly cacheChanges: DatawalletModification[]
-    private totalItems: number
-    private processedItemCount = 0
+    private readonly syncStep: SyncProgressReporterStep | undefined
 
     public constructor(
         modifications: DatawalletModification[],
         private readonly cacheFetcher: CacheFetcher,
         private readonly collectionProvider: IDatabaseCollectionProvider,
         private readonly logger: ILogger,
-        private readonly syncCallback?: SyncPercentageCallback
+        reporter?: SyncProgressReporter
     ) {
         const modificationsGroupedByType = _.groupBy(modifications, (m) => m.type)
 
@@ -45,7 +44,8 @@ export class DatawalletModificationsProcessor {
         this.deletes = modificationsGroupedByType[DatawalletModificationType.Delete] ?? []
         this.cacheChanges = modificationsGroupedByType[DatawalletModificationType.CacheChanged] ?? []
 
-        this.totalItems = this.creates.length + this.updates.length + this.deletes.length + this.cacheChanges.length
+        const totalItems = this.creates.length + this.updates.length + this.deletes.length + this.cacheChanges.length
+        this.syncStep = reporter?.newStep(SyncStep.DatawalletSyncProcessing, totalItems)
     }
 
     private readonly collectionsWithCacheableItems: string[] = [
@@ -57,8 +57,6 @@ export class DatawalletModificationsProcessor {
     ]
 
     public async execute(): Promise<void> {
-        this.syncCallback?.(0, SyncStep.DatawalletSyncProcessing)
-
         await this.applyCreates()
         await this.applyUpdates()
         await this.applyCacheChanges()
@@ -66,9 +64,7 @@ export class DatawalletModificationsProcessor {
 
         // cache-fills are optimized by the backbone, so it is possible that the processedItemCount is
         // lower than the total number of items - in this case the 100% callback is triggered here
-        if (this.processedItemCount < this.totalItems) {
-            this.syncCallback?.(100, SyncStep.DatawalletSyncProcessing)
-        }
+        this.syncStep?.finishIfNotFinished()
     }
 
     private async applyCreates() {
@@ -108,11 +104,11 @@ export class DatawalletModificationsProcessor {
                 })
 
                 this.cacheChanges.push(modification)
-                this.totalItems++
+                this.syncStep?.incrementTotalNumberOfItems()
             }
 
             await targetCollection.create(newObject)
-            this.sendProgess()
+            this.syncStep?.progress()
         }
     }
 
@@ -133,7 +129,7 @@ export class DatawalletModificationsProcessor {
             const newObject = { ...oldObject.toJSON(), ...updateModification.payload }
 
             await targetCollection.update(oldDoc, newObject)
-            this.sendProgess()
+            this.syncStep?.progress()
         }
     }
 
@@ -215,7 +211,7 @@ export class DatawalletModificationsProcessor {
                 const item = await CoreSerializableAsync.fromT(itemDoc, constructorOfT)
                 item.setCache(c.cache)
                 await collection.update(itemDoc, item)
-                this.sendProgess()
+                this.syncStep?.progress()
             })
         )
     }
@@ -228,16 +224,8 @@ export class DatawalletModificationsProcessor {
         for (const deleteModification of this.deletes) {
             const targetCollection = await this.collectionProvider.getCollection(deleteModification.collection)
             await targetCollection.delete({ id: deleteModification.objectIdentifier })
-            this.sendProgess()
+            this.syncStep?.progress()
         }
-    }
-
-    private sendProgess() {
-        this.processedItemCount++
-        if (!this.syncCallback) return
-
-        const percentage = Math.round((this.processedItemCount / this.totalItems) * 100)
-        this.syncCallback(percentage, SyncStep.DatawalletSyncProcessing)
     }
 }
 

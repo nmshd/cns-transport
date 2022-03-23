@@ -5,25 +5,25 @@ import { RelationshipsController } from "../relationships/RelationshipsControlle
 import { BackboneExternalEvent } from "./backbone/BackboneExternalEvent"
 import { FinalizeSyncRunRequestExternalEventResult } from "./backbone/FinalizeSyncRun"
 import { ChangedItems } from "./ChangedItems"
-import { SyncPercentageCallback, SyncStep } from "./SyncCallback"
+import { SyncProgressReporter, SyncProgressReporterStep, SyncStep } from "./SyncCallback"
 
 export class ExternalEventsProcessor {
     private readonly log: ILogger
     public readonly changedItems: ChangedItems = new ChangedItems()
     public readonly results: FinalizeSyncRunRequestExternalEventResult[] = []
-    private processedItemCount = 0
+    private readonly syncStep: SyncProgressReporterStep | undefined
 
     public constructor(
         private readonly messagesController: MessageController,
         private readonly relationshipsController: RelationshipsController,
         private readonly externalEvents: BackboneExternalEvent[],
-        private readonly syncCallback?: SyncPercentageCallback
+        reporter?: SyncProgressReporter
     ) {
         this.log = TransportLoggerFactory.getLogger(ExternalEventsProcessor)
+        this.syncStep = reporter?.newStep(SyncStep.ExternalEventsProcessing, externalEvents.length)
     }
 
     public async execute(): Promise<void> {
-        this.syncCallback?.(0, SyncStep.ExternalEventsProcessing)
         for (const externalEvent of this.externalEvents) {
             try {
                 switch (externalEvent.type) {
@@ -63,7 +63,7 @@ export class ExternalEventsProcessor {
                     errorCode: errorCode
                 })
             } finally {
-                this.sendProgess()
+                this.syncStep?.progress()
             }
         }
     }
@@ -97,13 +97,5 @@ export class ExternalEventsProcessor {
         const newMessagePayload = externalEvent.payload as { id: string }
         const newMessage = await this.messagesController.loadPeerMessage(CoreId.from(newMessagePayload.id))
         this.changedItems.addMessage(newMessage)
-    }
-
-    private sendProgess() {
-        this.processedItemCount++
-        if (!this.syncCallback) return
-
-        const percentage = Math.round((this.processedItemCount / this.externalEvents.length) * 100)
-        this.syncCallback(percentage, SyncStep.ExternalEventsProcessing)
     }
 }

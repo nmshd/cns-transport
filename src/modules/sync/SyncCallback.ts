@@ -1,4 +1,15 @@
+import { ProgressReporter, ProgressReporterStep } from "../../core"
+
 export type SyncPercentageCallback = (percentage: number, process: string) => void
+
+export class SyncProgressReporter extends ProgressReporter<SyncStep> {
+    public static fromCallback(callback?: SyncPercentageCallback): SyncProgressReporter | undefined {
+        if (!callback) return
+
+        return new SyncProgressReporter(callback)
+    }
+}
+export class SyncProgressReporterStep extends ProgressReporterStep<SyncStep> {}
 
 export enum SyncStep {
     Sync = "sync",
