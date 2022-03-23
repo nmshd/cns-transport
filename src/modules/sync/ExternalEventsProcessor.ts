@@ -11,16 +11,16 @@ export class ExternalEventsProcessor {
     private readonly log: ILogger
     public readonly changedItems: ChangedItems = new ChangedItems()
     public readonly results: FinalizeSyncRunRequestExternalEventResult[] = []
-    private readonly syncStep: SyncProgressReporterStep | undefined
+    private readonly syncStep: SyncProgressReporterStep
 
     public constructor(
         private readonly messagesController: MessageController,
         private readonly relationshipsController: RelationshipsController,
         private readonly externalEvents: BackboneExternalEvent[],
-        reporter?: SyncProgressReporter
+        reporter: SyncProgressReporter
     ) {
         this.log = TransportLoggerFactory.getLogger(ExternalEventsProcessor)
-        this.syncStep = reporter?.createStep(SyncStep.ExternalEventsProcessing, externalEvents.length)
+        this.syncStep = reporter.createStep(SyncStep.ExternalEventsProcessing, externalEvents.length)
     }
 
     public async execute(): Promise<void> {
@@ -63,7 +63,7 @@ export class ExternalEventsProcessor {
                     errorCode: errorCode
                 })
             } finally {
-                this.syncStep?.progress()
+                this.syncStep.progress()
             }
         }
     }

@@ -1,5 +1,5 @@
 export class ProgressReporter<T extends string> {
-    public constructor(private readonly callback: (currentPercentage: number, currentStep: T) => void) {}
+    public constructor(private readonly callback?: (currentPercentage: number, currentStep: T) => void) {}
 
     public createStep(stepName: T, totalNumberOfItemsInStep = -1): ProgressReporterStep<T> {
         return new ProgressReporterStep(stepName, totalNumberOfItemsInStep, this.callback)
@@ -10,7 +10,7 @@ export class ProgressReporterStep<T extends string> {
     public constructor(
         public readonly name: T,
         private totalNumberOfItems: number,
-        private readonly callback: (currentPercentage: number, currentStep: T) => void
+        private readonly callback?: (currentPercentage: number, currentStep: T) => void
     ) {
         if (totalNumberOfItems > 0) this.progressTo(0)
     }
@@ -21,7 +21,7 @@ export class ProgressReporterStep<T extends string> {
 
     public progressTo(itemIndex: number): void {
         this.currentItem = itemIndex
-        this.callback(Math.round((itemIndex / this.totalNumberOfItems) * 100), this.name)
+        this.callback?.(Math.round((itemIndex / this.totalNumberOfItems) * 100), this.name)
     }
 
     public incrementTotalNumberOfItems(): void {
@@ -41,6 +41,6 @@ export class ProgressReporterStep<T extends string> {
     }
 
     public manualReport(percentage: number): void {
-        this.callback(percentage, this.name)
+        this.callback?.(percentage, this.name)
     }
 }

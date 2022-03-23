@@ -73,12 +73,12 @@ export class SyncController extends TransportController {
     private currentSyncRun?: BackboneSyncRun
 
     // TODO: JSSNMSHDD-2475 (return changed items from syncDatawallet)
-    public async sync(whatToSync: "OnlyDatawallet", reporter?: SyncProgressReporter): Promise<void>
-    public async sync(whatToSync: "Everything", reporter?: SyncProgressReporter): Promise<ChangedItems>
-    public async sync(whatToSync: WhatToSync, reporter?: SyncProgressReporter): Promise<ChangedItems | void>
+    public async sync(whatToSync: "OnlyDatawallet", reporter: SyncProgressReporter): Promise<void>
+    public async sync(whatToSync: "Everything", reporter: SyncProgressReporter): Promise<ChangedItems>
+    public async sync(whatToSync: WhatToSync, reporter: SyncProgressReporter): Promise<ChangedItems | void>
     public async sync(
         whatToSync: WhatToSync = "Everything",
-        reporter?: SyncProgressReporter
+        reporter: SyncProgressReporter
     ): Promise<ChangedItems | void> {
         if (this.currentSync?.includes(whatToSync)) {
             return await this.currentSync.promise
@@ -96,19 +96,19 @@ export class SyncController extends TransportController {
             return await this.currentSync.promise
         } finally {
             if (this.datawalletEnabled && (await this.unpushedDatawalletModifications.exists())) {
-                await this.syncDatawallet().catch((e) => this.log.error(e))
+                await this.syncDatawallet(reporter).catch((e) => this.log.error(e))
             }
 
             this.currentSync = undefined
         }
     }
 
-    private async _sync(whatToSync: WhatToSync, reporter?: SyncProgressReporter): Promise<ChangedItems | void> {
-        const syncStep = reporter?.createStep(SyncStep.Sync, 1)
+    private async _sync(whatToSync: WhatToSync, reporter: SyncProgressReporter): Promise<ChangedItems | void> {
+        const syncStep = reporter.createStep(SyncStep.Sync, 1)
 
         if (whatToSync === "OnlyDatawallet") {
             const value = await this.syncDatawallet(reporter)
-            syncStep?.finish()
+            syncStep.finish()
             return value
         }
 
@@ -126,12 +126,12 @@ export class SyncController extends TransportController {
             ).logWith(this.log)
         }
 
-        syncStep?.finish()
+        syncStep.finish()
 
         return externalEventSyncResult.changedItems
     }
 
-    private async syncExternalEvents(reporter?: SyncProgressReporter): Promise<{
+    private async syncExternalEvents(reporter: SyncProgressReporter): Promise<{
         externalEventResults: FinalizeSyncRunRequestExternalEventResult[]
         changedItems: ChangedItems
     }> {
@@ -150,7 +150,7 @@ export class SyncController extends TransportController {
         return result
     }
 
-    private async syncDatawallet(reporter?: SyncProgressReporter) {
+    private async syncDatawallet(reporter: SyncProgressReporter) {
         if (!this.datawalletEnabled) {
             return
         }
@@ -278,22 +278,18 @@ export class SyncController extends TransportController {
         }
     }
 
-    private async applyIncomingDatawalletModifications(reporter?: SyncProgressReporter) {
-        const datawalletSyncStep = reporter?.createStep(SyncStep.DatawalletSync, 1)
+    private async applyIncomingDatawalletModifications(reporter: SyncProgressReporter) {
+        const datawalletSyncStep = reporter.createStep(SyncStep.DatawalletSync, 1)
 
-        const downloadingStep = reporter?.createStep(SyncStep.DatawalletSyncDownloading)
-        const paginatorCallback = reporter
-            ? (percentage: number) => downloadingStep?.manualReport(percentage)
-            : undefined
-
+        const downloadingStep = reporter.createStep(SyncStep.DatawalletSyncDownloading)
         const getDatawalletModificationsResult = await this.client.getDatawalletModifications(
             { localIndex: await this.getLocalDatawalletModificationIndex() },
-            paginatorCallback
+            (percentage: number) => downloadingStep.manualReport(percentage)
         )
 
         const encryptedIncomingModifications = await getDatawalletModificationsResult.value.collect()
         if (encryptedIncomingModifications.length === 0) {
-            datawalletSyncStep?.finish()
+            datawalletSyncStep.finish()
             return
         }
 
@@ -318,7 +314,7 @@ export class SyncController extends TransportController {
 
         await this.updateLocalDatawalletModificationIndex(encryptedIncomingModifications.sort(descending)[0].index)
 
-        datawalletSyncStep?.finish()
+        datawalletSyncStep.finish()
     }
 
     private async promiseAllWithProgess<T>(promises: Promise<T>[], callback: (percentage: number) => void) {
@@ -340,12 +336,11 @@ export class SyncController extends TransportController {
 
     private async decryptDatawalletModifications(
         encryptedModifications: BackboneDatawalletModification[],
-        reporter?: SyncProgressReporter
+        reporter: SyncProgressReporter
     ): Promise<DatawalletModification[]> {
         const promises = encryptedModifications.map((m) => this.decryptDatawalletModification(m))
-        if (!reporter) return await Promise.all(promises)
-
         const step = reporter.createStep(SyncStep.DatawalletSyncDecryption)
+
         return await this.promiseAllWithProgess(promises, (p: number) => step.manualReport(p))
     }
 
@@ -444,16 +439,13 @@ export class SyncController extends TransportController {
         return this.currentSyncRun !== undefined
     }
 
-    private async applyIncomingExternalEvents(reporter?: SyncProgressReporter) {
-        const externalEventStep = reporter?.createStep(SyncStep.ExternalEventsSync, 1)
+    private async applyIncomingExternalEvents(reporter: SyncProgressReporter) {
+        const externalEventStep = reporter.createStep(SyncStep.ExternalEventsSync, 1)
 
-        const downloadingStep = reporter?.createStep(SyncStep.ExternalEventsSyncDownloading)
-        const paginatorCallback = reporter
-            ? (percentage: number) => downloadingStep?.manualReport(percentage)
-            : undefined
+        const downloadingStep = reporter.createStep(SyncStep.ExternalEventsSyncDownloading)
         const getExternalEventsResult = await this.client.getExternalEventsOfSyncRun(
             this.currentSyncRun!.id.toString(),
-            paginatorCallback
+            (percentage: number) => downloadingStep.manualReport(percentage)
         )
 
         if (getExternalEventsResult.isError) {
@@ -470,7 +462,7 @@ export class SyncController extends TransportController {
         )
         await externalEventProcessor.execute()
 
-        externalEventStep?.finish()
+        externalEventStep.finish()
 
         return {
             externalEventResults: externalEventProcessor.results,

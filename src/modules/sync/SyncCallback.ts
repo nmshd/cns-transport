@@ -3,9 +3,7 @@ import { ProgressReporter, ProgressReporterStep } from "../../core"
 export type SyncProgressCallback = (percentage: number, process: SyncStep) => void
 
 export class SyncProgressReporter extends ProgressReporter<SyncStep> {
-    public static fromCallback(callback?: SyncProgressCallback): SyncProgressReporter | undefined {
-        if (!callback) return
-
+    public static fromCallback(callback?: SyncProgressCallback): SyncProgressReporter {
         return new SyncProgressReporter(callback)
     }
 }
