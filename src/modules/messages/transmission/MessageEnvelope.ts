@@ -69,12 +69,12 @@ export class MessageEnvelope extends CoreSerializableAsync implements IMessageEn
         return obj
     }
 
-    public static async deserializeMap(value: any): Promise<Map<CoreAddress, CryptoCipher>> {
+    public static deserializeMap(value: any): Map<CoreAddress, CryptoCipher> {
         const obj: Map<CoreAddress, CryptoCipher> = new Map<CoreAddress, CryptoCipher>()
         for (const key in value) {
             const cipher: any = value[key]
             const serializedKey: CoreAddress = CoreAddress.deserialize(key)
-            const serializedValue: CryptoCipher = await CryptoCipher.deserialize(cipher)
+            const serializedValue: CryptoCipher = CryptoCipher.deserialize(cipher)
             obj.set(serializedKey, serializedValue)
         }
         return obj

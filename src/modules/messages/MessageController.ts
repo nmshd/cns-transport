@@ -165,7 +165,7 @@ export class MessageController extends TransportController {
 
         for (const recipient of response.recipients) {
             const sealedRecipient = await MessageEnvelopeRecipient.from({
-                encryptedKey: await CryptoCipher.fromBase64(recipient.encryptedKey),
+                encryptedKey: CryptoCipher.fromBase64(recipient.encryptedKey),
                 address: CoreAddress.from(recipient.address),
                 receivedAt: recipient.receivedAt ? CoreDate.from(recipient.receivedAt) : undefined,
                 receivedByDevice: recipient.receivedByDevice ? CoreId.from(recipient.receivedByDevice) : undefined
@@ -178,7 +178,7 @@ export class MessageController extends TransportController {
             createdAt: CoreDate.from(response.createdAt),
             createdBy: CoreAddress.from(response.createdBy),
             createdByDevice: CoreId.from(response.createdByDevice),
-            cipher: await CryptoCipher.fromBase64(response.body),
+            cipher: CryptoCipher.fromBase64(response.body),
             attachments: response.attachments,
             recipients: recipients
         })
@@ -338,7 +338,7 @@ export class MessageController extends TransportController {
         }
 
         const plaintextKeyBuffer = await this.secrets.decryptPeer(relationship.relationshipSecretId, ownKeyCipher, true)
-        const plaintextKey: CryptoSecretKey = await CryptoSecretKey.deserialize(plaintextKeyBuffer.toUtf8())
+        const plaintextKey: CryptoSecretKey = CryptoSecretKey.deserialize(plaintextKeyBuffer.toUtf8())
         const plaintextMessageBuffer: CoreBuffer = await CoreCrypto.decrypt(envelope.cipher, plaintextKey)
 
         const signedMessage: MessageSigned = await MessageSigned.deserialize(plaintextMessageBuffer.toUtf8())

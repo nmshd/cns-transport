@@ -105,7 +105,7 @@ export class FileController extends TransportController {
     }
 
     private async decryptFile(response: BackboneGetFilesResponse, secretKey: CryptoSecretKey) {
-        const cipher = await CryptoCipher.fromBase64(response.encryptedProperties)
+        const cipher = CryptoCipher.fromBase64(response.encryptedProperties)
         const plaintextMetadataBuffer = await CoreCrypto.decrypt(cipher, secretKey)
         const plaintextMetadata: FileMetadata = await FileMetadata.deserialize(plaintextMetadataBuffer.toUtf8())
 
@@ -266,7 +266,7 @@ export class FileController extends TransportController {
         }
         */
 
-        const cipher: CryptoCipher = await CryptoCipher.fromBase64(buffer.toBase64URL())
+        const cipher: CryptoCipher = CryptoCipher.fromBase64(buffer.toBase64URL())
         const decrypt = await CoreCrypto.decrypt(cipher, file.cache.cipherKey)
         const plaintextHashesMatch = await file.cache.plaintextHash.verify(decrypt, CryptoHashAlgorithm.SHA512)
 

@@ -22,7 +22,7 @@ export class IdentityGeneratorTest extends AbstractUnitTest {
                 it("should create a correct address object (test 0)", async function () {
                     const key = "tB9KFp/YqHrom3m5qUuZsd6l30DkaNjN14SxRw7YZuI="
                     const buf = CoreBuffer.fromBase64(key)
-                    const pk = await CryptoSignaturePublicKey.from({
+                    const pk = CryptoSignaturePublicKey.from({
                         publicKey: buf,
                         algorithm: CryptoSignatureAlgorithm.ECDSA_ED25519
                     })
@@ -89,7 +89,7 @@ export class IdentityGeneratorTest extends AbstractUnitTest {
                     for (let i = 0; i < 10; i++) {
                         const testcase = addresses[i]
                         const buf = CoreBuffer.fromBase64(testcase.publicKey)
-                        const pk = await CryptoSignaturePublicKey.from({
+                        const pk = CryptoSignaturePublicKey.from({
                             publicKey: buf,
                             algorithm: CryptoSignatureAlgorithm.ECDSA_ED25519
                         })

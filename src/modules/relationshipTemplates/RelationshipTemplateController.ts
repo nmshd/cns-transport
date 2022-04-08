@@ -171,7 +171,7 @@ export class RelationshipTemplateController extends TransportController {
         response: BackboneGetRelationshipTemplatesResponse,
         secretKey: CryptoSecretKey
     ) {
-        const cipher: CryptoCipher = await CryptoCipher.fromBase64(response.content)
+        const cipher: CryptoCipher = CryptoCipher.fromBase64(response.content)
         const signedTemplateBuffer: CoreBuffer = await this.secrets.decryptTemplate(cipher, secretKey)
 
         const signedTemplate = await RelationshipTemplateSigned.deserialize(signedTemplateBuffer.toUtf8())

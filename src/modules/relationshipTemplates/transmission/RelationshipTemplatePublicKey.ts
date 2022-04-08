@@ -46,22 +46,18 @@ export class RelationshipTemplatePublicKey extends CryptoExchangePublicKey imple
         return JSON.stringify(this.toJSON(verbose))
     }
 
-    public static async fromJSON(
-        value: IRelationshipTemplatePublicKeySerialized
-    ): Promise<RelationshipTemplatePublicKey> {
-        const key = await CryptoExchangePublicKey.fromJSON(value)
+    public static fromJSON(value: IRelationshipTemplatePublicKeySerialized): RelationshipTemplatePublicKey {
+        const key = CryptoExchangePublicKey.fromJSON(value)
 
         return new RelationshipTemplatePublicKey(CoreId.from(value.id), key.algorithm, key.publicKey)
     }
 
-    public static from(value: IRelationshipTemplatePublicKey): Promise<RelationshipTemplatePublicKey> {
-        return Promise.resolve(
-            new RelationshipTemplatePublicKey(CoreId.from(value.id), value.algorithm, value.publicKey)
-        )
+    public static from(value: IRelationshipTemplatePublicKey): RelationshipTemplatePublicKey {
+        return new RelationshipTemplatePublicKey(CoreId.from(value.id), value.algorithm, value.publicKey)
     }
 
-    public static async deserialize(value: string): Promise<RelationshipTemplatePublicKey> {
+    public static deserialize(value: string): RelationshipTemplatePublicKey {
         const obj = JSON.parse(value)
-        return await this.fromJSON(obj)
+        return this.fromJSON(obj)
     }
 }

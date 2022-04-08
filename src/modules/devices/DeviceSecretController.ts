@@ -212,7 +212,7 @@ export class DeviceSecretController extends TransportController {
             return undefined
         }
 
-        const payloadCipher = await CryptoCipher.fromBase64(payloadCipherBase64)
+        const payloadCipher = CryptoCipher.fromBase64(payloadCipherBase64)
 
         const privSync = await this.loadSecret(DeviceSecretType.IdentitySynchronizationMaster)
         if (!privSync || !(privSync.secret instanceof CryptoSecretKey)) {

@@ -139,7 +139,7 @@ export class CachedFile extends CoreSerializableAsync implements ICachedFile {
             expiresAt: CoreDate.from(backboneResponse.expiresAt),
             mimetype: metadata.mimetype,
             owner: CoreAddress.from(backboneResponse.owner),
-            ownerSignature: await CryptoSignature.fromBase64(backboneResponse.ownerSignature)
+            ownerSignature: CryptoSignature.fromBase64(backboneResponse.ownerSignature)
         })
     }
 }

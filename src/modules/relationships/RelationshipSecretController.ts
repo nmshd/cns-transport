@@ -69,7 +69,7 @@ export class RelationshipSecretController extends SecretController {
         )
         await this.storeSecret(secrets, relationshipSecretId.toString(), "")
 
-        const publicRequest = await secrets.toPublicRequest()
+        const publicRequest = secrets.toPublicRequest()
         return publicRequest
     }
 
@@ -108,7 +108,7 @@ export class RelationshipSecretController extends SecretController {
         if (!(secret.secret instanceof CryptoRelationshipSecrets)) {
             throw TransportErrors.secrets.wrongSecretType(secret.id.toString()).logWith(this._log)
         }
-        const publicResponse = await secret.secret.toPublicResponse()
+        const publicResponse = secret.secret.toPublicResponse()
         return publicResponse
     }
 

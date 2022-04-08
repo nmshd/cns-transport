@@ -27,7 +27,7 @@ export class ChallengeSigned extends CoreSerializableAsync implements IChallenge
     }
 
     public static async fromJSON(value: IChallengeSignedSerialized): Promise<ChallengeSigned> {
-        const signature = await CryptoSignature.fromBase64(value.signature)
+        const signature = CryptoSignature.fromBase64(value.signature)
 
         return await this.from({ signature: signature, challenge: value.challenge })
     }

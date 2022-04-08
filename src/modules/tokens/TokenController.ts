@@ -151,7 +151,7 @@ export class TokenController extends TransportController {
     }
 
     private async decryptToken(response: BackboneGetTokensResponse, secretKey: CryptoSecretKey) {
-        const cipher = await CryptoCipher.fromBase64(response.content)
+        const cipher = CryptoCipher.fromBase64(response.content)
         const plaintextTokenBuffer = await CoreCrypto.decrypt(cipher, secretKey)
         const plaintextTokenContent = await CoreSerializableAsync.deserializeUnknown(plaintextTokenBuffer.toUtf8())
 

@@ -24,7 +24,7 @@ export class AnonymousTokenController {
     public async loadPeerToken(id: CoreId, secretKey: CryptoSecretKey): Promise<Token> {
         const response = (await this.client.getToken(id.toString())).value
 
-        const cipher = await CryptoCipher.fromBase64(response.content)
+        const cipher = CryptoCipher.fromBase64(response.content)
         const plaintextTokenBuffer = await CoreCrypto.decrypt(cipher, secretKey)
         const plaintextTokenContent = await CoreSerializableAsync.deserializeUnknown(plaintextTokenBuffer.toUtf8())
 

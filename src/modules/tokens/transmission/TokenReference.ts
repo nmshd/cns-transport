@@ -35,7 +35,7 @@ export class TokenReference extends CoreSerializableAsync implements ITokenRefer
             const id = CoreId.from(splitted[0])
             const alg = parseInt(splitted[1])
             const key = splitted[2]
-            const secretKey = await CryptoSecretKey.from({
+            const secretKey = CryptoSecretKey.from({
                 algorithm: alg,
                 secretKey: CoreBuffer.fromBase64URL(key)
             })
