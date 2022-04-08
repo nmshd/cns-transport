@@ -92,31 +92,11 @@ export class TransportController {
         return Promise.resolve(this)
     }
 
-    protected async parseObject<T extends CoreSerializableAsync | CoreSerializable>(
-        value: Object,
-        type: new () => T
-    ): Promise<T> {
-        return await CoreSerializableAsync.fromT(value, type)
-    }
-
     protected async parseArray<T extends CoreSerializableAsync | CoreSerializable>(
-        value: Object[],
-        type: new () => T,
-        contentProperty?: string
+        values: Object[],
+        type: new () => T
     ): Promise<T[]> {
-        const parsePromises: Promise<T>[] = []
-        for (let i = 0, l = value.length; i < l; i++) {
-            if (contentProperty) {
-                const item: any = value[i]
-                if (item[contentProperty]) {
-                    parsePromises.push(this.parseObject(item[contentProperty], type))
-                } else {
-                    throw TransportErrors.controller.contentPropertyUndefined(contentProperty).logWith(this._log)
-                }
-            } else {
-                parsePromises.push(this.parseObject(value[i], type))
-            }
-        }
+        const parsePromises: Promise<T>[] = values.map((v) => (type as any).from(v, type))
         return await Promise.all(parsePromises)
     }
 }
