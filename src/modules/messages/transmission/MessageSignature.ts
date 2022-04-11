@@ -1,14 +1,14 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CryptoSignature, ICryptoSignature } from "@nmshd/crypto"
-import { CoreAddress, CoreSerializableAsync, ICoreAddress, ICoreSerializableAsync } from "../../../core"
+import { CoreAddress, CoreSerializable, ICoreAddress, ICoreSerializable } from "../../../core"
 
-export interface IMessageSignature extends ICoreSerializableAsync {
+export interface IMessageSignature extends ICoreSerializable {
     recipient: ICoreAddress
     signature: ICryptoSignature
 }
 
 @type("MessageSignature")
-export class MessageSignature extends CoreSerializableAsync implements IMessageSignature {
+export class MessageSignature extends CoreSerializable implements IMessageSignature {
     @validate()
     @serialize()
     public recipient: CoreAddress
@@ -17,7 +17,7 @@ export class MessageSignature extends CoreSerializableAsync implements IMessageS
     @serialize({ enforceString: true })
     public signature: CryptoSignature
 
-    public static async from(value: IMessageSignature): Promise<MessageSignature> {
-        return await super.fromT(value, MessageSignature)
+    public static from(value: IMessageSignature): MessageSignature {
+        return super.fromT(value, MessageSignature)
     }
 }

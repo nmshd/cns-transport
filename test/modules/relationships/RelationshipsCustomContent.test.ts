@@ -1,4 +1,4 @@
-import { JSONWrapperAsync, SerializableAsync } from "@js-soft/ts-serval"
+import { JSONWrapper, Serializable } from "@js-soft/ts-serval"
 import { AccountController, RelationshipChangeRequest, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest, TestUtil } from "../../testHelpers"
@@ -30,7 +30,7 @@ export class RelationshipsCustomContentTest extends AbstractTest {
             it("should create a relationship with custom content", async function () {
                 const tokenReference = await TestUtil.sendRelationshipTemplateAndToken(sender)
                 const template = await TestUtil.fetchRelationshipTemplateFromTokenReference(recipient, tokenReference)
-                const customContent = await SerializableAsync.from({
+                const customContent = Serializable.from({
                     content: "TestToken"
                 })
                 const relRecipient = await TestUtil.sendRelationship(recipient, template, customContent)
@@ -42,10 +42,10 @@ export class RelationshipsCustomContentTest extends AbstractTest {
                 expect(relRecipientRequest).instanceOf(RelationshipChangeRequest)
                 expect(relSenderRequest).instanceOf(RelationshipChangeRequest)
 
-                expect(relRecipientRequest.content).instanceOf(JSONWrapperAsync)
-                const recipientToken = relRecipientRequest.content as JSONWrapperAsync
-                expect(relSenderRequest.content).instanceOf(JSONWrapperAsync)
-                const senderToken = relSenderRequest.content as JSONWrapperAsync
+                expect(relRecipientRequest.content).instanceOf(JSONWrapper)
+                const recipientToken = relRecipientRequest.content as JSONWrapper
+                expect(relSenderRequest.content).instanceOf(JSONWrapper)
+                const senderToken = relSenderRequest.content as JSONWrapper
 
                 expect((recipientToken.toJSON() as any).content).equals("TestToken")
                 expect((senderToken.toJSON() as any).content).equals("TestToken")

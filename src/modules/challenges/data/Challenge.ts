@@ -1,7 +1,7 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreAddress, CoreDate, CoreId, CoreSerializableAsync, ICoreId, ICoreSerializableAsync } from "../../../core"
+import { CoreAddress, CoreDate, CoreId, CoreSerializable, ICoreId, ICoreSerializable } from "../../../core"
 
-export interface IChallenge extends ICoreSerializableAsync {
+export interface IChallenge extends ICoreSerializable {
     id: ICoreId
     expiresAt: CoreDate
     createdBy?: CoreAddress
@@ -16,7 +16,7 @@ export enum ChallengeType {
 }
 
 @type("Challenge")
-export class Challenge extends CoreSerializableAsync implements IChallenge {
+export class Challenge extends CoreSerializable implements IChallenge {
     @validate()
     @serialize()
     public id: CoreId
@@ -37,11 +37,11 @@ export class Challenge extends CoreSerializableAsync implements IChallenge {
     @serialize()
     public type: ChallengeType
 
-    public static async from(value: IChallenge): Promise<Challenge> {
-        return await super.fromT(value, Challenge)
+    public static from(value: IChallenge): Challenge {
+        return super.fromT(value, Challenge)
     }
 
-    public static async deserialize(value: string): Promise<Challenge> {
-        return await this.deserializeT(value, Challenge)
+    public static deserialize(value: string): Challenge {
+        return this.deserializeT(value, Challenge)
     }
 }

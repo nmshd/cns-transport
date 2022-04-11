@@ -5,16 +5,16 @@ import {
     ICryptoCipher,
     ICryptoRelationshipPublicRequest
 } from "@nmshd/crypto"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../../core"
+import { CoreSerializable, ICoreSerializable } from "../../../../core"
 
-export interface IRelationshipCreationChangeRequestCipher extends ICoreSerializableAsync {
+export interface IRelationshipCreationChangeRequestCipher extends ICoreSerializable {
     cipher: ICryptoCipher
     publicRequestCrypto: ICryptoRelationshipPublicRequest
 }
 
 @type("RelationshipCreationChangeRequestCipher")
 export class RelationshipCreationChangeRequestCipher
-    extends CoreSerializableAsync
+    extends CoreSerializable
     implements IRelationshipCreationChangeRequestCipher
 {
     @validate()
@@ -25,20 +25,18 @@ export class RelationshipCreationChangeRequestCipher
     @serialize()
     public publicRequestCrypto: CryptoRelationshipPublicRequest
 
-    public static async from(
-        value: IRelationshipCreationChangeRequestCipher
-    ): Promise<RelationshipCreationChangeRequestCipher> {
-        return await super.fromT(value, RelationshipCreationChangeRequestCipher)
+    public static from(value: IRelationshipCreationChangeRequestCipher): RelationshipCreationChangeRequestCipher {
+        return super.fromT(value, RelationshipCreationChangeRequestCipher)
     }
 
-    public static async fromBase64(value: string): Promise<RelationshipCreationChangeRequestCipher> {
-        return await super.fromBase64T<RelationshipCreationChangeRequestCipher>(
+    public static fromBase64(value: string): RelationshipCreationChangeRequestCipher {
+        return super.fromBase64T<RelationshipCreationChangeRequestCipher>(
             value,
             RelationshipCreationChangeRequestCipher
         )
     }
 
-    public static async deserialize(value: string): Promise<RelationshipCreationChangeRequestCipher> {
-        return await super.deserializeT(value, RelationshipCreationChangeRequestCipher)
+    public static deserialize(value: string): RelationshipCreationChangeRequestCipher {
+        return super.deserializeT(value, RelationshipCreationChangeRequestCipher)
     }
 }

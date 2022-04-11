@@ -1,32 +1,32 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreAddress, CoreSerializableAsync, ICoreAddress, ICoreSerializableAsync } from "../../../core"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreAddress, CoreSerializable, ICoreAddress, ICoreSerializable } from "../../../core"
 import { File, IFile } from "../../files/local/File"
 
-export interface ISendMessageParameters extends ICoreSerializableAsync {
+export interface ISendMessageParameters extends ICoreSerializable {
     recipients: ICoreAddress[]
-    content: ISerializableAsync
+    content: ISerializable
     attachments?: IFile[]
 }
 
 @type("SendMessageParameters")
-export class SendMessageParameters extends CoreSerializableAsync implements ISendMessageParameters {
+export class SendMessageParameters extends CoreSerializable implements ISendMessageParameters {
     @validate()
     @serialize({ type: CoreAddress })
     public recipients: CoreAddress[]
 
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
 
     @validate({ nullable: true })
     @serialize({ type: File })
     public attachments?: File[]
 
-    public static async from(value: ISendMessageParameters): Promise<SendMessageParameters> {
-        return await super.fromT(value, SendMessageParameters)
+    public static from(value: ISendMessageParameters): SendMessageParameters {
+        return super.fromT(value, SendMessageParameters)
     }
 
-    public static async deserialize(value: string): Promise<SendMessageParameters> {
-        return await super.deserializeT(value, SendMessageParameters)
+    public static deserialize(value: string): SendMessageParameters {
+        return super.deserializeT(value, SendMessageParameters)
     }
 }

@@ -52,12 +52,12 @@ export class RelationshipTemplate extends CoreSynchronizable implements IRelatio
     @serialize()
     public metadataModifiedAt?: CoreDate
 
-    public static async from(value: IRelationshipTemplate): Promise<RelationshipTemplate> {
-        return await super.fromT(value, RelationshipTemplate)
+    public static from(value: IRelationshipTemplate): RelationshipTemplate {
+        return super.fromT(value, RelationshipTemplate)
     }
 
-    public static async deserialize(value: string): Promise<RelationshipTemplate> {
-        return await super.deserializeT(value, RelationshipTemplate)
+    public static deserialize(value: string): RelationshipTemplate {
+        return super.deserializeT(value, RelationshipTemplate)
     }
 
     public setCache(cache: CachedRelationshipTemplate): this {

@@ -1,8 +1,8 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { CoreSerializable, ICoreSerializable } from "../../../core"
 import { IMessageSignature, MessageSignature } from "./MessageSignature"
 
-export interface IMessageSigned extends ICoreSerializableAsync {
+export interface IMessageSigned extends ICoreSerializable {
     signatures: IMessageSignature[]
     message: string
 }
@@ -11,7 +11,7 @@ export interface IMessageSigned extends ICoreSerializableAsync {
  * MessageSigned encapsulates the actual message with the senders digital signature.
  */
 @type("MessageSigned")
-export class MessageSigned extends CoreSerializableAsync {
+export class MessageSigned extends CoreSerializable {
     @validate()
     @serialize({ type: MessageSignature })
     public signatures: MessageSignature[]
@@ -20,12 +20,11 @@ export class MessageSigned extends CoreSerializableAsync {
     @serialize()
     public message: string
 
-    public static async from(value: IMessageSigned): Promise<MessageSigned> {
-        return await super.fromT(value, MessageSigned)
+    public static from(value: IMessageSigned): MessageSigned {
+        return super.fromT(value, MessageSigned)
     }
 
-    public static async deserialize(value: string): Promise<MessageSigned> {
-        const obj = JSON.parse(value)
-        return await this.from(obj)
+    public static deserialize(value: string): MessageSigned {
+        return super.deserializeT(value, MessageSigned)
     }
 }

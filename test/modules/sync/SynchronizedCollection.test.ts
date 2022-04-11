@@ -2,7 +2,7 @@ import { IDatabaseCollection } from "@js-soft/docdb-access-abstractions"
 import {
     CoreDate,
     CoreId,
-    CoreSerializableAsync,
+    CoreSerializable,
     DatawalletModification,
     DatawalletModificationCategory,
     DatawalletModificationType,
@@ -38,7 +38,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             })
 
             it("when inserting a new item, datawallet modifications are created for each category of data", async function () {
-                const newItem = await ASynchronizedCollectionItem.from({
+                const newItem = ASynchronizedCollectionItem.from({
                     id: await CoreId.generate(),
                     someTechnicalStringProperty: "SomeValue",
                     someMetadataStringProperty: "SomeValue",
@@ -82,7 +82,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             })
 
             it("when inserting a new cacheable item, a CacheChanged modification is created", async function () {
-                const newItem = await ACacheableSynchronizedCollectionItem.from({
+                const newItem = ACacheableSynchronizedCollectionItem.from({
                     id: await CoreId.generate(),
                     someTechnicalProperty: "SomeValue",
                     cache: { someCacheProperty: "cachedValue" },
@@ -103,7 +103,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             })
 
             it("when inserting a new non-cacheable item, no CacheChanged modification is created", async function () {
-                const newItem = await ASynchronizedCollectionItem.from({
+                const newItem = ASynchronizedCollectionItem.from({
                     id: await CoreId.generate(),
                     someTechnicalStringProperty: "SomeValue"
                 })
@@ -122,7 +122,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             })
 
             it("when updating a cacheable item with a changed cache, a CacheChanged modification is created", async function () {
-                const item = await ACacheableSynchronizedCollectionItem.from({
+                const item = ACacheableSynchronizedCollectionItem.from({
                     id: await CoreId.generate(),
                     someTechnicalProperty: "SomeValue",
                     cache: { someCacheProperty: "cachedValue" },
@@ -149,7 +149,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             })
 
             it("when updating a cacheable item without a changed cache, no CacheChanged modification is created", async function () {
-                const item = await ACacheableSynchronizedCollectionItem.from({
+                const item = ACacheableSynchronizedCollectionItem.from({
                     id: await CoreId.generate(),
                     someTechnicalProperty: "SomeValue",
                     cache: { someCacheProperty: "cachedValue" },
@@ -174,7 +174,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             })
 
             it("when updating a non-cacheable item, no CacheChanged modification is created", async function () {
-                const item = await ASynchronizedCollectionItem.from({
+                const item = ASynchronizedCollectionItem.from({
                     id: await CoreId.generate(),
                     someTechnicalStringProperty: "SomeValue"
                 })
@@ -197,7 +197,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             })
 
             it("when a inserting a new item, a datawallet modification for technical data is created", async function () {
-                const newItem = await ASynchronizedCollectionItem.from({
+                const newItem = ASynchronizedCollectionItem.from({
                     id: await CoreId.generate(),
                     someTechnicalStringProperty: "SomeValue",
                     someTechnicalNumberProperty: 1,
@@ -220,7 +220,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             })
 
             it("when a inserting a new item, a datawallet modification for metadata is created", async function () {
-                const newItem = await ASynchronizedCollectionItem.from({
+                const newItem = ASynchronizedCollectionItem.from({
                     id: await CoreId.generate(),
                     someMetadataStringProperty: "SomeValue",
                     someMetadataNumberProperty: 1,
@@ -243,7 +243,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             })
 
             it("when inserting a new item, a datawallet modification for userdata is created", async function () {
-                const newItem = await ASynchronizedCollectionItem.from({
+                const newItem = ASynchronizedCollectionItem.from({
                     id: await CoreId.generate(),
                     someUserdataStringProperty: "SomeValue",
                     someUserdataNumberProperty: 1,
@@ -268,7 +268,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
             it("when updating an item, should add every property of a category to the payload even if only one was changed", async function () {
                 const itemId = await CoreId.generate()
                 await synchronizedCollection.create(
-                    await ASynchronizedCollectionItem.from({
+                    ASynchronizedCollectionItem.from({
                         id: itemId,
                         someTechnicalBooleanProperty: false,
                         someTechnicalNumberProperty: 0,
@@ -277,7 +277,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
                 )
 
                 const itemDoc = await synchronizedCollection.read(itemId.toString())
-                const item = await CoreSerializableAsync.fromT(itemDoc, ASynchronizedCollectionItem)
+                const item = CoreSerializable.fromT(itemDoc, ASynchronizedCollectionItem)
 
                 item.someTechnicalBooleanProperty = true
                 await synchronizedCollection.update(itemDoc, item)
@@ -313,7 +313,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
                     }
                 ],
                 async function (params) {
-                    const newItem = await ASynchronizedCollectionItem.from({
+                    const newItem = ASynchronizedCollectionItem.from({
                         id: await CoreId.generate()
                     })
 

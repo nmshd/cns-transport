@@ -20,7 +20,7 @@ export class CertificateAuthorizationItem extends CertificateItem {
     @serialize()
     public authorization: string
 
-    public static async from(value: ICertificateAuthorizationItem): Promise<CertificateAuthorizationItem> {
-        return await super.fromT(value, CertificateAuthorizationItem)
+    public static from(value: ICertificateAuthorizationItem): CertificateAuthorizationItem {
+        return super.fromT(value, CertificateAuthorizationItem)
     }
 }

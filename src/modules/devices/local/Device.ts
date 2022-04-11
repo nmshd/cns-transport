@@ -106,7 +106,7 @@ export class Device extends CoreSynchronizable implements IDevice {
     @serialize()
     public datawalletVersion?: number
 
-    public static async from(value: IDevice): Promise<Device> {
-        return await super.fromT(value, Device)
+    public static from(value: IDevice): Device {
+        return super.fromT(value, Device)
     }
 }

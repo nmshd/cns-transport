@@ -302,7 +302,7 @@ export class AccountController {
             throw TransportErrors.identity.addressMismatch().logWith(this._log)
         }
 
-        const identity = await Identity.from({
+        const identity = Identity.from({
             address: CoreAddress.from(deviceResponse.address),
             realm: realm,
             publicKey: identityKeypair.publicKey
@@ -310,7 +310,7 @@ export class AccountController {
 
         const deviceId = CoreId.from(deviceResponse.device.id)
 
-        const device = await Device.from({
+        const device = Device.from({
             createdAt: CoreDate.from(deviceResponse.createdAt),
             createdByDevice: deviceId,
             id: deviceId,
@@ -328,7 +328,7 @@ export class AccountController {
         // Initialize required controllers
         await Promise.all([this.identity.init(identity), this.activeDevice.init(privBaseDevice, device)])
 
-        const deviceCredentials = await DeviceSecretCredentials.from({
+        const deviceCredentials = DeviceSecretCredentials.from({
             id: device.id,
             username: deviceResponse.device.username,
             password: devicePwdD1
@@ -362,7 +362,7 @@ export class AccountController {
             CoreCrypto.generateSecretKey()
         ])
 
-        const device = await Device.from({
+        const device = Device.from({
             id: deviceSharedSecret.id,
             name: deviceSharedSecret.name ? deviceSharedSecret.name : "",
             description: deviceSharedSecret.description ? deviceSharedSecret.name : "",
@@ -383,7 +383,7 @@ export class AccountController {
             this.activeDevice.init(privBaseDevice, device)
         ])
 
-        const deviceCredentials = await DeviceSecretCredentials.from({
+        const deviceCredentials = DeviceSecretCredentials.from({
             id: deviceSharedSecret.id,
             username: deviceSharedSecret.username,
             password: deviceSharedSecret.password

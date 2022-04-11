@@ -1,8 +1,8 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoSignature, CryptoSignaturePublicKey, ICryptoSignature } from "@nmshd/crypto"
-import { CoreCrypto, CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { CoreCrypto, CoreSerializable, ICoreSerializable } from "../../../core"
 
-export interface ICertificate extends ICoreSerializableAsync {
+export interface ICertificate extends ICoreSerializable {
     content: string
     signature: ICryptoSignature
 }
@@ -19,7 +19,7 @@ export interface ICertificate extends ICoreSerializableAsync {
  *
  */
 @type("Certificate")
-export class Certificate extends CoreSerializableAsync {
+export class Certificate extends CoreSerializable {
     @validate()
     @serialize()
     public content: string
@@ -28,12 +28,12 @@ export class Certificate extends CoreSerializableAsync {
     @serialize()
     public signature: CryptoSignature
 
-    public static async from(value: ICertificate): Promise<Certificate> {
-        return await super.fromT(value, Certificate)
+    public static from(value: ICertificate): Certificate {
+        return super.fromT(value, Certificate)
     }
 
-    public static async deserialize(value: string): Promise<Certificate> {
-        return await super.deserializeT(value, Certificate)
+    public static deserialize(value: string): Certificate {
+        return super.deserializeT(value, Certificate)
     }
 
     /**

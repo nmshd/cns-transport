@@ -61,7 +61,7 @@ export class FileControllerTest extends AbstractTest {
                 const content = CoreBuffer.fromUtf8("Test")
                 const sentFile = await TestUtil.uploadFile(sender, content)
 
-                const reference = (await sentFile.toFileReference()).truncate()
+                const reference = sentFile.toFileReference().truncate()
                 const receivedFile = await recipient.files.loadPeerFileByTruncated(reference)
                 tempId1 = sentFile.id
 
@@ -81,7 +81,7 @@ export class FileControllerTest extends AbstractTest {
                 const content = CoreBuffer.fromUtf8("Test2")
                 const sentFile = await TestUtil.uploadFile(sender, content)
 
-                const reference = (await sentFile.toFileReference()).truncate()
+                const reference = sentFile.toFileReference().truncate()
                 const receivedFile = await recipient.files.loadPeerFileByTruncated(reference)
                 tempId2 = sentFile.id
 
@@ -93,7 +93,7 @@ export class FileControllerTest extends AbstractTest {
                 const content = CoreBuffer.fromUtf8("Test3")
                 const sentFile = await TestUtil.uploadFile(sender, content)
 
-                const reference = (await sentFile.toFileReference()).truncate()
+                const reference = sentFile.toFileReference().truncate()
                 const receivedFile = await recipient.files.loadPeerFileByTruncated(reference)
 
                 expectValidFiles(sentFile, receivedFile, tempDate)

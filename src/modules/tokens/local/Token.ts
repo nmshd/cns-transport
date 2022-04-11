@@ -49,23 +49,23 @@ export class Token extends CoreSynchronizable implements IToken {
     @serialize()
     public metadataModifiedAt?: CoreDate
 
-    public static async from(value: IToken): Promise<Token> {
-        return await super.fromT(value, Token)
+    public static from(value: IToken): Token {
+        return super.fromT(value, Token)
     }
 
-    public static async deserialize(value: string): Promise<Token> {
-        return await super.deserializeT(value, Token)
+    public static deserialize(value: string): Token {
+        return super.deserializeT(value, Token)
     }
 
-    public async toTokenReference(): Promise<TokenReference> {
-        return await TokenReference.from({
+    public toTokenReference(): TokenReference {
+        return TokenReference.from({
             id: this.id,
             key: this.secretKey
         })
     }
 
-    public async truncate(): Promise<string> {
-        const tokenReference = await this.toTokenReference()
+    public truncate(): string {
+        const tokenReference = this.toTokenReference()
         return tokenReference.truncate()
     }
 

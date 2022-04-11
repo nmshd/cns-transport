@@ -1,4 +1,4 @@
-import { Serializable, SerializableAsync } from "@js-soft/ts-serval"
+import { Serializable } from "@js-soft/ts-serval"
 import {
     CoreBuffer,
     CryptoCipher,
@@ -152,7 +152,7 @@ export class RelationshipSecretController extends SecretController {
 
     public async encryptRequest(
         relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string | CoreBuffer
+        content: Serializable | string | CoreBuffer
     ): Promise<CryptoCipher> {
         const buffer = CoreUtil.toBuffer(content)
         const secrets = await this.getSecret(relationshipSecretId)
@@ -164,10 +164,7 @@ export class RelationshipSecretController extends SecretController {
         return await secrets.encryptRequest(buffer)
     }
 
-    public async encrypt(
-        relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string
-    ): Promise<CryptoCipher> {
+    public async encrypt(relationshipSecretId: CoreId, content: Serializable | string): Promise<CryptoCipher> {
         const buffer = CoreUtil.toBuffer(content)
         const secrets = await this.getSecret(relationshipSecretId)
 
@@ -226,7 +223,7 @@ export class RelationshipSecretController extends SecretController {
 
     public async sign(
         relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string | CoreBuffer
+        content: Serializable | string | CoreBuffer
     ): Promise<CryptoSignature> {
         const bufferToSign = CoreUtil.toBuffer(content)
         const secrets = await this.getSecret(relationshipSecretId)
@@ -235,7 +232,7 @@ export class RelationshipSecretController extends SecretController {
 
     public async verifyOwn(
         relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string | CoreBuffer,
+        content: Serializable | string | CoreBuffer,
         signature: CryptoSignature
     ): Promise<boolean> {
         const bufferToVerify = CoreUtil.toBuffer(content)
@@ -245,7 +242,7 @@ export class RelationshipSecretController extends SecretController {
 
     public async verifyPeer(
         relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string | CoreBuffer,
+        content: Serializable | string | CoreBuffer,
         signature: CryptoSignature
     ): Promise<boolean> {
         const bufferToVerify = CoreUtil.toBuffer(content)

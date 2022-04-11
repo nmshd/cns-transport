@@ -5,17 +5,17 @@ import {
     CoreDate,
     CoreHash,
     CoreId,
-    CoreSerializableAsync,
+    CoreSerializable,
     ICoreAddress,
     ICoreDate,
     ICoreHash,
     ICoreId,
-    ICoreSerializableAsync
+    ICoreSerializable
 } from "../../../core"
 import { BackboneGetFilesResponse } from "../backbone/BackboneGetFiles"
 import { FileMetadata } from "../transmission/FileMetadata"
 
-export interface ICachedFile extends ICoreSerializableAsync {
+export interface ICachedFile extends ICoreSerializable {
     title?: string
     filename: string
     filesize: number
@@ -38,7 +38,7 @@ export interface ICachedFile extends ICoreSerializableAsync {
 }
 
 @type("CachedFile")
-export class CachedFile extends CoreSerializableAsync implements ICachedFile {
+export class CachedFile extends CoreSerializable implements ICachedFile {
     @validate({ nullable: true })
     @serialize()
     public title?: string
@@ -111,15 +111,12 @@ export class CachedFile extends CoreSerializableAsync implements ICachedFile {
     @serialize()
     public deletedByDevice?: CoreId
 
-    public static async from(value: ICachedFile): Promise<CachedFile> {
-        return await super.fromT(value, CachedFile)
+    public static from(value: ICachedFile): CachedFile {
+        return super.fromT(value, CachedFile)
     }
 
-    public static async fromBackbone(
-        backboneResponse: BackboneGetFilesResponse,
-        metadata: FileMetadata
-    ): Promise<CachedFile> {
-        return await CachedFile.from({
+    public static fromBackbone(backboneResponse: BackboneGetFilesResponse, metadata: FileMetadata): CachedFile {
+        return CachedFile.from({
             title: metadata.title,
             description: metadata.description,
             cipherKey: metadata.secretKey,

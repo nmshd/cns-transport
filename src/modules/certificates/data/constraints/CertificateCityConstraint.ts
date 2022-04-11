@@ -40,7 +40,7 @@ export class CertificateCityConstraint extends CertificateConstraint {
     @serialize()
     public zipCode: string
 
-    public static async from(value: ICertificateCityConstraint): Promise<CertificateCityConstraint> {
-        return await super.fromT(value, CertificateCityConstraint)
+    public static from(value: ICertificateCityConstraint): CertificateCityConstraint {
+        return super.fromT(value, CertificateCityConstraint)
     }
 }

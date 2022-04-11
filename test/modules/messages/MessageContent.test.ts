@@ -1,4 +1,4 @@
-import { ISerializableAsync, JSONWrapperAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
+import { ISerializable, JSONWrapper, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
 import { AccountController, CoreAddress, ICoreAddress, Transport } from "@nmshd/transport"
 import { expect } from "chai"
 import { TestUtil } from "../../core"
@@ -35,8 +35,8 @@ export class MessageContentTest extends AbstractTest {
 
             describe("Any Content", function () {
                 it("should send the message", async function () {
-                    const value: any = await SerializableAsync.from({ any: "content", submitted: true })
-                    expect(value).instanceOf(JSONWrapperAsync)
+                    const value: any = Serializable.from({ any: "content", submitted: true })
+                    expect(value).instanceOf(JSONWrapper)
                     await TestUtil.sendMessage(sender, recipient1, value)
                 })
                 it("should correctly store the message (sender)", async function () {
@@ -44,7 +44,7 @@ export class MessageContentTest extends AbstractTest {
                     expect(messages).lengthOf(1)
                     const message = messages[0]
                     const content = message.cache!.content as any
-                    expect(content).instanceOf(JSONWrapperAsync)
+                    expect(content).instanceOf(JSONWrapper)
                     expect(content.value.any).equals("content")
                     expect(content.value.submitted).equals(true)
                 })
@@ -66,7 +66,7 @@ export class MessageContentTest extends AbstractTest {
                     expect(messages).lengthOf(1)
                     const message = messages[0]
                     const content = message.cache!.content as any
-                    expect(content).instanceOf(JSONWrapperAsync)
+                    expect(content).instanceOf(JSONWrapper)
                     expect(content.value.any).equals("content")
                     expect(content.value.submitted).equals(true)
                 })
@@ -84,7 +84,7 @@ export class MessageContentTest extends AbstractTest {
 
             describe("Mail", function () {
                 it("should send the message", async function () {
-                    const value: Mail = await Mail.from({
+                    const value = Mail.from({
                         body: "Test",
                         subject: "Test Subject",
                         to: [recipient1.identity.address]
@@ -130,7 +130,7 @@ export class MessageContentTest extends AbstractTest {
     }
 }
 
-interface IMail extends ISerializableAsync {
+interface IMail extends ISerializable {
     to: ICoreAddress[]
     cc?: ICoreAddress[]
     subject: string
@@ -138,7 +138,7 @@ interface IMail extends ISerializableAsync {
 }
 
 @type("Mail")
-class Mail extends SerializableAsync implements IMail {
+class Mail extends Serializable implements IMail {
     @serialize({ type: CoreAddress })
     @validate()
     public to: CoreAddress[]
@@ -155,7 +155,7 @@ class Mail extends SerializableAsync implements IMail {
     @validate()
     public body: string
 
-    public static async from(value: IMail): Promise<Mail> {
+    public static from(value: IMail): Mail {
         if (typeof value.cc === "undefined") {
             value.cc = []
         }
@@ -163,7 +163,7 @@ class Mail extends SerializableAsync implements IMail {
             value.body = (value as any).content
             delete (value as any).content
         }
-        const obj: Mail = await super.fromT(value, Mail)
+        const obj: Mail = super.fromT(value, Mail)
         return obj
     }
 }

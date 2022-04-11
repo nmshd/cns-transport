@@ -1,4 +1,4 @@
-import { JSONWrapperAsync, SerializableAsync } from "@js-soft/ts-serval"
+import { JSONWrapper, Serializable } from "@js-soft/ts-serval"
 import { CoreBuffer } from "@nmshd/crypto"
 import {
     AccountController,
@@ -71,7 +71,7 @@ export class End2EndTest extends AbstractTest {
                     maxNumberOfRelationships: 1
                 })
 
-                const templateToken = await TokenContentRelationshipTemplate.from({
+                const templateToken = TokenContentRelationshipTemplate.from({
                     templateId: templateFrom.id,
                     secretKey: templateFrom.secretKey
                 })
@@ -82,7 +82,7 @@ export class End2EndTest extends AbstractTest {
                     ephemeral: false
                 })
 
-                const tokenRef = await token.truncate()
+                const tokenRef = token.truncate()
 
                 const receivedToken = await to.tokens.loadPeerTokenByTruncated(tokenRef, false)
 
@@ -95,8 +95,8 @@ export class End2EndTest extends AbstractTest {
                     receivedToken.cache!.content.secretKey
                 )
 
-                expect(templateTo.cache!.content).instanceOf(JSONWrapperAsync)
-                const templateContent = templateTo.cache!.content as JSONWrapperAsync
+                expect(templateTo.cache!.content).instanceOf(JSONWrapper)
+                const templateContent = templateTo.cache!.content as JSONWrapper
                 expect(templateContent.value).has.property("mycontent")
                 expect(templateContent.value.mycontent).equals("template")
 
@@ -109,7 +109,7 @@ export class End2EndTest extends AbstractTest {
                 })
                 const relationshipId = request.id
 
-                const templateRequestContent = request.cache!.template.cache!.content as JSONWrapperAsync
+                const templateRequestContent = request.cache!.template.cache!.content as JSONWrapper
                 expect(templateRequestContent.value).has.property("mycontent")
                 expect(templateRequestContent.value.mycontent).equals("template")
 
@@ -127,7 +127,7 @@ export class End2EndTest extends AbstractTest {
                 expect(pendingRelationship.cache!.template.id.toString()).to.equal(templateTo.id.toString())
                 expect(pendingRelationship.cache!.template.isOwn).to.equal(true)
 
-                const templateResponseContent = pendingRelationship.cache!.template.cache!.content as JSONWrapperAsync
+                const templateResponseContent = pendingRelationship.cache!.template.cache!.content as JSONWrapper
                 expect(templateResponseContent.value).has.property("mycontent")
                 expect(templateResponseContent.value.mycontent).equals("template")
 
@@ -152,7 +152,7 @@ export class End2EndTest extends AbstractTest {
                 )
 
                 const acceptedContentSelf = acceptedRelationshipFromSelf.cache!.creationChange.response?.content as any
-                expect(acceptedContentSelf).instanceOf(JSONWrapperAsync)
+                expect(acceptedContentSelf).instanceOf(JSONWrapper)
                 expect(acceptedContentSelf.value.mycontent).to.equal("acceptContent")
 
                 // Get accepted relationship
@@ -171,7 +171,7 @@ export class End2EndTest extends AbstractTest {
                 )
 
                 const acceptedContentPeer = acceptedRelationshipPeer.cache!.creationChange.response?.content as any
-                expect(acceptedContentPeer).instanceOf(JSONWrapperAsync)
+                expect(acceptedContentPeer).instanceOf(JSONWrapper)
                 expect(acceptedContentPeer.value.mycontent).to.equal("acceptContent")
             }).timeout(End2EndTest.maxTimeoutStep)
 
@@ -215,7 +215,7 @@ export class End2EndTest extends AbstractTest {
                     maxNumberOfRelationships: 1
                 })
 
-                const templateToken = await TokenContentRelationshipTemplate.from({
+                const templateToken = TokenContentRelationshipTemplate.from({
                     templateId: templateFrom.id,
                     secretKey: templateFrom.secretKey
                 })
@@ -226,7 +226,7 @@ export class End2EndTest extends AbstractTest {
                     ephemeral: false
                 })
 
-                const tokenRef = await token.truncate()
+                const tokenRef = token.truncate()
 
                 const receivedToken = await to.tokens.loadPeerTokenByTruncated(tokenRef, false)
 
@@ -239,8 +239,8 @@ export class End2EndTest extends AbstractTest {
                     receivedToken.cache!.content.secretKey
                 )
 
-                expect(templateTo.cache!.content).instanceOf(JSONWrapperAsync)
-                const templateContent = templateTo.cache!.content as JSONWrapperAsync
+                expect(templateTo.cache!.content).instanceOf(JSONWrapper)
+                const templateContent = templateTo.cache!.content as JSONWrapper
                 expect(templateContent.value).has.property("mycontent")
                 expect(templateContent.value.mycontent).equals("template")
 
@@ -252,7 +252,7 @@ export class End2EndTest extends AbstractTest {
                 })
                 const relationshipId = request.id
 
-                const templateRequestContent = request.cache!.template.cache!.content as JSONWrapperAsync
+                const templateRequestContent = request.cache!.template.cache!.content as JSONWrapper
                 expect(templateRequestContent.value).has.property("mycontent")
                 expect(templateRequestContent.value.mycontent).equals("template")
 
@@ -269,7 +269,7 @@ export class End2EndTest extends AbstractTest {
                 expect(pendingRelationship.cache!.template.id.toString()).to.equal(templateTo.id.toString())
                 expect(pendingRelationship.cache!.template.isOwn).to.equal(true)
 
-                const templateResponseContent = pendingRelationship.cache!.template.cache!.content as JSONWrapperAsync
+                const templateResponseContent = pendingRelationship.cache!.template.cache!.content as JSONWrapper
                 expect(templateResponseContent.value).has.property("mycontent")
                 expect(templateResponseContent.value.mycontent).equals("template")
 
@@ -294,7 +294,7 @@ export class End2EndTest extends AbstractTest {
                 )
 
                 const rejectionContentSelf = rejectedRelationshipFromSelf.cache!.creationChange.response?.content as any
-                expect(rejectionContentSelf).instanceOf(JSONWrapperAsync)
+                expect(rejectionContentSelf).instanceOf(JSONWrapper)
                 expect(rejectionContentSelf.value.mycontent).to.equal("rejectContent")
 
                 // Get accepted relationship
@@ -314,7 +314,7 @@ export class End2EndTest extends AbstractTest {
                 )
 
                 const rejectionContentPeer = rejectedRelationshipPeer.cache!.creationChange.response?.content as any
-                expect(rejectionContentPeer).instanceOf(JSONWrapperAsync)
+                expect(rejectionContentPeer).instanceOf(JSONWrapper)
                 expect(rejectionContentPeer.value.mycontent).to.equal("rejectContent")
             }).timeout(End2EndTest.maxTimeoutStep)
 
@@ -358,7 +358,7 @@ export class End2EndTest extends AbstractTest {
                     maxNumberOfRelationships: 1
                 })
 
-                const templateToken = await TokenContentRelationshipTemplate.from({
+                const templateToken = TokenContentRelationshipTemplate.from({
                     templateId: templateTemplator.id,
                     secretKey: templateTemplator.secretKey
                 })
@@ -369,7 +369,7 @@ export class End2EndTest extends AbstractTest {
                     ephemeral: false
                 })
 
-                const tokenRef = await token.truncate()
+                const tokenRef = token.truncate()
 
                 const receivedToken = await requestor.tokens.loadPeerTokenByTruncated(tokenRef, false)
 
@@ -382,8 +382,8 @@ export class End2EndTest extends AbstractTest {
                     receivedToken.cache!.content.secretKey
                 )
 
-                expect(templateRequestor.cache!.content).instanceOf(JSONWrapperAsync)
-                const templateContent = templateRequestor.cache!.content as JSONWrapperAsync
+                expect(templateRequestor.cache!.content).instanceOf(JSONWrapper)
+                const templateContent = templateRequestor.cache!.content as JSONWrapper
                 expect(templateContent.value).has.property("mycontent")
                 expect(templateContent.value.mycontent).equals("template")
 
@@ -394,7 +394,7 @@ export class End2EndTest extends AbstractTest {
                     }
                 })
 
-                const templateRequestContent = request.cache!.template.cache!.content as JSONWrapperAsync
+                const templateRequestContent = request.cache!.template.cache!.content as JSONWrapper
                 expect(templateRequestContent.value).has.property("mycontent")
                 expect(templateRequestContent.value.mycontent).equals("template")
 
@@ -415,7 +415,7 @@ export class End2EndTest extends AbstractTest {
                 expect(pendingRelationship.cache!.template.id.toString()).to.equal(templateRequestor.id.toString())
                 expect(pendingRelationship.cache!.template.isOwn).to.equal(true)
 
-                const templateResponseContent = pendingRelationship.cache!.template.cache!.content as JSONWrapperAsync
+                const templateResponseContent = pendingRelationship.cache!.template.cache!.content as JSONWrapper
                 expect(templateResponseContent.value).has.property("mycontent")
                 expect(templateResponseContent.value.mycontent).equals("template")
 
@@ -439,7 +439,7 @@ export class End2EndTest extends AbstractTest {
                     revokedRelationshipSelf.cache!.template.cache?.identity.address.toString()
                 )
                 const revocationContentSelf = revokedRelationshipSelf.cache!.creationChange.response?.content as any
-                expect(revocationContentSelf).instanceOf(JSONWrapperAsync)
+                expect(revocationContentSelf).instanceOf(JSONWrapper)
                 expect(revocationContentSelf.value.mycontent).to.equal("revokeContent")
 
                 // Get revoked relationship
@@ -456,7 +456,7 @@ export class End2EndTest extends AbstractTest {
                 )
 
                 const revocationContentPeer = revokedRelationshipPeer.cache!.creationChange.response?.content as any
-                expect(revocationContentPeer).instanceOf(JSONWrapperAsync)
+                expect(revocationContentPeer).instanceOf(JSONWrapper)
                 expect(revocationContentPeer.value.mycontent).to.equal("revokeContent")
             }).timeout(End2EndTest.maxTimeoutStep)
 
@@ -469,7 +469,7 @@ export class End2EndTest extends AbstractTest {
                     maxNumberOfRelationships: 1
                 })
 
-                const templateToken = await TokenContentRelationshipTemplate.from({
+                const templateToken = TokenContentRelationshipTemplate.from({
                     templateId: templateTemplator.id,
                     secretKey: templateTemplator.secretKey
                 })
@@ -480,11 +480,11 @@ export class End2EndTest extends AbstractTest {
                     ephemeral: false
                 })
 
-                const tokenRef = await token.truncate()
+                const tokenRef = token.truncate()
 
                 const receivedToken = await requestor.tokens.loadPeerTokenByTruncated(tokenRef, false)
 
-                const receivedTemplateToken = await TokenContentRelationshipTemplate.from(
+                const receivedTemplateToken = TokenContentRelationshipTemplate.from(
                     receivedToken.cache!.content as TokenContentRelationshipTemplate
                 )
 
@@ -493,8 +493,8 @@ export class End2EndTest extends AbstractTest {
                     receivedTemplateToken.secretKey
                 )
 
-                expect(templateRequestor.cache!.content).instanceOf(JSONWrapperAsync)
-                const templateContent = templateRequestor.cache!.content as JSONWrapperAsync
+                expect(templateRequestor.cache!.content).instanceOf(JSONWrapper)
+                const templateContent = templateRequestor.cache!.content as JSONWrapper
                 expect(templateContent.value).has.property("mycontent")
                 expect(templateContent.value.mycontent).equals("template")
 
@@ -514,7 +514,7 @@ export class End2EndTest extends AbstractTest {
                 )
                 expect(revokedRelationshipSelf.status).to.equal(RelationshipStatus.Revoked)
                 const revocationContentSelf = revokedRelationshipSelf.cache!.creationChange.response?.content as any
-                expect(revocationContentSelf).instanceOf(JSONWrapperAsync)
+                expect(revocationContentSelf).instanceOf(JSONWrapper)
                 expect(revocationContentSelf.value.mycontent).to.equal("revokeContent")
 
                 // Get revoked relationship
@@ -524,7 +524,7 @@ export class End2EndTest extends AbstractTest {
                 expect(revokedRelationshipPeer.status).to.equal(RelationshipStatus.Revoked)
 
                 const revocationContentPeer = revokedRelationshipPeer.cache!.creationChange.response?.content as any
-                expect(revocationContentPeer).instanceOf(JSONWrapperAsync)
+                expect(revocationContentPeer).instanceOf(JSONWrapper)
                 expect(revocationContentPeer.value.mycontent).to.equal("revokeContent")
             }).timeout(End2EndTest.maxTimeoutStep)
 
@@ -603,7 +603,7 @@ export class End2EndTest extends AbstractTest {
 
             it("should create a token and read it afterwards", async function () {
                 const token = await from.tokens.sendToken({
-                    content: await SerializableAsync.from({
+                    content: Serializable.from({
                         content: "someContent"
                     }),
                     expiresAt: CoreDate.utc().add({ minutes: 10 }),
@@ -649,9 +649,9 @@ export class End2EndTest extends AbstractTest {
                 const content: CoreBuffer = CoreBuffer.fromUtf8("abcd")
 
                 const file: File = await TestUtil.uploadFile(from, content)
-                const ref: any = (await file.toFileReference()).toJSON()
+                const ref: any = file.toFileReference().toJSON()
 
-                const parcelRef: FileReference = await FileReference.from(ref)
+                const parcelRef: FileReference = FileReference.from(ref)
 
                 const downloadedFile: File = await to.files.loadPeerFileByReference(parcelRef)
 
@@ -665,9 +665,9 @@ export class End2EndTest extends AbstractTest {
 
                 const file: File = await TestUtil.uploadFile(from, content)
 
-                const ref: any = (await file.toFileReference()).toJSON()
+                const ref: any = file.toFileReference().toJSON()
 
-                const parcelRef: FileReference = await FileReference.from(ref)
+                const parcelRef: FileReference = FileReference.from(ref)
 
                 const downloadedFile: File = await from.files.loadPeerFileByReference(parcelRef)
 

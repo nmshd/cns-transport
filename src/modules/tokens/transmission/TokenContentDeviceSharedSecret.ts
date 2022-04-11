@@ -1,22 +1,22 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { CoreSerializable, ICoreSerializable } from "../../../core"
 import { DeviceSharedSecret } from "../../devices/transmission/DeviceSharedSecret"
 
-export interface ITokenContentDeviceSharedSecret extends ICoreSerializableAsync {
+export interface ITokenContentDeviceSharedSecret extends ICoreSerializable {
     sharedSecret: DeviceSharedSecret
 }
 
 @type("TokenContentDeviceSharedSecret")
-export class TokenContentDeviceSharedSecret extends CoreSerializableAsync implements ITokenContentDeviceSharedSecret {
+export class TokenContentDeviceSharedSecret extends CoreSerializable implements ITokenContentDeviceSharedSecret {
     @validate()
     @serialize()
     public sharedSecret: DeviceSharedSecret
 
-    public static async from(value: ITokenContentDeviceSharedSecret): Promise<TokenContentDeviceSharedSecret> {
-        return await super.fromT(value, TokenContentDeviceSharedSecret)
+    public static from(value: ITokenContentDeviceSharedSecret): TokenContentDeviceSharedSecret {
+        return super.fromT(value, TokenContentDeviceSharedSecret)
     }
 
-    public static async deserialize(value: string): Promise<TokenContentDeviceSharedSecret> {
-        return await super.deserializeT(value, TokenContentDeviceSharedSecret)
+    public static deserialize(value: string): TokenContentDeviceSharedSecret {
+        return super.deserializeT(value, TokenContentDeviceSharedSecret)
     }
 }

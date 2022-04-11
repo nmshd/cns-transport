@@ -37,9 +37,7 @@ export class CertificatePrivateAttributeItemSource extends CertificateItem {
         return await CoreHash.hash(`${this.nonce}|${this.name}|${this.value}`)
     }
 
-    public static async from(
-        value: ICertificatePrivateAttributeItemSource
-    ): Promise<CertificatePrivateAttributeItemSource> {
-        return await super.fromT(value, CertificatePrivateAttributeItemSource)
+    public static from(value: ICertificatePrivateAttributeItemSource): CertificatePrivateAttributeItemSource {
+        return super.fromT(value, CertificatePrivateAttributeItemSource)
     }
 }

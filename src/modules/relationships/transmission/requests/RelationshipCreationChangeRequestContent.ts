@@ -1,16 +1,16 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreId, CoreSerializableAsync, ICoreId, ICoreSerializableAsync } from "../../../../core"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreId, CoreSerializable, ICoreId, ICoreSerializable } from "../../../../core"
 import { Identity, IIdentity } from "../../../accounts/data/Identity"
 
-export interface IRelationshipCreationChangeRequestContent extends ICoreSerializableAsync {
+export interface IRelationshipCreationChangeRequestContent extends ICoreSerializable {
     identity: IIdentity
-    content: ISerializableAsync
+    content: ISerializable
     templateId: ICoreId
 }
 
 @type("RelationshipCreationChangeRequestContent")
 export class RelationshipCreationChangeRequestContent
-    extends CoreSerializableAsync
+    extends CoreSerializable
     implements IRelationshipCreationChangeRequestContent
 {
     @validate()
@@ -19,19 +19,17 @@ export class RelationshipCreationChangeRequestContent
 
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
 
     @validate()
     @serialize()
     public templateId: CoreId
 
-    public static async from(
-        value: IRelationshipCreationChangeRequestContent
-    ): Promise<RelationshipCreationChangeRequestContent> {
-        return await super.fromT(value, RelationshipCreationChangeRequestContent)
+    public static from(value: IRelationshipCreationChangeRequestContent): RelationshipCreationChangeRequestContent {
+        return super.fromT(value, RelationshipCreationChangeRequestContent)
     }
 
-    public static async deserialize(value: string): Promise<RelationshipCreationChangeRequestContent> {
-        return await super.deserializeT(value, RelationshipCreationChangeRequestContent)
+    public static deserialize(value: string): RelationshipCreationChangeRequestContent {
+        return super.deserializeT(value, RelationshipCreationChangeRequestContent)
     }
 }

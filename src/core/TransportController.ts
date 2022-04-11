@@ -2,7 +2,6 @@ import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
 import { AccountController } from "../modules/accounts/AccountController"
 import { CoreSerializable } from "./CoreSerializable"
-import { CoreSerializableAsync } from "./CoreSerializableAsync"
 import { IConfig, Transport } from "./Transport"
 import { TransportErrors } from "./TransportErrors"
 import { TransportLoggerFactory } from "./TransportLoggerFactory"
@@ -92,7 +91,7 @@ export class TransportController {
         return Promise.resolve(this)
     }
 
-    protected async parseArray<T extends CoreSerializableAsync | CoreSerializable>(
+    protected async parseArray<T extends CoreSerializable | CoreSerializable>(
         values: Object[],
         type: new () => T
     ): Promise<T[]> {

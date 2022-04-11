@@ -64,7 +64,7 @@ export class SecretContainerCipher extends CoreSynchronizable implements ISecret
     @validate()
     public cipher: CryptoCipher
 
-    public static async from(value: ISecretContainerCipher): Promise<SecretContainerCipher> {
-        return await super.fromT(value, SecretContainerCipher)
+    public static from(value: ISecretContainerCipher): SecretContainerCipher {
+        return super.fromT(value, SecretContainerCipher)
     }
 }

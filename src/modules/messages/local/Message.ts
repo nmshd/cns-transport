@@ -57,8 +57,8 @@ export class Message extends CoreSynchronizable implements IMessage {
     @serialize({ type: CoreId })
     public relationshipIds: CoreId[]
 
-    public static async from(value: IMessage): Promise<Message> {
-        return await super.fromT(value, Message)
+    public static from(value: IMessage): Message {
+        return super.fromT(value, Message)
     }
 
     public setCache(cache: CachedMessage): this {

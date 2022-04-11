@@ -1,8 +1,8 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreId, CoreSerializableAsync, ICoreSerializableAsync } from "@nmshd/transport"
+import { CoreId, CoreSerializable, ICoreSerializable } from "@nmshd/transport"
 import { nameof } from "ts-simple-nameof"
 
-export interface IACollectionItem extends ICoreSerializableAsync {
+export interface IACollectionItem extends ICoreSerializable {
     id: CoreId
 
     someTechnicalStringProperty?: string
@@ -13,7 +13,7 @@ export interface IACollectionItem extends ICoreSerializableAsync {
 }
 
 @type("ACollectionItem")
-export class ACollectionItem extends CoreSerializableAsync implements IACollectionItem {
+export class ACollectionItem extends CoreSerializable implements IACollectionItem {
     public readonly technicalProperties = [
         nameof<ACollectionItem>((r) => r.someTechnicalStringProperty),
         "@type",
@@ -38,7 +38,7 @@ export class ACollectionItem extends CoreSerializableAsync implements IACollecti
     @validate({ nullable: true })
     public someMetadataStringProperty?: string
 
-    public static async from(value: IACollectionItem): Promise<ACollectionItem> {
-        return await super.fromT(value, ACollectionItem)
+    public static from(value: IACollectionItem): ACollectionItem {
+        return super.fromT(value, ACollectionItem)
     }
 }

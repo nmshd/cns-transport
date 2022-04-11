@@ -1,4 +1,4 @@
-import { SerializableAsync } from "@js-soft/ts-serval"
+import { Serializable } from "@js-soft/ts-serval"
 import { CryptoSignature } from "@nmshd/crypto"
 import {
     AccountController,
@@ -48,7 +48,7 @@ export class ChallengesTest extends AbstractTest {
                 expect(challenge.challenge).is.a("string")
                 expect(challenge.signature).is.instanceOf(CryptoSignature)
 
-                const deserializedChallenge = await Challenge.deserialize(challenge.challenge)
+                const deserializedChallenge = Challenge.deserialize(challenge.challenge)
                 expect(deserializedChallenge.createdBy).instanceOf(CoreAddress)
                 expect(deserializedChallenge.expiresAt).instanceOf(CoreDate)
                 expect(deserializedChallenge.type).equals(ChallengeType.Identity)
@@ -66,9 +66,7 @@ export class ChallengesTest extends AbstractTest {
             it("recipient should validate a signed challenge", async function () {
                 const challenge = await sender.challenges.createChallenge()
                 const serializedChallenge = challenge.serialize(true)
-                const deserializedChallenge = (await SerializableAsync.deserializeUnknown(
-                    serializedChallenge
-                )) as ChallengeSigned
+                const deserializedChallenge = Serializable.deserializeUnknown(serializedChallenge) as ChallengeSigned
                 const validationResult = await recipient.challenges.validateChallenge(deserializedChallenge)
                 expect(validationResult).to.exist
                 expect(validationResult.isValid).to.be.true

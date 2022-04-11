@@ -1,6 +1,6 @@
-import { SerializableAsync } from "@js-soft/ts-serval"
+import { Serializable } from "@js-soft/ts-serval"
 import { CryptoCipher, CryptoSecretKey } from "@nmshd/crypto"
-import { CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializableAsync, IConfig, TransportErrors } from "../../core"
+import { CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializable, IConfig, TransportErrors } from "../../core"
 import { AnonymousTokenClient } from "./backbone/AnonymousTokenClient"
 import { CachedToken } from "./local/CachedToken"
 import { Token } from "./local/Token"
@@ -13,7 +13,7 @@ export class AnonymousTokenController {
     }
 
     public async loadPeerTokenByTruncated(truncated: string): Promise<Token> {
-        const reference = await TokenReference.fromTruncated(truncated)
+        const reference = TokenReference.fromTruncated(truncated)
         return await this.loadPeerTokenByReference(reference)
     }
 
@@ -26,18 +26,18 @@ export class AnonymousTokenController {
 
         const cipher = CryptoCipher.fromBase64(response.content)
         const plaintextTokenBuffer = await CoreCrypto.decrypt(cipher, secretKey)
-        const plaintextTokenContent = await CoreSerializableAsync.deserializeUnknown(plaintextTokenBuffer.toUtf8())
+        const plaintextTokenContent = CoreSerializable.deserializeUnknown(plaintextTokenBuffer.toUtf8())
 
-        if (!(plaintextTokenContent instanceof SerializableAsync)) {
+        if (!(plaintextTokenContent instanceof Serializable)) {
             throw TransportErrors.tokens.invalidTokenContent(id.toString())
         }
-        const token = await Token.from({
+        const token = Token.from({
             id: id,
             secretKey: secretKey,
             isOwn: false
         })
 
-        const cachedToken = await CachedToken.from({
+        const cachedToken = CachedToken.from({
             createdAt: CoreDate.from(response.createdAt),
             expiresAt: CoreDate.from(response.expiresAt),
             createdBy: CoreAddress.from(response.createdBy),

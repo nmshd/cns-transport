@@ -1,8 +1,8 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CryptoSignature, ICryptoSignature } from "@nmshd/crypto"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../../core"
+import { CoreSerializable, ICoreSerializable } from "../../../../core"
 
-export interface IRelationshipCreationChangeResponseSigned extends ICoreSerializableAsync {
+export interface IRelationshipCreationChangeResponseSigned extends ICoreSerializable {
     serializedResponse: string
     deviceSignature: ICryptoSignature
     relationshipSignature: ICryptoSignature
@@ -10,7 +10,7 @@ export interface IRelationshipCreationChangeResponseSigned extends ICoreSerializ
 
 @type("RelationshipCreationChangeResponseSigned")
 export class RelationshipCreationChangeResponseSigned
-    extends CoreSerializableAsync
+    extends CoreSerializable
     implements IRelationshipCreationChangeResponseSigned
 {
     @validate()
@@ -25,13 +25,11 @@ export class RelationshipCreationChangeResponseSigned
     @serialize()
     public relationshipSignature: CryptoSignature
 
-    public static async from(
-        value: IRelationshipCreationChangeResponseSigned
-    ): Promise<RelationshipCreationChangeResponseSigned> {
-        return await super.fromT(value, RelationshipCreationChangeResponseSigned)
+    public static from(value: IRelationshipCreationChangeResponseSigned): RelationshipCreationChangeResponseSigned {
+        return super.fromT(value, RelationshipCreationChangeResponseSigned)
     }
 
-    public static async deserialize(value: string): Promise<RelationshipCreationChangeResponseSigned> {
-        return await super.deserializeT(value, RelationshipCreationChangeResponseSigned)
+    public static deserialize(value: string): RelationshipCreationChangeResponseSigned {
+        return super.deserializeT(value, RelationshipCreationChangeResponseSigned)
     }
 }

@@ -1,19 +1,10 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CryptoSignaturePublicKey, ICryptoSignaturePublicKey } from "@nmshd/crypto"
-import {
-    CoreAddress,
-    CoreDate,
-    CoreSerializable,
-    CoreSerializableAsync,
-    ICoreAddress,
-    ICoreDate,
-    ICoreSerializable,
-    ICoreSerializableAsync
-} from "../../../core"
+import { CoreAddress, CoreDate, CoreSerializable, ICoreAddress, ICoreDate, ICoreSerializable } from "../../../core"
 import { CertificateConstraint, ICertificateConstraint } from "./CertificateConstraint"
 import { CertificateItem, ICertificateItem } from "./CertificateItem"
 
-export interface ICertificateContent extends ICoreSerializableAsync {
+export interface ICertificateContent extends ICoreSerializable {
     issuedAt: ICoreDate
     issuer: ICoreAddress
     issuerData?: ICoreSerializable
@@ -28,7 +19,7 @@ export interface ICertificateContent extends ICoreSerializableAsync {
  * is done on top of the serialized content of this data structure.
  */
 @type("CertificateContent")
-export class CertificateContent extends CoreSerializableAsync {
+export class CertificateContent extends CoreSerializable {
     @validate()
     @serialize()
     public issuedAt: CoreDate
@@ -57,11 +48,11 @@ export class CertificateContent extends CoreSerializableAsync {
     @serialize({ type: CertificateItem })
     public items: CertificateItem[]
 
-    public static async from(value: ICertificateContent): Promise<CertificateContent> {
-        return await super.fromT(value, CertificateContent)
+    public static from(value: ICertificateContent): CertificateContent {
+        return super.fromT(value, CertificateContent)
     }
 
-    public static async deserialize(value: string): Promise<CertificateContent> {
-        return await super.deserializeT(value, CertificateContent)
+    public static deserialize(value: string): CertificateContent {
+        return super.deserializeT(value, CertificateContent)
     }
 }

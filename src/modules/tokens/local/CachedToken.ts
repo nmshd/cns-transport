@@ -1,25 +1,25 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
 import {
     CoreAddress,
     CoreDate,
     CoreId,
-    CoreSerializableAsync,
+    CoreSerializable,
     ICoreAddress,
     ICoreDate,
     ICoreId,
-    ICoreSerializableAsync
+    ICoreSerializable
 } from "../../../core"
 
-export interface ICachedToken extends ICoreSerializableAsync {
+export interface ICachedToken extends ICoreSerializable {
     createdBy: ICoreAddress
     createdAt: ICoreDate
     expiresAt: ICoreDate
-    content: ISerializableAsync
+    content: ISerializable
     createdByDevice: ICoreId
 }
 
 @type("CachedToken")
-export class CachedToken extends CoreSerializableAsync implements ICachedToken {
+export class CachedToken extends CoreSerializable implements ICachedToken {
     @validate()
     @serialize()
     public createdBy: CoreAddress
@@ -34,17 +34,17 @@ export class CachedToken extends CoreSerializableAsync implements ICachedToken {
 
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
 
     @validate()
     @serialize()
     public createdByDevice: CoreId
 
-    public static async from(value: ICachedToken): Promise<CachedToken> {
-        return await super.fromT(value, CachedToken)
+    public static from(value: ICachedToken): CachedToken {
+        return super.fromT(value, CachedToken)
     }
 
-    public static async deserialize(value: string): Promise<CachedToken> {
-        return await super.deserializeT(value, CachedToken)
+    public static deserialize(value: string): CachedToken {
+        return super.deserializeT(value, CachedToken)
     }
 }

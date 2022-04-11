@@ -1,4 +1,4 @@
-import { ISerializableAsync } from "@js-soft/ts-serval"
+import { ISerializable } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, CryptoSignature } from "@nmshd/crypto"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, TransportErrors } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
@@ -43,10 +43,10 @@ export class RelationshipTemplateController extends TransportController {
     public async sendRelationshipTemplate(
         parameters: ISendRelationshipTemplateParameters
     ): Promise<RelationshipTemplate> {
-        parameters = await SendRelationshipTemplateParameters.from(parameters)
+        parameters = SendRelationshipTemplateParameters.from(parameters)
         const templateKey = await this.secrets.createTemplateKey()
 
-        const templateContent = await RelationshipTemplateContent.from({
+        const templateContent = RelationshipTemplateContent.from({
             content: parameters.content,
             identity: this.parent.identity.identity,
             templateKey: templateKey
@@ -57,7 +57,7 @@ export class RelationshipTemplateController extends TransportController {
         const serializedTemplateBuffer: CoreBuffer = CoreBuffer.fromUtf8(serializedTemplate)
 
         const signature: CryptoSignature = await this.parent.identity.sign(serializedTemplateBuffer)
-        const signedTemplate = await RelationshipTemplateSigned.from({
+        const signedTemplate = RelationshipTemplateSigned.from({
             deviceSignature: signature,
             serializedTemplate: serializedTemplate
         })
@@ -73,7 +73,7 @@ export class RelationshipTemplateController extends TransportController {
             })
         ).value
 
-        const templateCache = await CachedRelationshipTemplate.from({
+        const templateCache = CachedRelationshipTemplate.from({
             content: parameters.content,
             createdAt: CoreDate.from(backboneResponse.createdAt),
             createdBy: this.parent.identity.address,
@@ -84,7 +84,7 @@ export class RelationshipTemplateController extends TransportController {
             templateKey: templateKey
         })
 
-        const template = await RelationshipTemplate.from({
+        const template = RelationshipTemplate.from({
             id: CoreId.from(backboneResponse.id),
             secretKey: secretKey,
             isOwn: true,
@@ -131,7 +131,7 @@ export class RelationshipTemplateController extends TransportController {
 
         const decryptionPromises = backboneRelationships.map(async (t) => {
             const templateDoc = await this.templates.read(t.id)
-            const template = await RelationshipTemplate.from(templateDoc)
+            const template = RelationshipTemplate.from(templateDoc)
 
             return { id: CoreId.from(t.id), cache: await this.decryptRelationshipTemplate(t, template.secretKey) }
         })
@@ -145,7 +145,7 @@ export class RelationshipTemplateController extends TransportController {
             throw TransportErrors.general.recordNotFound(RelationshipTemplate, id).logWith(this._log)
         }
 
-        const template = await RelationshipTemplate.from(templateDoc)
+        const template = RelationshipTemplate.from(templateDoc)
 
         await this.updateCacheOfTemplate(template, response)
         await this.templates.update(templateDoc, template)
@@ -174,8 +174,8 @@ export class RelationshipTemplateController extends TransportController {
         const cipher: CryptoCipher = CryptoCipher.fromBase64(response.content)
         const signedTemplateBuffer: CoreBuffer = await this.secrets.decryptTemplate(cipher, secretKey)
 
-        const signedTemplate = await RelationshipTemplateSigned.deserialize(signedTemplateBuffer.toUtf8())
-        const templateContent = await RelationshipTemplateContent.deserialize(signedTemplate.serializedTemplate)
+        const signedTemplate = RelationshipTemplateSigned.deserialize(signedTemplateBuffer.toUtf8())
+        const templateContent = RelationshipTemplateContent.deserialize(signedTemplate.serializedTemplate)
 
         const templateSignatureValid = await this.secrets.verifyTemplate(
             CoreBuffer.fromUtf8(signedTemplate.serializedTemplate),
@@ -187,7 +187,7 @@ export class RelationshipTemplateController extends TransportController {
             throw TransportErrors.general.signatureNotValid("template").logWith(this._log)
         }
 
-        const cachedTemplate = await CachedRelationshipTemplate.from({
+        const cachedTemplate = CachedRelationshipTemplate.from({
             content: templateContent.content,
             createdBy: CoreAddress.from(response.createdBy),
             createdByDevice: CoreId.from(response.createdByDevice),
@@ -206,12 +206,12 @@ export class RelationshipTemplateController extends TransportController {
         if (!templateDoc) {
             return
         }
-        return await RelationshipTemplate.from(templateDoc)
+        return RelationshipTemplate.from(templateDoc)
     }
 
     public async setRelationshipTemplateMetadata(
         idOrTemplate: CoreId | RelationshipTemplate,
-        metadata: ISerializableAsync
+        metadata: ISerializable
     ): Promise<RelationshipTemplate> {
         const id = idOrTemplate instanceof CoreId ? idOrTemplate.toString() : idOrTemplate.id.toString()
         const templateDoc = await this.templates.read(id)
@@ -219,7 +219,7 @@ export class RelationshipTemplateController extends TransportController {
             throw TransportErrors.general.recordNotFound(RelationshipTemplate, id.toString()).logWith(this._log)
         }
 
-        const template = await RelationshipTemplate.from(templateDoc)
+        const template = RelationshipTemplate.from(templateDoc)
         template.setMetadata(metadata)
         await this.templates.update(templateDoc, template)
 
@@ -232,7 +232,7 @@ export class RelationshipTemplateController extends TransportController {
             return await this.updateCacheOfExistingTemplateInDb(id.toString())
         }
 
-        const relationshipTemplate = await RelationshipTemplate.from({
+        const relationshipTemplate = RelationshipTemplate.from({
             id: id,
             secretKey: secretKey,
             isOwn: false

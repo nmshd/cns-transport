@@ -1,6 +1,6 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CryptoSecretKey, CryptoSignaturePrivateKey, ICryptoSecretKey, ICryptoSignaturePrivateKey } from "@nmshd/crypto"
-import { CoreDate, CoreId, CoreSerializableAsync, ICoreId } from "../../../core"
+import { CoreDate, CoreId, CoreSerializable, ICoreId } from "../../../core"
 import { Identity, IIdentity } from "../../accounts/data/Identity"
 
 export interface IDeviceSharedSecret {
@@ -19,7 +19,7 @@ export interface IDeviceSharedSecret {
 }
 
 @type("DeviceSharedSecret")
-export class DeviceSharedSecret extends CoreSerializableAsync implements IDeviceSharedSecret {
+export class DeviceSharedSecret extends CoreSerializable implements IDeviceSharedSecret {
     @serialize()
     @validate()
     public id: CoreId
@@ -68,11 +68,11 @@ export class DeviceSharedSecret extends CoreSerializableAsync implements IDevice
     @validate()
     public password: string
 
-    public static async from(value: IDeviceSharedSecret): Promise<DeviceSharedSecret> {
-        return await super.fromT(value, DeviceSharedSecret)
+    public static from(value: IDeviceSharedSecret): DeviceSharedSecret {
+        return super.fromT(value, DeviceSharedSecret)
     }
 
-    public static async deserialize(value: string): Promise<DeviceSharedSecret> {
-        return await super.deserializeT(value, DeviceSharedSecret)
+    public static deserialize(value: string): DeviceSharedSecret {
+        return super.deserializeT(value, DeviceSharedSecret)
     }
 }

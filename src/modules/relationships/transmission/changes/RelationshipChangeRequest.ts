@@ -1,5 +1,5 @@
-import { ISerializable, ISerializableAsync, SerializableAsync, serialize, validate } from "@js-soft/ts-serval"
-import { CoreAddress, CoreDate, CoreSerializableAsync, ICoreAddress } from "../../../../core"
+import { ISerializable, Serializable, serialize, validate } from "@js-soft/ts-serval"
+import { CoreAddress, CoreDate, CoreSerializable, ICoreAddress } from "../../../../core"
 import { ICoreDate } from "../../../../core/types/CoreDate"
 import { CoreId, ICoreId } from "../../../../core/types/CoreId"
 import { BackboneGetRelationshipsChangesSingleChangeResponse } from "../../backbone/BackboneGetRelationshipsChanges"
@@ -11,7 +11,7 @@ export interface IRelationshipChangeRequest {
     content?: ISerializable
 }
 
-export class RelationshipChangeRequest extends CoreSerializableAsync implements IRelationshipChangeRequest {
+export class RelationshipChangeRequest extends CoreSerializable implements IRelationshipChangeRequest {
     @validate()
     @serialize()
     public createdBy: CoreAddress
@@ -26,13 +26,13 @@ export class RelationshipChangeRequest extends CoreSerializableAsync implements 
 
     @validate({ nullable: true })
     @serialize()
-    public content?: SerializableAsync
+    public content?: Serializable
 
-    public static async fromBackbone(
+    public static fromBackbone(
         backboneChange: BackboneGetRelationshipsChangesSingleChangeResponse,
-        content?: ISerializableAsync
-    ): Promise<RelationshipChangeRequest> {
-        return await this.from({
+        content?: ISerializable
+    ): RelationshipChangeRequest {
+        return this.from({
             createdBy: CoreAddress.from(backboneChange.createdBy),
             createdByDevice: CoreId.from(backboneChange.createdByDevice),
             createdAt: CoreDate.from(backboneChange.createdAt),
@@ -40,11 +40,11 @@ export class RelationshipChangeRequest extends CoreSerializableAsync implements 
         })
     }
 
-    public static async from(value: IRelationshipChangeRequest): Promise<RelationshipChangeRequest> {
-        return await super.fromT(value, RelationshipChangeRequest)
+    public static from(value: IRelationshipChangeRequest): RelationshipChangeRequest {
+        return super.fromT(value, RelationshipChangeRequest)
     }
 
-    public static async deserialize(value: string): Promise<RelationshipChangeRequest> {
-        return await super.deserializeT(value, RelationshipChangeRequest)
+    public static deserialize(value: string): RelationshipChangeRequest {
+        return super.deserializeT(value, RelationshipChangeRequest)
     }
 }

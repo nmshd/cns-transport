@@ -2,7 +2,7 @@
 import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
 import _ from "lodash"
-import { CoreId, CoreSerializableAsync, TransportErrors, TransportIds } from "../../core"
+import { CoreId, CoreSerializable, TransportErrors, TransportIds } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
 import { ICacheable } from "../../core/ICacheable"
 import { FileController } from "../files/FileController"
@@ -86,11 +86,11 @@ export class DatawalletModificationsProcessor {
                 mergedPayload = { ...mergedPayload, ...create.payload }
             }
 
-            const newObject = await CoreSerializableAsync.fromUnknown(mergedPayload)
+            const newObject = CoreSerializable.fromUnknown(mergedPayload)
 
             const oldDoc = await targetCollection.read(objectIdentifier)
             if (oldDoc) {
-                const oldObject = await CoreSerializableAsync.fromUnknown(oldDoc)
+                const oldObject = CoreSerializable.fromUnknown(oldDoc)
                 const updatedObject = { ...oldObject.toJSON(), ...newObject.toJSON() }
                 await targetCollection.update(oldDoc, updatedObject)
             }
@@ -125,7 +125,7 @@ export class DatawalletModificationsProcessor {
                 throw new Error("Document to update was not found.")
             }
 
-            const oldObject = await CoreSerializableAsync.fromUnknown(oldDoc)
+            const oldObject = CoreSerializable.fromUnknown(oldDoc)
             const newObject = { ...oldObject.toJSON(), ...updateModification.payload }
 
             await targetCollection.update(oldDoc, newObject)
@@ -208,7 +208,7 @@ export class DatawalletModificationsProcessor {
         await Promise.all(
             caches.map(async (c) => {
                 const itemDoc = await collection.read(c.id.toString())
-                const item = await CoreSerializableAsync.fromT(itemDoc, constructorOfT)
+                const item = CoreSerializable.fromT(itemDoc, constructorOfT)
                 item.setCache(c.cache)
                 await collection.update(itemDoc, item)
                 this.syncStep.progress()

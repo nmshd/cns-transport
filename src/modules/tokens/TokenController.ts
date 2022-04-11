@@ -1,6 +1,6 @@
-import { ISerializableAsync, SerializableAsync } from "@js-soft/ts-serval"
+import { ISerializable, Serializable } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey } from "@nmshd/crypto"
-import { CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializableAsync, TransportErrors } from "../../core"
+import { CoreAddress, CoreCrypto, CoreDate, CoreId, CoreSerializable, TransportErrors } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
 import { AccountController } from "../accounts/AccountController"
@@ -35,7 +35,7 @@ export class TokenController extends TransportController {
     }
 
     public async sendToken(parameters: ISendTokenParameters): Promise<Token> {
-        const input = await SendTokenParameters.from(parameters)
+        const input = SendTokenParameters.from(parameters)
         const secretKey: CryptoSecretKey = await CoreCrypto.generateSecretKey()
         const serializedToken: string = input.content.serialize()
         const serializedTokenBuffer: CoreBuffer = CoreBuffer.fromUtf8(serializedToken)
@@ -49,7 +49,7 @@ export class TokenController extends TransportController {
             })
         ).value
 
-        const cachedToken = await CachedToken.from({
+        const cachedToken = CachedToken.from({
             createdAt: CoreDate.from(response.createdAt),
             expiresAt: input.expiresAt,
             createdBy: this.parent.identity.address,
@@ -57,7 +57,7 @@ export class TokenController extends TransportController {
             content: input.content
         })
 
-        const token: Token = await Token.from({
+        const token: Token = Token.from({
             id: CoreId.from(response.id),
             secretKey: secretKey,
             isOwn: true,
@@ -72,14 +72,14 @@ export class TokenController extends TransportController {
         return token
     }
 
-    public async setTokenMetadata(idOrToken: CoreId | Token, metadata: ISerializableAsync): Promise<Token> {
+    public async setTokenMetadata(idOrToken: CoreId | Token, metadata: ISerializable): Promise<Token> {
         const id = idOrToken instanceof CoreId ? idOrToken.toString() : idOrToken.id.toString()
         const tokenDoc = await this.tokens.read(id)
         if (!tokenDoc) {
             throw TransportErrors.general.recordNotFound(Token, id.toString()).logWith(this._log)
         }
 
-        const token = await Token.from(tokenDoc)
+        const token = Token.from(tokenDoc)
         token.setMetadata(metadata)
         await this.tokens.update(tokenDoc, token)
 
@@ -88,7 +88,7 @@ export class TokenController extends TransportController {
 
     public async getToken(id: CoreId): Promise<Token | undefined> {
         const tokenDoc = await this.tokens.read(id.toString())
-        return tokenDoc ? await Token.from(tokenDoc) : undefined
+        return tokenDoc ? Token.from(tokenDoc) : undefined
     }
 
     public async updateCache(ids: string[]): Promise<Token[]> {
@@ -114,7 +114,7 @@ export class TokenController extends TransportController {
 
         const decryptionPromises = backboneTokens.map(async (t) => {
             const tokenDoc = await this.tokens.read(t.id)
-            const token = await Token.from(tokenDoc)
+            const token = Token.from(tokenDoc)
 
             return { id: CoreId.from(t), cache: await this.decryptToken(t, token.secretKey) }
         })
@@ -129,7 +129,7 @@ export class TokenController extends TransportController {
             return
         }
 
-        const token = await Token.from(tokenDoc)
+        const token = Token.from(tokenDoc)
 
         await this.updateCacheOfToken(token, response)
         await this.tokens.update(tokenDoc, token)
@@ -153,13 +153,13 @@ export class TokenController extends TransportController {
     private async decryptToken(response: BackboneGetTokensResponse, secretKey: CryptoSecretKey) {
         const cipher = CryptoCipher.fromBase64(response.content)
         const plaintextTokenBuffer = await CoreCrypto.decrypt(cipher, secretKey)
-        const plaintextTokenContent = await CoreSerializableAsync.deserializeUnknown(plaintextTokenBuffer.toUtf8())
+        const plaintextTokenContent = CoreSerializable.deserializeUnknown(plaintextTokenBuffer.toUtf8())
 
-        if (!(plaintextTokenContent instanceof SerializableAsync)) {
+        if (!(plaintextTokenContent instanceof Serializable)) {
             throw TransportErrors.tokens.invalidTokenContent(response.id).logWith(this._log)
         }
 
-        const cachedToken = await CachedToken.from({
+        const cachedToken = CachedToken.from({
             createdAt: CoreDate.from(response.createdAt),
             expiresAt: CoreDate.from(response.expiresAt),
             createdBy: CoreAddress.from(response.createdBy),
@@ -170,7 +170,7 @@ export class TokenController extends TransportController {
     }
 
     public async loadPeerTokenByTruncated(truncated: string, ephemeral: boolean): Promise<Token> {
-        const reference = await TokenReference.fromTruncated(truncated)
+        const reference = TokenReference.fromTruncated(truncated)
         return await this.loadPeerTokenByReference(reference, ephemeral)
     }
 
@@ -181,7 +181,7 @@ export class TokenController extends TransportController {
     public async loadPeerToken(id: CoreId, secretKey: CryptoSecretKey, ephemeral: boolean): Promise<Token> {
         const tokenDoc = await this.tokens.read(id.toString())
         if (tokenDoc) {
-            let token: Token | undefined = await Token.from(tokenDoc)
+            let token: Token | undefined = Token.from(tokenDoc)
             if (token.cache) {
                 return token
             }
@@ -197,7 +197,7 @@ export class TokenController extends TransportController {
             return token
         }
 
-        const token = await Token.from({
+        const token = Token.from({
             id: id,
             secretKey: secretKey,
             isOwn: false

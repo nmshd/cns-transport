@@ -1,4 +1,4 @@
-import { JSONWrapperAsync, SerializableAsync } from "@js-soft/ts-serval"
+import { JSONWrapper, Serializable } from "@js-soft/ts-serval"
 import { CryptoEncryption, CryptoSecretKey } from "@nmshd/crypto"
 import {
     AccountController,
@@ -31,13 +31,13 @@ export class TokenControllerTest extends AbstractTest {
                 expect(sentToken.id.toString()).equals(receivedToken.id.toString())
                 expect(sentToken.cache).to.exist
                 expect(sentToken.cachedAt?.isSameOrAfter(nowMinusSeconds)).to.be.true
-                expect(sentToken.cache?.content).instanceOf(SerializableAsync)
+                expect(sentToken.cache?.content).instanceOf(Serializable)
                 expect(sentToken.cache?.createdBy.toString()).equals(sender.identity.address.toString())
                 expect(sentToken.cache?.createdByDevice.toString()).equals(sender.activeDevice.id.toString())
                 expect(sentToken.cache?.createdAt.isSameOrAfter(nowMinusSeconds)).to.be.true
                 expect(receivedToken.cache).to.exist
                 expect(receivedToken.cachedAt?.isSameOrAfter(nowMinusSeconds)).to.be.true
-                expect(receivedToken.cache?.content).instanceOf(SerializableAsync)
+                expect(receivedToken.cache?.content).instanceOf(Serializable)
                 expect(receivedToken.cache?.createdBy.toString()).equals(sender.identity.address.toString())
                 expect(receivedToken.cache?.createdByDevice.toString()).equals(sender.activeDevice.id.toString())
                 expect(receivedToken.cache?.createdAt.isSameOrAfter(nowMinusSeconds)).to.be.true
@@ -58,20 +58,20 @@ export class TokenControllerTest extends AbstractTest {
             it("should send and receive a TokenContent as String", async function () {
                 tempDate = CoreDate.utc().subtract(that.tempDateThreshold)
                 const expiresAt = CoreDate.utc().add({ minutes: 5 })
-                const content = await SerializableAsync.from({ content: "TestToken" })
+                const content = Serializable.from({ content: "TestToken" })
                 const sentToken = await sender.tokens.sendToken({
                     content,
                     expiresAt,
                     ephemeral: false
                 })
-                const reference = (await sentToken.toTokenReference()).truncate()
+                const reference = sentToken.toTokenReference().truncate()
                 const receivedToken = await recipient.tokens.loadPeerTokenByTruncated(reference, false)
                 tempId1 = sentToken.id
 
                 testTokens(sentToken, receivedToken, tempDate)
                 expect(sentToken.cache?.expiresAt.toISOString()).equals(expiresAt.toISOString())
-                expect(sentToken.cache?.content).instanceOf(SerializableAsync)
-                expect(receivedToken.cache?.content).instanceOf(JSONWrapperAsync)
+                expect(sentToken.cache?.content).instanceOf(Serializable)
+                expect(receivedToken.cache?.content).instanceOf(JSONWrapper)
                 expect((sentToken.cache?.content.toJSON() as any).content).equals("TestToken")
                 expect((receivedToken.cache?.content as any).content).equals((sentToken.cache?.content as any).content)
             }).timeout(15000)
@@ -86,7 +86,7 @@ export class TokenControllerTest extends AbstractTest {
 
             it("should send and receive a TokenContentFile", async function () {
                 const expiresAt = CoreDate.utc().add({ minutes: 5 })
-                const content = await TokenContentFile.from({
+                const content = TokenContentFile.from({
                     fileId: await CoreId.generate(),
                     secretKey: await CryptoEncryption.generateKey()
                 })
@@ -95,7 +95,7 @@ export class TokenControllerTest extends AbstractTest {
                     expiresAt,
                     ephemeral: false
                 })
-                const reference = (await sentToken.toTokenReference()).truncate()
+                const reference = sentToken.toTokenReference().truncate()
                 const receivedToken = await recipient.tokens.loadPeerTokenByTruncated(reference, false)
                 tempId2 = sentToken.id
 
@@ -123,7 +123,7 @@ export class TokenControllerTest extends AbstractTest {
 
             it("should send and receive a TokenContentRelationshipTemplate", async function () {
                 const expiresAt = CoreDate.utc().add({ minutes: 5 })
-                const content = await TokenContentRelationshipTemplate.from({
+                const content = TokenContentRelationshipTemplate.from({
                     templateId: await CoreId.generate(),
                     secretKey: await CryptoEncryption.generateKey()
                 })
@@ -132,7 +132,7 @@ export class TokenControllerTest extends AbstractTest {
                     expiresAt,
                     ephemeral: false
                 })
-                const reference = (await sentToken.toTokenReference()).truncate()
+                const reference = sentToken.toTokenReference().truncate()
                 const receivedToken = await recipient.tokens.loadPeerTokenByTruncated(reference, false)
 
                 testTokens(sentToken, receivedToken, tempDate)

@@ -4,15 +4,15 @@ import {
     CoreAddress,
     CoreDate,
     CoreId,
-    CoreSerializableAsync,
+    CoreSerializable,
     ICoreAddress,
     ICoreDate,
     ICoreId,
-    ICoreSerializableAsync
+    ICoreSerializable
 } from "../../../core"
 import { IMessageEnvelopeRecipient, MessageEnvelopeRecipient } from "./MessageEnvelopeRecipient"
 
-export interface IMessageEnvelope extends ICoreSerializableAsync {
+export interface IMessageEnvelope extends ICoreSerializable {
     id: ICoreId
 
     createdAt: ICoreDate
@@ -26,7 +26,7 @@ export interface IMessageEnvelope extends ICoreSerializableAsync {
 }
 
 @type("MessageEnvelope")
-export class MessageEnvelope extends CoreSerializableAsync implements IMessageEnvelope {
+export class MessageEnvelope extends CoreSerializable implements IMessageEnvelope {
     @validate()
     @serialize()
     public id: CoreId
@@ -55,8 +55,8 @@ export class MessageEnvelope extends CoreSerializableAsync implements IMessageEn
     @serialize({ type: CoreId })
     public attachments: CoreId[]
 
-    public static async from(value: IMessageEnvelope): Promise<MessageEnvelope> {
-        return await super.fromT(value, MessageEnvelope)
+    public static from(value: IMessageEnvelope): MessageEnvelope {
+        return super.fromT(value, MessageEnvelope)
     }
 
     public static mapToJSON(value: Map<CoreAddress, CryptoCipher>): Object {

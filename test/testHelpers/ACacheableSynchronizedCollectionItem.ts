@@ -1,12 +1,12 @@
 import { serialize, validate } from "@js-soft/ts-serval"
-import { CoreDate, CoreId, CoreSynchronizable, ICoreDate, ICoreSerializableAsync } from "@nmshd/transport"
+import { CoreDate, CoreId, CoreSynchronizable, ICoreDate, ICoreSerializable } from "@nmshd/transport"
 import { nameof } from "ts-simple-nameof"
 
 export interface ICachedACacheableSynchronizedCollectionItem {
     someCacheProperty: string
 }
 
-export interface IACacheableSynchronizedCollectionItem extends ICoreSerializableAsync {
+export interface IACacheableSynchronizedCollectionItem extends ICoreSerializable {
     id: CoreId
 
     someTechnicalProperty?: string
@@ -41,9 +41,7 @@ export class ACacheableSynchronizedCollectionItem
     @validate({ nullable: true })
     public someTechnicalProperty?: string
 
-    public static async from(
-        value: IACacheableSynchronizedCollectionItem
-    ): Promise<ACacheableSynchronizedCollectionItem> {
-        return await super.fromT(value, ACacheableSynchronizedCollectionItem)
+    public static from(value: IACacheableSynchronizedCollectionItem): ACacheableSynchronizedCollectionItem {
+        return super.fromT(value, ACacheableSynchronizedCollectionItem)
     }
 }

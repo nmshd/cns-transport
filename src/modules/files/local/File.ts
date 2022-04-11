@@ -48,16 +48,16 @@ export class File extends CoreSynchronizable implements IFile {
     @serialize()
     public metadataModifiedAt?: CoreDate
 
-    public static async from(value: IFile): Promise<File> {
-        return await super.fromT(value, File)
+    public static from(value: IFile): File {
+        return super.fromT(value, File)
     }
 
-    public static async deserialize(value: string): Promise<File> {
-        return await super.deserializeT(value, File)
+    public static deserialize(value: string): File {
+        return super.deserializeT(value, File)
     }
 
-    public async toFileReference(): Promise<FileReference> {
-        return await FileReference.from({
+    public toFileReference(): FileReference {
+        return FileReference.from({
             id: this.id,
             key: this.secretKey
         })

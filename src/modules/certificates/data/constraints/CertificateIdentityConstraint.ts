@@ -12,7 +12,7 @@ export class CertificateIdentityConstraint extends CertificateConstraint {
     @serialize()
     public identity: CoreAddress
 
-    public static async from(value: ICertificateIdentityConstraint): Promise<CertificateIdentityConstraint> {
-        return await super.fromT(value, CertificateIdentityConstraint)
+    public static from(value: ICertificateIdentityConstraint): CertificateIdentityConstraint {
+        return super.fromT(value, CertificateIdentityConstraint)
     }
 }

@@ -1,4 +1,4 @@
-import { ISerializableAsync } from "@js-soft/ts-serval"
+import { ISerializable } from "@js-soft/ts-serval"
 import {
     CoreBuffer,
     CryptoCipher,
@@ -45,7 +45,7 @@ export class FileController extends TransportController {
 
     public async getFile(id: CoreId): Promise<File | undefined> {
         const doc = await this.files.read(id.toString())
-        return doc ? await File.from(doc) : undefined
+        return doc ? File.from(doc) : undefined
     }
 
     public async fetchCaches(ids: CoreId[]): Promise<{ id: CoreId; cache: CachedFile }[]> {
@@ -55,7 +55,7 @@ export class FileController extends TransportController {
 
         const decryptionPromises = backboneFiles.map(async (f) => {
             const fileDoc = await this.files.read(f.id)
-            const file = await File.from(fileDoc)
+            const file = File.from(fileDoc)
 
             return { id: CoreId.from(f.id), cache: await this.decryptFile(f, file.secretKey) }
         })
@@ -84,7 +84,7 @@ export class FileController extends TransportController {
             throw TransportErrors.general.recordNotFound(File, id).logWith(this._log)
         }
 
-        const file = await File.from(fileDoc)
+        const file = File.from(fileDoc)
 
         await this.updateCacheOfFile(file, response)
         await this.files.update(fileDoc, file)
@@ -107,19 +107,19 @@ export class FileController extends TransportController {
     private async decryptFile(response: BackboneGetFilesResponse, secretKey: CryptoSecretKey) {
         const cipher = CryptoCipher.fromBase64(response.encryptedProperties)
         const plaintextMetadataBuffer = await CoreCrypto.decrypt(cipher, secretKey)
-        const plaintextMetadata: FileMetadata = await FileMetadata.deserialize(plaintextMetadataBuffer.toUtf8())
+        const plaintextMetadata: FileMetadata = FileMetadata.deserialize(plaintextMetadataBuffer.toUtf8())
 
         if (!(plaintextMetadata instanceof FileMetadata)) {
             throw TransportErrors.files.invalidMetadata(response.id).logWith(this._log)
         }
 
         // TODO: JSSNMSHDD-2486 (check signature)
-        const cachedFile = await CachedFile.fromBackbone(response, plaintextMetadata)
+        const cachedFile = CachedFile.fromBackbone(response, plaintextMetadata)
         return cachedFile
     }
 
     public async loadPeerFileByTruncated(truncated: string): Promise<File> {
-        const reference = await FileReference.fromTruncated(truncated)
+        const reference = FileReference.fromTruncated(truncated)
         return await this.loadPeerFileByReference(reference)
     }
 
@@ -133,7 +133,7 @@ export class FileController extends TransportController {
             return await this.updateCacheOfExistingFileInDb(id.toString())
         }
 
-        const file = await File.from({
+        const file = File.from({
             id: id,
             secretKey: secretKey,
             isOwn: false
@@ -144,21 +144,21 @@ export class FileController extends TransportController {
         return file
     }
 
-    public async setFileMetadata(idOrFile: CoreId | File, metadata: ISerializableAsync): Promise<File> {
+    public async setFileMetadata(idOrFile: CoreId | File, metadata: ISerializable): Promise<File> {
         const id = idOrFile instanceof CoreId ? idOrFile.toString() : idOrFile.id.toString()
         const fileDoc = await this.files.read(id)
         if (!fileDoc) {
             throw TransportErrors.general.recordNotFound(File, id.toString()).logWith(this._log)
         }
 
-        const file = await File.from(fileDoc)
+        const file = File.from(fileDoc)
         file.setMetadata(metadata)
         await this.files.update(fileDoc, file)
         return file
     }
 
     public async sendFile(parameters: ISendFileParameters): Promise<File> {
-        const input = await SendFileParameters.from(parameters)
+        const input = SendFileParameters.from(parameters)
 
         const content = input.buffer
         const fileSize = content.length
@@ -179,7 +179,7 @@ export class FileController extends TransportController {
         const cipherHash: CoreBuffer = await CryptoHash.hash(cipherBuffer, CryptoHashAlgorithm.SHA512)
         const cipherCoreHash: CoreHash = CoreHash.from(cipherHash.toBase64URL())
 
-        const metadata: FileMetadata = await FileMetadata.from({
+        const metadata: FileMetadata = FileMetadata.from({
             title: input.title,
             description: input.description,
             filename: input.filename,
@@ -209,7 +209,7 @@ export class FileController extends TransportController {
             })
         ).value
 
-        const cachedFile: CachedFile = await CachedFile.from({
+        const cachedFile: CachedFile = CachedFile.from({
             title: input.title,
             description: input.description,
             filename: input.filename,
@@ -227,7 +227,7 @@ export class FileController extends TransportController {
             plaintextHash: plaintextHash
         })
 
-        const file: File = await File.from({
+        const file: File = File.from({
             id: CoreId.from(response.id),
             secretKey: metadataKey,
             isOwn: true

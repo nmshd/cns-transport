@@ -1,9 +1,9 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CryptoCipher, ICryptoCipher } from "@nmshd/crypto"
-import { CoreDate, CoreId, CoreSerializableAsync, ICoreDate, ICoreId, ICoreSerializableAsync } from "../../../core"
+import { CoreDate, CoreId, CoreSerializable, ICoreDate, ICoreId, ICoreSerializable } from "../../../core"
 import { CoreAddress, ICoreAddress } from "../../../core/types/CoreAddress"
 
-export interface IMessageEnvelopeRecipient extends ICoreSerializableAsync {
+export interface IMessageEnvelopeRecipient extends ICoreSerializable {
     address: ICoreAddress
     encryptedKey: ICryptoCipher
     receivedAt?: ICoreDate
@@ -11,7 +11,7 @@ export interface IMessageEnvelopeRecipient extends ICoreSerializableAsync {
 }
 
 @type("MessageEnvelopeRecipient")
-export class MessageEnvelopeRecipient extends CoreSerializableAsync implements IMessageEnvelopeRecipient {
+export class MessageEnvelopeRecipient extends CoreSerializable implements IMessageEnvelopeRecipient {
     @validate()
     @serialize()
     public address: CoreAddress
@@ -28,7 +28,7 @@ export class MessageEnvelopeRecipient extends CoreSerializableAsync implements I
     @serialize()
     public receivedByDevice?: CoreId
 
-    public static async from(value: IMessageEnvelopeRecipient): Promise<MessageEnvelopeRecipient> {
-        return await super.fromT(value, MessageEnvelopeRecipient)
+    public static from(value: IMessageEnvelopeRecipient): MessageEnvelopeRecipient {
+        return super.fromT(value, MessageEnvelopeRecipient)
     }
 }

@@ -2,7 +2,7 @@ import { DatabaseType, IDatabaseCollection } from "@js-soft/docdb-access-abstrac
 import jsonpatch from "fast-json-patch"
 import _ from "lodash"
 import { nameof } from "ts-simple-nameof"
-import { CoreSerializableAsync } from "../../core/CoreSerializableAsync"
+import { CoreSerializable } from "../../core/CoreSerializable"
 import { CoreSynchronizable, ICoreSynchronizable } from "../../core/CoreSynchronizable"
 import { ICacheable } from "../../core/ICacheable"
 import { TransportIds } from "../../core/TransportIds"
@@ -96,7 +96,7 @@ export class SynchronizedCollection implements IDatabaseCollection {
     }
 
     public async update(oldDoc: any, newObject: CoreSynchronizable): Promise<any> {
-        const oldObject = await CoreSerializableAsync.fromUnknown(oldDoc)
+        const oldObject = CoreSerializable.fromUnknown(oldDoc)
 
         const newObjectJson = newObject.toJSON()
 

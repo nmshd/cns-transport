@@ -73,7 +73,7 @@ export class CertificateIssuerTest extends AbstractTest {
                     const valid = await cert.verify(issuer.identity.publicKey)
                     expect(valid).to.equal(true)
 
-                    const cert2 = await Certificate.deserialize(serializedCert)
+                    const cert2 = Certificate.deserialize(serializedCert)
                     const valid2 = await cert2.verify(issuer.identity.publicKey)
                     expect(valid2).to.equal(true)
                 })

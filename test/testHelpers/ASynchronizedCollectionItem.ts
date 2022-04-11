@@ -1,8 +1,8 @@
 import { serialize, validate } from "@js-soft/ts-serval"
-import { CoreId, CoreSynchronizable, ICoreSerializableAsync } from "@nmshd/transport"
+import { CoreId, CoreSynchronizable, ICoreSerializable } from "@nmshd/transport"
 import { nameof } from "ts-simple-nameof"
 
-export interface IASynchronizedCollectionItem extends ICoreSerializableAsync {
+export interface IASynchronizedCollectionItem extends ICoreSerializable {
     id: CoreId
 
     someTechnicalStringProperty?: string
@@ -71,7 +71,7 @@ export class ASynchronizedCollectionItem extends CoreSynchronizable implements I
     @validate({ nullable: true })
     public someMetadataBooleanProperty?: boolean
 
-    public static async from(value: IASynchronizedCollectionItem): Promise<ASynchronizedCollectionItem> {
-        return await super.fromT(value, ASynchronizedCollectionItem)
+    public static from(value: IASynchronizedCollectionItem): ASynchronizedCollectionItem {
+        return super.fromT(value, ASynchronizedCollectionItem)
     }
 }

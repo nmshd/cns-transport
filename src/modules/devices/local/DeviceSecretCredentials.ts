@@ -1,5 +1,5 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreId, CoreSerializableAsync, ICoreId } from "../../../core"
+import { CoreId, CoreSerializable, ICoreId } from "../../../core"
 
 export interface IDeviceSecretCredentials {
     id: ICoreId
@@ -8,7 +8,7 @@ export interface IDeviceSecretCredentials {
 }
 
 @type("DeviceSecretCredentials")
-export class DeviceSecretCredentials extends CoreSerializableAsync implements IDeviceSecretCredentials {
+export class DeviceSecretCredentials extends CoreSerializable implements IDeviceSecretCredentials {
     @serialize()
     @validate()
     public id: CoreId
@@ -21,7 +21,7 @@ export class DeviceSecretCredentials extends CoreSerializableAsync implements ID
     @validate({ nullable: true })
     public username?: string
 
-    public static async from(value: IDeviceSecretCredentials): Promise<DeviceSecretCredentials> {
-        return await super.fromT(value, DeviceSecretCredentials)
+    public static from(value: IDeviceSecretCredentials): DeviceSecretCredentials {
+        return super.fromT(value, DeviceSecretCredentials)
     }
 }

@@ -38,7 +38,7 @@ export class CertificateBorderConstraint extends CertificateConstraint {
     @serialize()
     public state: string
 
-    public static async from(value: ICertificateBorderConstraint): Promise<CertificateBorderConstraint> {
-        return await super.fromT(value, CertificateBorderConstraint)
+    public static from(value: ICertificateBorderConstraint): CertificateBorderConstraint {
+        return super.fromT(value, CertificateBorderConstraint)
     }
 }

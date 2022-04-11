@@ -94,9 +94,9 @@ export class DeviceOnboardingTest extends AbstractTest {
                 expect(sharedSecret.identityPrivateKey).instanceOf(CryptoSignaturePrivateKey)
             })
 
-            it("should serialize device shared secrets and deserialize them again", async function () {
+            it("should serialize device shared secrets and deserialize them again", function () {
                 const serialized = sharedSecret.serialize()
-                sharedSecret = await DeviceSharedSecret.deserialize(serialized)
+                sharedSecret = DeviceSharedSecret.deserialize(serialized)
                 expect(sharedSecret).instanceOf(DeviceSharedSecret)
                 expect(sharedSecret.id.toString()).equals(newDevice.id.toString())
                 expect(JSON.stringify(sharedSecret.identity.toJSON(false))).equals(
