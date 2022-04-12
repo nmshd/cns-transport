@@ -18,10 +18,6 @@ export class RelationshipTemplateSigned extends CoreSerializable implements IRel
     public deviceSignature: CryptoSignature
 
     public static from(value: IRelationshipTemplateSigned): RelationshipTemplateSigned {
-        return super.fromT(value, RelationshipTemplateSigned)
-    }
-
-    public static deserialize(value: string): RelationshipTemplateSigned {
-        return super.deserializeT(value, RelationshipTemplateSigned)
+        return this.fromAny(value)
     }
 }

@@ -21,10 +21,6 @@ export class MessageSigned extends CoreSerializable {
     public message: string
 
     public static from(value: IMessageSigned): MessageSigned {
-        return super.fromT(value, MessageSigned)
-    }
-
-    public static deserialize(value: string): MessageSigned {
-        return super.deserializeT(value, MessageSigned)
+        return this.fromAny(value)
     }
 }

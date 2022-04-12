@@ -21,6 +21,6 @@ export class CertificateAuthorizationItem extends CertificateItem {
     public authorization: string
 
     public static from(value: ICertificateAuthorizationItem): CertificateAuthorizationItem {
-        return super.fromT(value, CertificateAuthorizationItem)
+        return this.fromAny(value)
     }
 }

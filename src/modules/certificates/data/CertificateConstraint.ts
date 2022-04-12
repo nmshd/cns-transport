@@ -9,10 +9,6 @@ export interface ICertificateConstraint extends ICoreSerializable {}
 @type("CertificateConstraint")
 export class CertificateConstraint extends CoreSerializable {
     public static from(value: ICertificateConstraint): CertificateConstraint {
-        return super.fromT(value, CertificateConstraint)
-    }
-
-    public static deserialize(value: string): CertificateConstraint {
-        return super.deserializeT(value, CertificateConstraint)
+        return this.fromAny(value)
     }
 }

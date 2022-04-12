@@ -20,6 +20,6 @@ export class CertificateRoleItem extends CertificateItem {
     public role: string
 
     public static from(value: ICertificateRoleItem): CertificateRoleItem {
-        return super.fromT(value, CertificateRoleItem)
+        return this.fromAny(value)
     }
 }

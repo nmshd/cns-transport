@@ -56,7 +56,7 @@ export class MessageEnvelope extends CoreSerializable implements IMessageEnvelop
     public attachments: CoreId[]
 
     public static from(value: IMessageEnvelope): MessageEnvelope {
-        return super.fromT(value, MessageEnvelope)
+        return this.fromAny(value)
     }
 
     public static mapToJSON(value: Map<CoreAddress, CryptoCipher>): Object {

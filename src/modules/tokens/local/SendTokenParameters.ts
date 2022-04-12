@@ -22,10 +22,6 @@ export class SendTokenParameters extends CoreSerializable implements ISendTokenP
     public ephemeral: boolean
 
     public static from(value: ISendTokenParameters): SendTokenParameters {
-        return super.fromT(value, SendTokenParameters)
-    }
-
-    public static deserialize(value: string): SendTokenParameters {
-        return super.deserializeT(value, SendTokenParameters)
+        return this.fromAny(value)
     }
 }

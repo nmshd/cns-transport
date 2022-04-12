@@ -107,6 +107,6 @@ export class Device extends CoreSynchronizable implements IDevice {
     public datawalletVersion?: number
 
     public static from(value: IDevice): Device {
-        return super.fromT(value, Device)
+        return this.fromAny(value)
     }
 }

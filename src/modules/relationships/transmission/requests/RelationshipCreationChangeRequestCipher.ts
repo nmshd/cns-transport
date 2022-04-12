@@ -26,17 +26,10 @@ export class RelationshipCreationChangeRequestCipher
     public publicRequestCrypto: CryptoRelationshipPublicRequest
 
     public static from(value: IRelationshipCreationChangeRequestCipher): RelationshipCreationChangeRequestCipher {
-        return super.fromT(value, RelationshipCreationChangeRequestCipher)
+        return this.fromAny(value)
     }
 
     public static fromBase64(value: string): RelationshipCreationChangeRequestCipher {
-        return super.fromBase64T<RelationshipCreationChangeRequestCipher>(
-            value,
-            RelationshipCreationChangeRequestCipher
-        )
-    }
-
-    public static deserialize(value: string): RelationshipCreationChangeRequestCipher {
-        return super.deserializeT(value, RelationshipCreationChangeRequestCipher)
+        return super.fromBase64T<RelationshipCreationChangeRequestCipher>(value)
     }
 }

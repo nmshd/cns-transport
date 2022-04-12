@@ -65,6 +65,6 @@ export class SecretContainerCipher extends CoreSynchronizable implements ISecret
     public cipher: CryptoCipher
 
     public static from(value: ISecretContainerCipher): SecretContainerCipher {
-        return super.fromT(value, SecretContainerCipher)
+        return this.fromAny(value)
     }
 }

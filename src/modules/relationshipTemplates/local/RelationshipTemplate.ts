@@ -53,11 +53,7 @@ export class RelationshipTemplate extends CoreSynchronizable implements IRelatio
     public metadataModifiedAt?: CoreDate
 
     public static from(value: IRelationshipTemplate): RelationshipTemplate {
-        return super.fromT(value, RelationshipTemplate)
-    }
-
-    public static deserialize(value: string): RelationshipTemplate {
-        return super.deserializeT(value, RelationshipTemplate)
+        return this.fromAny(value)
     }
 
     public setCache(cache: CachedRelationshipTemplate): this {

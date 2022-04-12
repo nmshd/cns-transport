@@ -34,10 +34,6 @@ export class CachedRelationship extends CoreSerializable implements ICachedRelat
     }
 
     public static from(value: ICachedRelationship): CachedRelationship {
-        return super.fromT(value, CachedRelationship)
-    }
-
-    public static deserialize(value: string): CachedRelationship {
-        return super.deserializeT(value, CachedRelationship)
+        return this.fromAny(value)
     }
 }

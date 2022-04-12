@@ -39,6 +39,6 @@ export class ACollectionItem extends CoreSerializable implements IACollectionIte
     public someMetadataStringProperty?: string
 
     public static from(value: IACollectionItem): ACollectionItem {
-        return super.fromT(value, ACollectionItem)
+        return this.fromAny(value)
     }
 }

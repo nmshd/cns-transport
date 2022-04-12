@@ -72,6 +72,6 @@ export class ASynchronizedCollectionItem extends CoreSynchronizable implements I
     public someMetadataBooleanProperty?: boolean
 
     public static from(value: IASynchronizedCollectionItem): ASynchronizedCollectionItem {
-        return super.fromT(value, ASynchronizedCollectionItem)
+        return this.fromAny(value)
     }
 }

@@ -18,6 +18,6 @@ export class MessageSignature extends CoreSerializable implements IMessageSignat
     public signature: CryptoSignature
 
     public static from(value: IMessageSignature): MessageSignature {
-        return super.fromT(value, MessageSignature)
+        return this.fromAny(value)
     }
 }

@@ -2,7 +2,6 @@ import { IDatabaseCollection } from "@js-soft/docdb-access-abstractions"
 import {
     CoreDate,
     CoreId,
-    CoreSerializable,
     DatawalletModification,
     DatawalletModificationCategory,
     DatawalletModificationType,
@@ -277,7 +276,7 @@ export class SynchronizedCollectionTest extends AbstractTest {
                 )
 
                 const itemDoc = await synchronizedCollection.read(itemId.toString())
-                const item = CoreSerializable.fromT(itemDoc, ASynchronizedCollectionItem)
+                const item = ASynchronizedCollectionItem.from(itemDoc)
 
                 item.someTechnicalBooleanProperty = true
                 await synchronizedCollection.update(itemDoc, item)

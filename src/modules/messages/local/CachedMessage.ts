@@ -49,6 +49,6 @@ export class CachedMessage extends CoreSerializable implements ICachedMessage {
     public content: Serializable
 
     public static from(value: ICachedMessage): CachedMessage {
-        return super.fromT(value, CachedMessage)
+        return this.fromAny(value)
     }
 }

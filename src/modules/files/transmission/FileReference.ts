@@ -51,10 +51,6 @@ export class FileReference extends CoreSerializable implements IFileReference {
     }
 
     public static from(value: IFileReference | string): FileReference {
-        return super.fromT(value, FileReference)
-    }
-
-    public static deserialize(value: string): FileReference {
-        return super.deserializeT(value, FileReference)
+        return this.fromAny(value)
     }
 }

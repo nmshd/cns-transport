@@ -22,6 +22,6 @@ export class DeviceSecretCredentials extends CoreSerializable implements IDevice
     public username?: string
 
     public static from(value: IDeviceSecretCredentials): DeviceSecretCredentials {
-        return super.fromT(value, DeviceSecretCredentials)
+        return this.fromAny(value)
     }
 }

@@ -69,10 +69,6 @@ export class DeviceSharedSecret extends CoreSerializable implements IDeviceShare
     public password: string
 
     public static from(value: IDeviceSharedSecret): DeviceSharedSecret {
-        return super.fromT(value, DeviceSharedSecret)
-    }
-
-    public static deserialize(value: string): DeviceSharedSecret {
-        return super.deserializeT(value, DeviceSharedSecret)
+        return this.fromAny(value)
     }
 }

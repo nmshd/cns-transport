@@ -36,6 +36,6 @@ export class IdentitySecretCredentials extends CoreSerializable implements IIden
     public privateKey?: CryptoSignaturePrivateKey
 
     public static from(value: IIdentitySecretCredentials): IdentitySecretCredentials {
-        return super.fromT(value, IdentitySecretCredentials)
+        return this.fromAny(value)
     }
 }

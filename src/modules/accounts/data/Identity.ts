@@ -58,14 +58,18 @@ export class Identity extends CoreSerializable implements IIdentity {
     @serialize()
     public type: string
 
-    public static from(value: IIdentity): Identity {
-        const identity = super.fromT(value, Identity)
-
+    protected static postFrom(value: any): any {
         // TODO: Remove these default values once we're sure that nobody is accessing the deprecated properties anymore
-        identity.name = ""
-        identity.description = ""
-        identity.type = "unknown"
-        identity.createdAt = CoreDate.from("2020-01-01T00:00:00Z")
-        return identity
+
+        value.name = ""
+        value.description = ""
+        value.type = "unknown"
+        value.createdAt = CoreDate.from("2020-01-01T00:00:00Z")
+
+        return value
+    }
+
+    public static from(value: IIdentity): Identity {
+        return this.fromAny(value)
     }
 }

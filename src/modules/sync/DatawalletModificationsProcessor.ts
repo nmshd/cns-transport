@@ -208,7 +208,7 @@ export class DatawalletModificationsProcessor {
         await Promise.all(
             caches.map(async (c) => {
                 const itemDoc = await collection.read(c.id.toString())
-                const item = CoreSerializable.fromT(itemDoc, constructorOfT)
+                const item = (constructorOfT as any).from(itemDoc)
                 item.setCache(c.cache)
                 await collection.update(itemDoc, item)
                 this.syncStep.progress()

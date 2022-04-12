@@ -20,10 +20,6 @@ export class RelationshipCreationChangeResponseContent
     public relationshipId: CoreId
 
     public static from(value: IRelationshipCreationChangeResponseContent): RelationshipCreationChangeResponseContent {
-        return super.fromT(value, RelationshipCreationChangeResponseContent)
-    }
-
-    public static deserialize(value: string): RelationshipCreationChangeResponseContent {
-        return super.deserializeT(value, RelationshipCreationChangeResponseContent)
+        return this.fromAny(value)
     }
 }

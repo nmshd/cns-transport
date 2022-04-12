@@ -95,7 +95,7 @@ export class TransportController {
         values: Object[],
         type: new () => T
     ): Promise<T[]> {
-        const parsePromises: Promise<T>[] = values.map((v) => (type as any).from(v, type))
+        const parsePromises: Promise<T>[] = values.map((v) => (type as any).from(v))
         return await Promise.all(parsePromises)
     }
 }

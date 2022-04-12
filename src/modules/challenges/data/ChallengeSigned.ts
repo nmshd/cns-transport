@@ -23,7 +23,7 @@ export class ChallengeSigned extends CoreSerializable implements IChallengeSigne
     public signature: CryptoSignature
 
     public static from(value: IChallengeSigned): ChallengeSigned {
-        return super.fromT(value, ChallengeSigned)
+        return this.fromAny(value)
     }
 
     public static fromJSON(value: IChallengeSignedSerialized): ChallengeSigned {

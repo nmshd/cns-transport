@@ -18,10 +18,6 @@ export class TokenContentFile extends CoreSerializable implements ITokenContentF
     public secretKey: CryptoSecretKey
 
     public static from(value: ITokenContentFile): TokenContentFile {
-        return super.fromT(value, TokenContentFile)
-    }
-
-    public static deserialize(value: string): TokenContentFile {
-        return super.deserializeT(value, TokenContentFile)
+        return this.fromAny(value)
     }
 }

@@ -53,20 +53,20 @@ export class CoreHash extends CoreSerializable {
         )
     }
 
+    protected static override preFrom(value: any): any {
+        if (typeof value === "string") {
+            return { hash: value }
+        }
+
+        return value
+    }
+
     /**
      * Creates a new Hash object from a given IHash or a string
      * @param value Hash, IHash or string
      */
     public static from(value: ICoreHash | string): CoreHash {
-        if (typeof value === "object") {
-            return super.fromT(value, CoreHash)
-        }
-
-        return super.fromT({ hash: value }, CoreHash)
-    }
-
-    public static deserialize(value: string): CoreHash {
-        return this.from(value)
+        return this.fromAny(value)
     }
 
     public serialize(): string {

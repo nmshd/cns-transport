@@ -26,10 +26,6 @@ export class SendRelationshipTemplateParameters
     public maxNumberOfRelationships?: number
 
     public static from(value: ISendRelationshipTemplateParameters): SendRelationshipTemplateParameters {
-        return super.fromT(value, SendRelationshipTemplateParameters)
-    }
-
-    public static deserialize(value: string): SendRelationshipTemplateParameters {
-        return super.deserializeT(value, SendRelationshipTemplateParameters)
+        return this.fromAny(value)
     }
 }

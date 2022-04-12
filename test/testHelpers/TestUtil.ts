@@ -523,7 +523,7 @@ export class TestUtil {
             recipientAddresses.push(controller.identity.address)
         }
         if (!content) {
-            content = Serializable.from({ content: "TestContent" }, Serializable)
+            content = Serializable.fromAny({ content: "TestContent" })
         }
         return await from.messages.sendMessage({
             recipients: recipientAddresses,

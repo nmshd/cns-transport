@@ -22,6 +22,6 @@ export class CertificatePrivateAttributeItem extends CertificateItem {
     public hash: CoreHash
 
     public static from(value: ICertificatePrivateAttributeItem): CertificatePrivateAttributeItem {
-        return super.fromT(value, CertificatePrivateAttributeItem)
+        return this.fromAny(value)
     }
 }

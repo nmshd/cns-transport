@@ -18,10 +18,6 @@ export class SendRelationshipParameters extends CoreSerializable implements ISen
     public template: RelationshipTemplate
 
     public static from(value: ISendRelationshipParameters): SendRelationshipParameters {
-        return super.fromT(value, SendRelationshipParameters)
-    }
-
-    public static deserialize(value: string): SendRelationshipParameters {
-        return super.deserializeT(value, SendRelationshipParameters)
+        return this.fromAny(value)
     }
 }

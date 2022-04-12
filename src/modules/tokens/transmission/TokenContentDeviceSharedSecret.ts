@@ -13,10 +13,6 @@ export class TokenContentDeviceSharedSecret extends CoreSerializable implements 
     public sharedSecret: DeviceSharedSecret
 
     public static from(value: ITokenContentDeviceSharedSecret): TokenContentDeviceSharedSecret {
-        return super.fromT(value, TokenContentDeviceSharedSecret)
-    }
-
-    public static deserialize(value: string): TokenContentDeviceSharedSecret {
-        return super.deserializeT(value, TokenContentDeviceSharedSecret)
+        return this.fromAny(value)
     }
 }

@@ -26,10 +26,6 @@ export class RelationshipCreationChangeRequestSigned
     public relationshipSignature: CryptoSignature
 
     public static from(value: IRelationshipCreationChangeRequestSigned): RelationshipCreationChangeRequestSigned {
-        return super.fromT(value, RelationshipCreationChangeRequestSigned)
-    }
-
-    public static deserialize(value: string): RelationshipCreationChangeRequestSigned {
-        return super.deserializeT(value, RelationshipCreationChangeRequestSigned)
+        return this.fromAny(value)
     }
 }

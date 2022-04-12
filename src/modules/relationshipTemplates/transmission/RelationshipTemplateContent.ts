@@ -24,10 +24,6 @@ export class RelationshipTemplateContent extends CoreSerializable implements IRe
     public content: Serializable
 
     public static from(value: IRelationshipTemplateContent): RelationshipTemplateContent {
-        return super.fromT(value, RelationshipTemplateContent)
-    }
-
-    public static deserialize(value: string): RelationshipTemplateContent {
-        return super.deserializeT(value, RelationshipTemplateContent)
+        return this.fromAny(value)
     }
 }

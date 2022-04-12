@@ -36,14 +36,13 @@ export class MessagePlain extends CoreSerializable implements IMessagePlain {
     @serialize({ type: CoreAddress })
     public recipients: CoreAddress[]
 
-    public static from(value: IMessagePlain): MessagePlain {
+    protected static override preFrom(value: any): any {
         if (typeof value.attachments === "undefined") {
             value.attachments = []
         }
-        return super.fromT(value, MessagePlain)
     }
 
-    public static deserialize(value: string): MessagePlain {
-        return super.deserializeT(value, MessagePlain)
+    public static from(value: IMessagePlain): MessagePlain {
+        return this.fromAny(value)
     }
 }

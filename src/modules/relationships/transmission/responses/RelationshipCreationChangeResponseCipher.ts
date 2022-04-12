@@ -26,14 +26,10 @@ export class RelationshipCreationChangeResponseCipher
     public publicResponseCrypto?: CryptoRelationshipPublicResponse
 
     public static from(value: IRelationshipCreationChangeResponseCipher): RelationshipCreationChangeResponseCipher {
-        return super.fromT(value, RelationshipCreationChangeResponseCipher)
+        return this.fromAny(value)
     }
 
     public static fromBase64(value: string): RelationshipCreationChangeResponseCipher {
-        return super.fromBase64T(value, RelationshipCreationChangeResponseCipher)
-    }
-
-    public static deserialize(value: string): RelationshipCreationChangeResponseCipher {
-        return super.deserializeT(value, RelationshipCreationChangeResponseCipher)
+        return super.fromBase64T(value)
     }
 }

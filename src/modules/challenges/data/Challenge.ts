@@ -38,10 +38,6 @@ export class Challenge extends CoreSerializable implements IChallenge {
     public type: ChallengeType
 
     public static from(value: IChallenge): Challenge {
-        return super.fromT(value, Challenge)
-    }
-
-    public static deserialize(value: string): Challenge {
-        return this.deserializeT(value, Challenge)
+        return this.fromAny(value)
     }
 }

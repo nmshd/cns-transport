@@ -41,6 +41,6 @@ export class CertificateCityConstraint extends CertificateConstraint {
     public zipCode: string
 
     public static from(value: ICertificateCityConstraint): CertificateCityConstraint {
-        return super.fromT(value, CertificateCityConstraint)
+        return this.fromAny(value)
     }
 }

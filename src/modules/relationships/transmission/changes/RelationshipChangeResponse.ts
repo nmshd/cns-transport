@@ -41,10 +41,6 @@ export class RelationshipChangeResponse extends CoreSerializable implements IRel
     }
 
     public static from(value: IRelationshipChangeResponse): RelationshipChangeResponse {
-        return super.fromT(value, RelationshipChangeResponse)
-    }
-
-    public static deserialize(value: string): RelationshipChangeResponse {
-        return super.deserializeT(value, RelationshipChangeResponse)
+        return this.fromAny(value)
     }
 }

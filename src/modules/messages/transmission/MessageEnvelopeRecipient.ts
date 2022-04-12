@@ -29,6 +29,6 @@ export class MessageEnvelopeRecipient extends CoreSerializable implements IMessa
     public receivedByDevice?: CoreId
 
     public static from(value: IMessageEnvelopeRecipient): MessageEnvelopeRecipient {
-        return super.fromT(value, MessageEnvelopeRecipient)
+        return this.fromAny(value)
     }
 }

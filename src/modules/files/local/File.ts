@@ -49,11 +49,7 @@ export class File extends CoreSynchronizable implements IFile {
     public metadataModifiedAt?: CoreDate
 
     public static from(value: IFile): File {
-        return super.fromT(value, File)
-    }
-
-    public static deserialize(value: string): File {
-        return super.deserializeT(value, File)
+        return this.fromAny(value)
     }
 
     public toFileReference(): FileReference {

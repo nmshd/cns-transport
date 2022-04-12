@@ -35,7 +35,7 @@ export class MessageContentTest extends AbstractTest {
 
             describe("Any Content", function () {
                 it("should send the message", async function () {
-                    const value: any = Serializable.from({ any: "content", submitted: true })
+                    const value: any = Serializable.fromAny({ any: "content", submitted: true })
                     expect(value).instanceOf(JSONWrapper)
                     await TestUtil.sendMessage(sender, recipient1, value)
                 })
@@ -155,15 +155,19 @@ class Mail extends Serializable implements IMail {
     @validate()
     public body: string
 
-    public static from(value: IMail): Mail {
+    protected static override preFrom(value: any): any {
         if (typeof value.cc === "undefined") {
             value.cc = []
         }
-        if (typeof value.body === "undefined" && (value as any).content) {
-            value.body = (value as any).content
-            delete (value as any).content
+        if (typeof value.body === "undefined" && value.content) {
+            value.body = value.content
+            delete value.content
         }
-        const obj: Mail = super.fromT(value, Mail)
-        return obj
+
+        return value
+    }
+
+    public static from(value: IMail): Mail {
+        return this.fromAny(value)
     }
 }

@@ -157,32 +157,32 @@ export class CoreDate extends CoreSerializable implements ICoreDate {
         return this.dateTime.toISO()
     }
 
-    public static from(value: ICoreDate | string | number): CoreDate {
+    public static override preFrom(value: any): any {
         if (typeof value === "undefined") {
             throw TransportErrors.util.date.undefined()
         }
 
         if (typeof value === "object") {
             if (typeof value.date === "undefined") {
-                if (typeof (value as any).toISOString !== "function") {
+                if (typeof value.toISOString !== "function") {
                     throw TransportErrors.util.date.noIsoStringMethod()
                 }
 
-                const iso = (value as any).toISOString()
-                return new CoreDate(DateTime.fromISO(iso, { zone: "utc" }))
+                const iso = value.toISOString()
+                return DateTime.fromISO(iso, { zone: "utc" })
             }
 
-            return new CoreDate(DateTime.fromISO(value.date, { zone: "utc" }))
+            return DateTime.fromISO(value.date, { zone: "utc" })
         }
 
         if (typeof value === "number") {
-            return new CoreDate(DateTime.fromMillis(value))
+            return DateTime.fromMillis(value)
         }
 
-        return new CoreDate(DateTime.fromISO(value, { zone: "utc" }).toUTC())
+        return DateTime.fromISO(value, { zone: "utc" }).toUTC()
     }
 
-    public static deserialize(isoString: string): CoreDate {
-        return this.from(isoString)
+    public static from(value: ICoreDate | string | number): CoreDate {
+        return this.fromAny(value)
     }
 }

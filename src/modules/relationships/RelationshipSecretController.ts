@@ -189,7 +189,11 @@ export class RelationshipSecretController extends SecretController {
         const templateKeyId = await TransportIds.relationshipTemplateKey.generate()
         const key = await this.createExchangeKey(`${templateKeyId.toString()}`)
         const publicKey = key[0]
-        return new RelationshipTemplatePublicKey(templateKeyId, publicKey.algorithm, publicKey.publicKey)
+        return RelationshipTemplatePublicKey.from({
+            id: templateKeyId,
+            algorithm: publicKey.algorithm,
+            publicKey: publicKey.publicKey
+        })
     }
 
     public async decryptPeer(

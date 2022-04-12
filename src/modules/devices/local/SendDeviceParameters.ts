@@ -22,10 +22,6 @@ export class SendDeviceParameters extends CoreSerializable implements ISendDevic
     public isAdmin?: boolean
 
     public static from(value: ISendDeviceParameters): SendDeviceParameters {
-        return super.fromT(value, SendDeviceParameters)
-    }
-
-    public static deserialize(value: string): SendDeviceParameters {
-        return super.deserializeT(value, SendDeviceParameters)
+        return this.fromAny(value)
     }
 }

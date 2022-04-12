@@ -10,10 +10,6 @@ export interface ICertificateItem extends ICoreSerializable {}
 @type("CertificateItem")
 export class CertificateItem extends CoreSerializable {
     public static from(value: ICertificateItem): CertificateItem {
-        return super.fromT(value, CertificateItem)
-    }
-
-    public static deserialize(value: string): CertificateItem {
-        return super.deserializeT(value, CertificateItem)
+        return this.fromAny(value)
     }
 }

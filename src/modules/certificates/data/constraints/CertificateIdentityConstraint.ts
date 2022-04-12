@@ -13,6 +13,6 @@ export class CertificateIdentityConstraint extends CertificateConstraint {
     public identity: CoreAddress
 
     public static from(value: ICertificateIdentityConstraint): CertificateIdentityConstraint {
-        return super.fromT(value, CertificateIdentityConstraint)
+        return this.fromAny(value)
     }
 }

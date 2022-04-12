@@ -50,11 +50,7 @@ export class Token extends CoreSynchronizable implements IToken {
     public metadataModifiedAt?: CoreDate
 
     public static from(value: IToken): Token {
-        return super.fromT(value, Token)
-    }
-
-    public static deserialize(value: string): Token {
-        return super.deserializeT(value, Token)
+        return this.fromAny(value)
     }
 
     public toTokenReference(): TokenReference {

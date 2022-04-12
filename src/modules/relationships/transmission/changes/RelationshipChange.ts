@@ -65,10 +65,6 @@ export class RelationshipChange extends CoreSerializable implements IRelationshi
     }
 
     public static from(value: IRelationshipChange): RelationshipChange {
-        return super.fromT(value, RelationshipChange)
-    }
-
-    public static deserialize(value: string): RelationshipChange {
-        return super.deserializeT(value, RelationshipChange)
+        return this.fromAny(value)
     }
 }

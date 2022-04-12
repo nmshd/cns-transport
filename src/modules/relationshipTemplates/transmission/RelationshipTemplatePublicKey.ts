@@ -1,7 +1,6 @@
 import { ISerialized, serialize, type, validate } from "@js-soft/ts-serval"
 import {
     CoreBuffer,
-    CryptoExchangeAlgorithm,
     CryptoExchangePublicKey,
     ICryptoExchangePublicKey,
     ICryptoExchangePublicKeySerialized
@@ -21,21 +20,13 @@ export class RelationshipTemplatePublicKey extends CryptoExchangePublicKey imple
     @validate()
     public id: CoreId
 
-    public constructor(id: CoreId, algorithm: CryptoExchangeAlgorithm, publicKey: CoreBuffer) {
-        super(algorithm, publicKey)
-        this.id = id
-    }
-
     public toJSON(verbose = true): IRelationshipTemplatePublicKeySerialized {
-        const obj: IRelationshipTemplatePublicKeySerialized = {
+        return {
             id: this.id.toString(),
             pub: this.publicKey.toBase64URL(),
-            alg: this.algorithm
+            alg: this.algorithm,
+            "@type": verbose ? "RelationshipTemplatePublicKey" : undefined
         }
-        if (verbose) {
-            obj["@type"] = "RelationshipTemplatePublicKey"
-        }
-        return obj
     }
 
     public toBase64(): string {
@@ -46,18 +37,18 @@ export class RelationshipTemplatePublicKey extends CryptoExchangePublicKey imple
         return JSON.stringify(this.toJSON(verbose))
     }
 
-    public static fromJSON(value: IRelationshipTemplatePublicKeySerialized): RelationshipTemplatePublicKey {
-        const key = CryptoExchangePublicKey.fromJSON(value)
+    protected static override preFrom(value: any): any {
+        const newValue = super.preFrom(value)
+        newValue.id = value.id
 
-        return new RelationshipTemplatePublicKey(CoreId.from(value.id), key.algorithm, key.publicKey)
+        return newValue
+    }
+
+    public static fromJSON(value: IRelationshipTemplatePublicKeySerialized): RelationshipTemplatePublicKey {
+        return this.fromAny(value)
     }
 
     public static from(value: IRelationshipTemplatePublicKey): RelationshipTemplatePublicKey {
-        return new RelationshipTemplatePublicKey(CoreId.from(value.id), value.algorithm, value.publicKey)
-    }
-
-    public static deserialize(value: string): RelationshipTemplatePublicKey {
-        const obj = JSON.parse(value)
-        return this.fromJSON(obj)
+        return this.fromAny(value)
     }
 }

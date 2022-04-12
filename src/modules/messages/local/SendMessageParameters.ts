@@ -23,10 +23,6 @@ export class SendMessageParameters extends CoreSerializable implements ISendMess
     public attachments?: File[]
 
     public static from(value: ISendMessageParameters): SendMessageParameters {
-        return super.fromT(value, SendMessageParameters)
-    }
-
-    public static deserialize(value: string): SendMessageParameters {
-        return super.deserializeT(value, SendMessageParameters)
+        return this.fromAny(value)
     }
 }

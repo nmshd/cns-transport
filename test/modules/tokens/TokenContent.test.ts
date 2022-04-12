@@ -39,7 +39,7 @@ export class TokenContentTest extends AbstractTest {
 
             describe("Any Content", function () {
                 it("should send the token", async function () {
-                    const value: any = Serializable.from({ any: "content", submitted: true })
+                    const value: any = Serializable.fromAny({ any: "content", submitted: true })
                     expect(value).instanceOf(JSONWrapper)
 
                     await account.tokens.sendToken({

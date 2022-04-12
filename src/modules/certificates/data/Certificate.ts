@@ -29,11 +29,7 @@ export class Certificate extends CoreSerializable {
     public signature: CryptoSignature
 
     public static from(value: ICertificate): Certificate {
-        return super.fromT(value, Certificate)
-    }
-
-    public static deserialize(value: string): Certificate {
-        return super.deserializeT(value, Certificate)
+        return this.fromAny(value)
     }
 
     /**

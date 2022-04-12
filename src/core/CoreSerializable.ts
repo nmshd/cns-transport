@@ -18,17 +18,9 @@ export class CoreSerializable extends Serializable implements ISerializable {
         return CoreBuffer.fromUtf8(this.serialize()).toBase64URL()
     }
 
-    public static from(value: ICoreSerializable, type: new () => CoreSerializable): CoreSerializable {
-        return super.fromT(value, type)
-    }
-
-    public static fromT<T>(value: ICoreSerializable, type: new () => T): T {
-        return super.fromT(value, type)
-    }
-
-    public static fromBase64T<T>(value: string, type: new () => T): T {
+    public static fromBase64T<T>(value: string): T {
         const serialized = CoreBuffer.fromBase64URL(value).toUtf8()
-        return CoreSerializable.deserializeT(serialized, type)
+        return (this as any).deserialize(serialized)
     }
 
     public static fromBase64Unknown(value: string): Serializable {

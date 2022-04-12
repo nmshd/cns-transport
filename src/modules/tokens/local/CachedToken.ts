@@ -41,10 +41,6 @@ export class CachedToken extends CoreSerializable implements ICachedToken {
     public createdByDevice: CoreId
 
     public static from(value: ICachedToken): CachedToken {
-        return super.fromT(value, CachedToken)
-    }
-
-    public static deserialize(value: string): CachedToken {
-        return super.deserializeT(value, CachedToken)
+        return this.fromAny(value)
     }
 }

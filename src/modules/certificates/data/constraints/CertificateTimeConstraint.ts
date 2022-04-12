@@ -23,6 +23,6 @@ export class CertificateTimeConstraint extends CertificateConstraint {
     public validTo: CoreDate
 
     public static from(value: ICertificateTimeConstraint): CertificateTimeConstraint {
-        return super.fromT(value, CertificateTimeConstraint)
+        return this.fromAny(value)
     }
 }

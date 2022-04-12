@@ -58,7 +58,7 @@ export class TokenControllerTest extends AbstractTest {
             it("should send and receive a TokenContent as String", async function () {
                 tempDate = CoreDate.utc().subtract(that.tempDateThreshold)
                 const expiresAt = CoreDate.utc().add({ minutes: 5 })
-                const content = Serializable.from({ content: "TestToken" })
+                const content = Serializable.fromAny({ content: "TestToken" })
                 const sentToken = await sender.tokens.sendToken({
                     content,
                     expiresAt,

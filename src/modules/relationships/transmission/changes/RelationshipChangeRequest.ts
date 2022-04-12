@@ -41,10 +41,6 @@ export class RelationshipChangeRequest extends CoreSerializable implements IRela
     }
 
     public static from(value: IRelationshipChangeRequest): RelationshipChangeRequest {
-        return super.fromT(value, RelationshipChangeRequest)
-    }
-
-    public static deserialize(value: string): RelationshipChangeRequest {
-        return super.deserializeT(value, RelationshipChangeRequest)
+        return this.fromAny(value)
     }
 }

@@ -112,7 +112,7 @@ export class CachedFile extends CoreSerializable implements ICachedFile {
     public deletedByDevice?: CoreId
 
     public static from(value: ICachedFile): CachedFile {
-        return super.fromT(value, CachedFile)
+        return this.fromAny(value)
     }
 
     public static fromBackbone(backboneResponse: BackboneGetFilesResponse, metadata: FileMetadata): CachedFile {

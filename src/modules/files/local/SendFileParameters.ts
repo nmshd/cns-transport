@@ -40,10 +40,6 @@ export class SendFileParameters extends CoreSerializable implements ISendFilePar
     public buffer: CoreBuffer
 
     public static from(value: ISendFileParameters): SendFileParameters {
-        return super.fromT(value, SendFileParameters)
-    }
-
-    public static deserialize(value: string): SendFileParameters {
-        return super.deserializeT(value, SendFileParameters)
+        return this.fromAny(value)
     }
 }

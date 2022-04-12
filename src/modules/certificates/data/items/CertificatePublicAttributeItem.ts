@@ -21,6 +21,6 @@ export class CertificatePublicAttributeItem extends CertificateItem {
     public value: string
 
     public static from(value: ICertificatePublicAttributeItem): CertificatePublicAttributeItem {
-        return super.fromT(value, CertificatePublicAttributeItem)
+        return this.fromAny(value)
     }
 }

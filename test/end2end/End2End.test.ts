@@ -603,9 +603,7 @@ export class End2EndTest extends AbstractTest {
 
             it("should create a token and read it afterwards", async function () {
                 const token = await from.tokens.sendToken({
-                    content: Serializable.from({
-                        content: "someContent"
-                    }),
+                    content: Serializable.fromAny({ content: "someContent" }),
                     expiresAt: CoreDate.utc().add({ minutes: 10 }),
                     ephemeral: false
                 })

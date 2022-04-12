@@ -34,15 +34,15 @@ export class CoreId extends CoreSerializable implements ICoreId {
     }
 
     public static from(value: ICoreId | string): CoreId {
-        if (typeof value === "string" || value instanceof String) {
-            return super.fromT({ id: value }, CoreId)
-        }
-
-        return super.fromT(value, CoreId)
+        return this.fromAny(value)
     }
 
-    public static deserialize(value: string): CoreId {
-        return this.from(value)
+    protected static override preFrom(value: any): any {
+        if (typeof value === "string") {
+            return { id: value }
+        }
+
+        return value
     }
 
     public serialize(): string {

@@ -135,11 +135,7 @@ export class Relationship extends CoreSynchronizable implements IRelationship {
     }
 
     public static from(value: IRelationship): Relationship {
-        return super.fromT(value, Relationship)
-    }
-
-    public static deserialize(value: string): Relationship {
-        return super.deserializeT(value, Relationship)
+        return this.fromAny(value)
     }
 
     public setCache(cache: CachedRelationship): this {

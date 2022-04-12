@@ -38,6 +38,6 @@ export class CertificatePrivateAttributeItemSource extends CertificateItem {
     }
 
     public static from(value: ICertificatePrivateAttributeItemSource): CertificatePrivateAttributeItemSource {
-        return super.fromT(value, CertificatePrivateAttributeItemSource)
+        return this.fromAny(value)
     }
 }

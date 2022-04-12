@@ -42,6 +42,6 @@ export class ACacheableSynchronizedCollectionItem
     public someTechnicalProperty?: string
 
     public static from(value: IACacheableSynchronizedCollectionItem): ACacheableSynchronizedCollectionItem {
-        return super.fromT(value, ACacheableSynchronizedCollectionItem)
+        return this.fromAny(value)
     }
 }

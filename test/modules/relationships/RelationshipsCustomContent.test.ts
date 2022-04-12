@@ -30,9 +30,7 @@ export class RelationshipsCustomContentTest extends AbstractTest {
             it("should create a relationship with custom content", async function () {
                 const tokenReference = await TestUtil.sendRelationshipTemplateAndToken(sender)
                 const template = await TestUtil.fetchRelationshipTemplateFromTokenReference(recipient, tokenReference)
-                const customContent = Serializable.from({
-                    content: "TestToken"
-                })
+                const customContent = Serializable.fromAny({ content: "TestToken" })
                 const relRecipient = await TestUtil.sendRelationship(recipient, template, customContent)
                 const relRecipientRequest = relRecipient.cache!.creationChange.request
 

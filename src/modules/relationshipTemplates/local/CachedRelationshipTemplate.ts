@@ -51,11 +51,7 @@ export class CachedRelationshipTemplate extends CoreSerializable implements ICac
     public maxNumberOfRelationships?: number
 
     public static from(value: ICachedRelationshipTemplate): CachedRelationshipTemplate {
-        return super.fromT(value, CachedRelationshipTemplate)
-    }
-
-    public static deserialize(value: string): CachedRelationshipTemplate {
-        return super.deserializeT(value, CachedRelationshipTemplate)
+        return this.fromAny(value)
     }
 
     public static validateMaxNumberOfRelationships(value?: number): string {

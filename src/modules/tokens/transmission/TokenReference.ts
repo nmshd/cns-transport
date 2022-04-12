@@ -50,14 +50,6 @@ export class TokenReference extends CoreSerializable implements ITokenReference 
     }
 
     public static from(value: ITokenReference | string): TokenReference {
-        return super.fromT(value, TokenReference)
-    }
-
-    public static deserialize(value: string): TokenReference {
-        try {
-            return super.deserializeT(value, TokenReference)
-        } catch (e) {
-            return this.from(value)
-        }
+        return this.fromAny(value)
     }
 }

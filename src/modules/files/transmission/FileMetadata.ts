@@ -50,10 +50,6 @@ export class FileMetadata extends CoreSerializable implements IFileMetadata {
     public mimetype: string
 
     public static from(value: IFileMetadata): FileMetadata {
-        return super.fromT(value, FileMetadata)
-    }
-
-    public static deserialize(value: string): FileMetadata {
-        return super.deserializeT(value, FileMetadata)
+        return this.fromAny(value)
     }
 }

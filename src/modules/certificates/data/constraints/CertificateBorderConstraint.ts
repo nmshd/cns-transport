@@ -39,6 +39,6 @@ export class CertificateBorderConstraint extends CertificateConstraint {
     public state: string
 
     public static from(value: ICertificateBorderConstraint): CertificateBorderConstraint {
-        return super.fromT(value, CertificateBorderConstraint)
+        return this.fromAny(value)
     }
 }

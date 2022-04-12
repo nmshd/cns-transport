@@ -58,7 +58,7 @@ export class Message extends CoreSynchronizable implements IMessage {
     public relationshipIds: CoreId[]
 
     public static from(value: IMessage): Message {
-        return super.fromT(value, Message)
+        return this.fromAny(value)
     }
 
     public setCache(cache: CachedMessage): this {

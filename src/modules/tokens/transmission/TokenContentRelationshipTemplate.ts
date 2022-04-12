@@ -18,10 +18,6 @@ export class TokenContentRelationshipTemplate extends CoreSerializable implement
     public secretKey: CryptoSecretKey
 
     public static from(value: ITokenContentRelationshipTemplate): TokenContentRelationshipTemplate {
-        return super.fromT(value, TokenContentRelationshipTemplate)
-    }
-
-    public static deserialize(value: string): TokenContentRelationshipTemplate {
-        return super.deserializeT(value, TokenContentRelationshipTemplate)
+        return this.fromAny(value)
     }
 }

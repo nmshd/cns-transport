@@ -49,10 +49,6 @@ export class CertificateContent extends CoreSerializable {
     public items: CertificateItem[]
 
     public static from(value: ICertificateContent): CertificateContent {
-        return super.fromT(value, CertificateContent)
-    }
-
-    public static deserialize(value: string): CertificateContent {
-        return super.deserializeT(value, CertificateContent)
+        return this.fromAny(value)
     }
 }

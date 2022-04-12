@@ -55,10 +55,6 @@ export class DatawalletModification extends CoreSerializable implements IDatawal
     public datawalletVersion?: number
 
     public static from(value: IDatawalletModification): DatawalletModification {
-        return super.fromT(value, DatawalletModification)
-    }
-
-    public static deserialize(value: string): DatawalletModification {
-        return super.deserializeT(value, DatawalletModification)
+        return this.fromAny(value)
     }
 }

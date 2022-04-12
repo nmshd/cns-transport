@@ -53,6 +53,6 @@ export class SecretContainerPlain extends CoreSerializable implements ISecretCon
     public secret: Serializable
 
     public static from(value: ISecretContainerPlain): SecretContainerPlain {
-        return super.fromT(value, SecretContainerPlain)
+        return this.fromAny(value)
     }
 }

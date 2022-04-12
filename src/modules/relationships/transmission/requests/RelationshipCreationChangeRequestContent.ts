@@ -26,10 +26,6 @@ export class RelationshipCreationChangeRequestContent
     public templateId: CoreId
 
     public static from(value: IRelationshipCreationChangeRequestContent): RelationshipCreationChangeRequestContent {
-        return super.fromT(value, RelationshipCreationChangeRequestContent)
-    }
-
-    public static deserialize(value: string): RelationshipCreationChangeRequestContent {
-        return super.deserializeT(value, RelationshipCreationChangeRequestContent)
+        return this.fromAny(value)
     }
 }
