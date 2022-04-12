@@ -1,4 +1,4 @@
-import { serialize, serializeOnly, validate } from "@js-soft/ts-serval"
+import { schema } from "@js-soft/ts-serval"
 import { DateTime, DateTimeUnit, Duration, DurationLike, Interval } from "luxon"
 import { CoreSerializable, ICoreSerializable } from "../CoreSerializable"
 import { TransportErrors } from "../TransportErrors"
@@ -7,21 +7,20 @@ export interface ICoreDate extends ICoreSerializable {
     date: string
 }
 
-@serializeOnly("date", "string")
-export class CoreDate extends CoreSerializable implements ICoreDate {
+@schema("CoreDate")
+export class CoreDate extends CoreSerializable {
     private readonly _dateTime: DateTime
     public get dateTime(): DateTime {
         return this._dateTime
     }
 
-    @validate()
-    @serialize()
-    public readonly date: string
+    public get date(): string {
+        return this.dateTime.toISODate()
+    }
 
     public constructor(dateTime: DateTime = DateTime.utc()) {
         super()
         this._dateTime = dateTime
-        this.date = dateTime.toISO()
     }
 
     public static utc(): CoreDate {
@@ -153,11 +152,15 @@ export class CoreDate extends CoreSerializable implements ICoreDate {
         return this.dateTime.toLocaleString()
     }
 
+    public toJSON(): string {
+        return this.dateTime.toISO()
+    }
+
     public serialize(): string {
         return this.dateTime.toISO()
     }
 
-    public static override preFrom(value: any): any {
+    protected static override preFrom(value: any): any {
         if (typeof value === "undefined") {
             throw TransportErrors.util.date.undefined()
         }
@@ -169,17 +172,21 @@ export class CoreDate extends CoreSerializable implements ICoreDate {
                 }
 
                 const iso = value.toISOString()
-                return { date: DateTime.fromISO(iso, { zone: "utc" }) }
+                return DateTime.fromISO(iso, { zone: "utc" })
             }
 
-            return { date: DateTime.fromISO(value.date, { zone: "utc" }) }
+            return DateTime.fromISO(value.date, { zone: "utc" })
         }
 
         if (typeof value === "number") {
-            return { date: DateTime.fromMillis(value) }
+            return DateTime.fromMillis(value)
         }
 
-        return { date: DateTime.fromISO(value, { zone: "utc" }).toUTC() }
+        if (typeof value === "string") {
+            return DateTime.fromISO(value, { zone: "utc" }).toUTC()
+        }
+
+        throw TransportErrors.util.date.invalid()
     }
 
     public static from(value: ICoreDate | string | number): CoreDate {

@@ -74,7 +74,7 @@
         "@js-soft/eslint-config-ts": "1.5.2",
         "@js-soft/license-check": "1.0.4",
         "@js-soft/node-logger": "1.0.1",
-        "@js-soft/ts-serval": "2.0.1",
+        "@js-soft/ts-serval": "2.0.2",
         "@js-soft/web-logger": "1.0.1",
         "@nmshd/crypto": "2.0.0",
         "@types/chai": "^4.3.0",
