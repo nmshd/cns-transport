@@ -1,4 +1,4 @@
-import { serialize, serializeOnly, validate } from "@js-soft/ts-serval"
+import { serializeOnly } from "@js-soft/ts-serval"
 import { DateTime, DateTimeUnit, Duration, DurationLike, Interval } from "luxon"
 import { CoreSerializable, ICoreSerializable } from "../CoreSerializable"
 import { TransportErrors } from "../TransportErrors"
@@ -14,8 +14,6 @@ export class CoreDate extends CoreSerializable implements ICoreDate {
         return this._dateTime
     }
 
-    @validate()
-    @serialize()
     public readonly date: string
 
     public constructor(dateTime: DateTime = DateTime.utc()) {
