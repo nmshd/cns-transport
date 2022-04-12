@@ -1,4 +1,4 @@
-import { serializeOnly } from "@js-soft/ts-serval"
+import { serialize, serializeOnly, validate } from "@js-soft/ts-serval"
 import { DateTime, DateTimeUnit, Duration, DurationLike, Interval } from "luxon"
 import { CoreSerializable, ICoreSerializable } from "../CoreSerializable"
 import { TransportErrors } from "../TransportErrors"
@@ -14,6 +14,8 @@ export class CoreDate extends CoreSerializable implements ICoreDate {
         return this._dateTime
     }
 
+    @validate()
+    @serialize()
     public readonly date: string
 
     public constructor(dateTime: DateTime = DateTime.utc()) {
@@ -167,17 +169,17 @@ export class CoreDate extends CoreSerializable implements ICoreDate {
                 }
 
                 const iso = value.toISOString()
-                return DateTime.fromISO(iso, { zone: "utc" })
+                return { date: DateTime.fromISO(iso, { zone: "utc" }) }
             }
 
-            return DateTime.fromISO(value.date, { zone: "utc" })
+            return { date: DateTime.fromISO(value.date, { zone: "utc" }) }
         }
 
         if (typeof value === "number") {
-            return DateTime.fromMillis(value)
+            return { date: DateTime.fromMillis(value) }
         }
 
-        return DateTime.fromISO(value, { zone: "utc" }).toUTC()
+        return { date: DateTime.fromISO(value, { zone: "utc" }).toUTC() }
     }
 
     public static from(value: ICoreDate | string | number): CoreDate {
