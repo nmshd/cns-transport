@@ -56,7 +56,7 @@ export class SyncClient extends RESTClientAuthenticate implements ISyncClient {
     public constructor(config: IConfig, authenticator: Authenticator) {
         super(config, authenticator, {
             headers: {
-                "x-supported-datawallet-version": config.supportedDatawalletVersion.toString()
+                "x-supported-datawallet-version": config.supportedDatawalletVersion.toString() // eslint-disable-line @typescript-eslint/naming-convention
             }
         })
     }

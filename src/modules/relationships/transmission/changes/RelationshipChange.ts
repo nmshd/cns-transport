@@ -1,4 +1,4 @@
-import { ISerializable, serialize, validate } from "@js-soft/ts-serval"
+import { ISerializable, serialize, type, validate } from "@js-soft/ts-serval"
 import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../../core"
 import { CoreId, ICoreId } from "../../../../core/types/CoreId"
 import { BackboneGetRelationshipsChangesResponse } from "../../backbone/BackboneGetRelationshipsChanges"
@@ -16,6 +16,7 @@ export interface IRelationshipChange extends ICoreSerializableAsync {
     type: RelationshipChangeType
 }
 
+@type("RelationshipChange")
 export class RelationshipChange extends CoreSerializableAsync implements IRelationshipChange {
     @validate()
     @serialize()

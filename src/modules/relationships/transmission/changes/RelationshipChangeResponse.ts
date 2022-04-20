@@ -1,4 +1,4 @@
-import { ISerializableAsync, SerializableAsync, serialize, validate } from "@js-soft/ts-serval"
+import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
 import { CoreAddress, CoreDate, CoreSerializableAsync, ICoreAddress, ICoreSerializableAsync } from "../../../../core"
 import { ICoreDate } from "../../../../core/types/CoreDate"
 import { CoreId, ICoreId } from "../../../../core/types/CoreId"
@@ -11,6 +11,7 @@ export interface IRelationshipChangeResponse extends ICoreSerializableAsync {
     content?: ISerializableAsync
 }
 
+@type("RelationshipChangeResponse")
 export class RelationshipChangeResponse extends CoreSerializableAsync implements IRelationshipChangeResponse {
     @validate()
     @serialize()
