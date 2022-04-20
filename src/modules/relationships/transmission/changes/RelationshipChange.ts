@@ -16,7 +16,7 @@ export interface IRelationshipChange extends ICoreSerializableAsync {
     type: RelationshipChangeType
 }
 
-@type("RelationshipChangeRequest")
+@type("RelationshipChange")
 export class RelationshipChange extends CoreSerializableAsync implements IRelationshipChange {
     @validate()
     @serialize()
