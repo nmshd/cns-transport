@@ -16,7 +16,7 @@ export interface IRelationshipTemplatePublicKeySerialized extends ICryptoExchang
 
 @type("RelationshipTemplatePublicKey")
 export class RelationshipTemplatePublicKey extends CryptoExchangePublicKey implements IRelationshipTemplatePublicKey {
-    @serialize({ enforceString: true })
+    @serialize()
     @validate()
     public id: CoreId
 
