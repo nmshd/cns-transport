@@ -1,4 +1,4 @@
-import { serialize, serializeOnly, validate } from "@js-soft/ts-serval"
+import { serialize, serializeOnly, type, validate } from "@js-soft/ts-serval"
 import { Random, RandomCharacterRange } from "../../util/Random"
 import { CoreSerializable, ICoreSerializable } from "../CoreSerializable"
 import { TransportErrors } from "../TransportErrors"
@@ -10,6 +10,7 @@ export interface ICoreId extends ICoreSerializable {
 /**
  * A CoreId is any kind of identifier we have in the system.
  */
+@type("CoreId")
 @serializeOnly("id", "string")
 export class CoreId extends CoreSerializable implements ICoreId {
     @validate()
