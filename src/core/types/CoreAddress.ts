@@ -15,20 +15,16 @@ export class CoreAddress extends CoreSerializable {
     @serialize()
     public address: string
 
-    public static from(value: ICoreAddress | string): CoreAddress {
+    protected static override preFrom(value: any): any {
         if (typeof value === "string") {
-            return super.fromT({ address: value }, CoreAddress)
+            return { address: value }
         }
 
-        return super.fromT(value, CoreAddress)
+        return value
     }
 
-    public static deserialize(value: string): CoreAddress {
-        try {
-            return super.deserializeT(value, CoreAddress)
-        } catch (e) {
-            return this.from(value)
-        }
+    public static from(value: ICoreAddress | string): CoreAddress {
+        return this.fromAny(value)
     }
 
     public equals(address?: CoreAddress): boolean {
@@ -37,11 +33,11 @@ export class CoreAddress extends CoreSerializable {
         return this.address === address.toString()
     }
 
-    public toString(): string {
+    public override toString(): string {
         return this.address
     }
 
-    public serialize(): string {
+    public override serialize(): string {
         return this.address
     }
 }

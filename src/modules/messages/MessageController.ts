@@ -1,4 +1,4 @@
-import { ISerializableAsync } from "@js-soft/ts-serval"
+import { ISerializable } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoCipher, CryptoSecretKey, ICryptoSignature } from "@nmshd/crypto"
 import { nameof } from "ts-simple-nameof"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, ICoreAddress, TransportErrors } from "../../core"
@@ -36,7 +36,7 @@ export class MessageController extends TransportController {
         this.relationships = parent.relationships
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.secrets = new RelationshipSecretController(this.parent)
@@ -76,7 +76,7 @@ export class MessageController extends TransportController {
 
     public async getMessage(id: CoreId): Promise<Message | undefined> {
         const messageDoc = await this.messages.read(id.toString())
-        return messageDoc ? await Message.from(messageDoc) : undefined
+        return messageDoc ? Message.from(messageDoc) : undefined
     }
 
     public async updateCache(ids: string[]): Promise<Message[]> {
@@ -101,8 +101,8 @@ export class MessageController extends TransportController {
 
         const decryptionPromises = backboneMessages.map(async (m) => {
             const messageDoc = await this.messages.read(m.id)
-            const message = await Message.from(messageDoc)
-            const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(m)
+            const message = Message.from(messageDoc)
+            const envelope = this.getEnvelopeFromBackboneGetMessagesResponse(m)
 
             const cachedMessage = (await this.decryptMessage(envelope, message.secretKey))[0]
             return { id: CoreId.from(m.id), cache: cachedMessage }
@@ -117,7 +117,7 @@ export class MessageController extends TransportController {
             throw TransportErrors.general.recordNotFound(Message, id).logWith(this._log)
         }
 
-        const message = await Message.from(messageDoc)
+        const message = Message.from(messageDoc)
 
         await this.updateCacheOfMessage(message, response)
         await this.messages.update(messageDoc, message)
@@ -131,7 +131,7 @@ export class MessageController extends TransportController {
             response = (await this.client.getMessage(messageId)).value
         }
 
-        const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(response)
+        const envelope = this.getEnvelopeFromBackboneGetMessagesResponse(response)
         const [cachedMessage, messageKey] = await this.decryptMessage(envelope, message.secretKey)
 
         message.secretKey = messageKey
@@ -141,14 +141,14 @@ export class MessageController extends TransportController {
     public async loadPeerMessage(id: CoreId): Promise<Message> {
         const response = (await this.client.getMessage(id.toString())).value
 
-        const envelope = await this.getEnvelopeFromBackboneGetMessagesResponse(response)
+        const envelope = this.getEnvelopeFromBackboneGetMessagesResponse(response)
         const [cachedMessage, messageKey, relationship] = await this.decryptMessage(envelope)
 
         if (!relationship) {
             throw TransportErrors.general.recordNotFound(Relationship, envelope.id.toString()).logWith(this._log)
         }
 
-        const message = await Message.from({
+        const message = Message.from({
             id: envelope.id,
             isOwn: false,
             secretKey: messageKey,
@@ -160,12 +160,12 @@ export class MessageController extends TransportController {
         return message
     }
 
-    private async getEnvelopeFromBackboneGetMessagesResponse(response: BackboneGetMessagesResponse) {
+    private getEnvelopeFromBackboneGetMessagesResponse(response: BackboneGetMessagesResponse) {
         const recipients = []
 
         for (const recipient of response.recipients) {
-            const sealedRecipient = await MessageEnvelopeRecipient.from({
-                encryptedKey: await CryptoCipher.fromBase64(recipient.encryptedKey),
+            const sealedRecipient = MessageEnvelopeRecipient.from({
+                encryptedKey: CryptoCipher.fromBase64(recipient.encryptedKey),
                 address: CoreAddress.from(recipient.address),
                 receivedAt: recipient.receivedAt ? CoreDate.from(recipient.receivedAt) : undefined,
                 receivedByDevice: recipient.receivedByDevice ? CoreId.from(recipient.receivedByDevice) : undefined
@@ -173,12 +173,12 @@ export class MessageController extends TransportController {
             recipients.push(sealedRecipient)
         }
 
-        const envelope = await MessageEnvelope.from({
+        const envelope = MessageEnvelope.from({
             id: CoreId.from(response.id),
             createdAt: CoreDate.from(response.createdAt),
             createdBy: CoreAddress.from(response.createdBy),
             createdByDevice: CoreId.from(response.createdByDevice),
-            cipher: await CryptoCipher.fromBase64(response.body),
+            cipher: CryptoCipher.fromBase64(response.body),
             attachments: response.attachments,
             recipients: recipients
         })
@@ -186,14 +186,14 @@ export class MessageController extends TransportController {
         return envelope
     }
 
-    public async setMessageMetadata(idOrMessage: CoreId | Message, metadata: ISerializableAsync): Promise<Message> {
+    public async setMessageMetadata(idOrMessage: CoreId | Message, metadata: ISerializable): Promise<Message> {
         const id = idOrMessage instanceof CoreId ? idOrMessage.toString() : idOrMessage.id.toString()
         const messageDoc = await this.messages.read(id)
         if (!messageDoc) {
             throw TransportErrors.general.recordNotFound(Message, id.toString()).logWith(this._log)
         }
 
-        const message = await Message.from(messageDoc)
+        const message = Message.from(messageDoc)
         message.setMetadata(metadata)
         await this.messages.update(messageDoc, message)
 
@@ -201,7 +201,7 @@ export class MessageController extends TransportController {
     }
 
     public async sendMessage(parameters: ISendMessageParameters): Promise<Message> {
-        parameters = await SendMessageParameters.from(parameters)
+        parameters = SendMessageParameters.from(parameters)
         if (!parameters.attachments) parameters.attachments = []
 
         const secret: CryptoSecretKey = await CoreCrypto.generateSecretKey()
@@ -219,7 +219,7 @@ export class MessageController extends TransportController {
                 serializedSecret
             )
             envelopeRecipients.push(
-                await MessageEnvelopeRecipient.from({
+                MessageEnvelopeRecipient.from({
                     address: recipient,
                     encryptedKey: cipherForRecipient
                 })
@@ -230,12 +230,12 @@ export class MessageController extends TransportController {
         const publicAttachmentArray: CoreId[] = []
         const fileReferences: FileReference[] = []
         for (const fileObject of parameters.attachments) {
-            const file = await File.from(fileObject)
-            fileReferences.push(await file.toFileReference())
+            const file = File.from(fileObject)
+            fileReferences.push(file.toFileReference())
             publicAttachmentArray.push(file.id)
         }
 
-        const plaintext: MessagePlain = await MessagePlain.from({
+        const plaintext: MessagePlain = MessagePlain.from({
             content: parameters.content,
             recipients: addressArray,
             createdAt: CoreDate.utc(),
@@ -257,7 +257,7 @@ export class MessageController extends TransportController {
                 relationship.relationshipSecretId,
                 plaintextBuffer
             )
-            const messageSignature: MessageSignature = await MessageSignature.from({
+            const messageSignature: MessageSignature = MessageSignature.from({
                 recipient: recipient,
                 signature: signature
             })
@@ -265,7 +265,7 @@ export class MessageController extends TransportController {
             relationshipIds.push(relationship.id)
         }
 
-        const signed: MessageSigned = await MessageSigned.from({
+        const signed: MessageSigned = MessageSigned.from({
             message: serializedPlaintext,
             signatures: messageSignatures
         })
@@ -293,7 +293,7 @@ export class MessageController extends TransportController {
             })
         ).value
 
-        const cachedMessage: CachedMessage = await CachedMessage.from({
+        const cachedMessage: CachedMessage = CachedMessage.from({
             content: parameters.content,
             createdAt: CoreDate.from(response.createdAt),
             createdBy: this.parent.identity.identity.address,
@@ -303,7 +303,7 @@ export class MessageController extends TransportController {
             receivedByEveryone: false
         })
 
-        const message: Message = await Message.from({
+        const message: Message = Message.from({
             id: CoreId.from(response.id),
             secretKey: secret,
             cache: cachedMessage,
@@ -321,8 +321,8 @@ export class MessageController extends TransportController {
         this.log.trace(`Decrypting own envelope with id ${envelope.id.toString()}...`)
 
         const plaintextMessageBuffer: CoreBuffer = await CoreCrypto.decrypt(envelope.cipher, secretKey)
-        const signedMessage: MessageSigned = await MessageSigned.deserialize(plaintextMessageBuffer.toUtf8())
-        const messagePlain = await MessagePlain.from(JSON.parse(signedMessage.message))
+        const signedMessage: MessageSigned = MessageSigned.deserialize(plaintextMessageBuffer.toUtf8())
+        const messagePlain = MessagePlain.from(JSON.parse(signedMessage.message))
 
         return messagePlain
     }
@@ -338,10 +338,10 @@ export class MessageController extends TransportController {
         }
 
         const plaintextKeyBuffer = await this.secrets.decryptPeer(relationship.relationshipSecretId, ownKeyCipher, true)
-        const plaintextKey: CryptoSecretKey = await CryptoSecretKey.deserialize(plaintextKeyBuffer.toUtf8())
+        const plaintextKey: CryptoSecretKey = CryptoSecretKey.deserialize(plaintextKeyBuffer.toUtf8())
         const plaintextMessageBuffer: CoreBuffer = await CoreCrypto.decrypt(envelope.cipher, plaintextKey)
 
-        const signedMessage: MessageSigned = await MessageSigned.deserialize(plaintextMessageBuffer.toUtf8())
+        const signedMessage: MessageSigned = MessageSigned.deserialize(plaintextMessageBuffer.toUtf8())
 
         const signature = signedMessage.signatures.find((s) => this.parent.identity.isMe(s.recipient))?.signature
 
@@ -349,7 +349,7 @@ export class MessageController extends TransportController {
             throw TransportErrors.messages.signatureListMismatch(envelope.id.toString()).logWith(this._log)
         }
 
-        const messagePlain = await MessagePlain.from(JSON.parse(signedMessage.message))
+        const messagePlain = MessagePlain.from(JSON.parse(signedMessage.message))
         if (signedMessage.signatures.length !== messagePlain.recipients.length) {
             this.log.debug(`Number of signatures does not match number of recipients from envelope ${envelope.id}.`)
         }
@@ -423,7 +423,7 @@ export class MessageController extends TransportController {
 
         this.log.trace("Attachments fetched. Creating message...")
 
-        const cachedMessage: CachedMessage = await CachedMessage.from({
+        const cachedMessage: CachedMessage = CachedMessage.from({
             createdBy: envelope.createdBy,
             createdByDevice: envelope.createdByDevice,
             recipients: envelope.recipients,

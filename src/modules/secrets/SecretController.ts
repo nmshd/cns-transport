@@ -1,4 +1,4 @@
-import { SerializableAsync } from "@js-soft/ts-serval"
+import { Serializable } from "@js-soft/ts-serval"
 import {
     CoreBuffer,
     CryptoCipher,
@@ -49,7 +49,7 @@ export class SecretController extends TransportController {
         super(name, parent)
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.secrets = await this.parent.getSynchronizedCollection(DbCollectionName.Secrets)
@@ -96,7 +96,7 @@ export class SecretController extends TransportController {
             validTo: validTo,
             active: true
         }
-        const container: SecretContainerCipher = await SecretContainerCipher.from(secretContainerInterface)
+        const container: SecretContainerCipher = SecretContainerCipher.from(secretContainerInterface)
 
         this.log.trace(
             `Created secret id:${container.id} name:${container.name} on ${container.createdAt.toISOString()}.`
@@ -111,7 +111,7 @@ export class SecretController extends TransportController {
         const secrets = await this.secrets.find({ name: name })
         const plainSecrets: SecretContainerPlain[] = []
         for (const secretObj of secrets) {
-            const secret: SecretContainerCipher = await SecretContainerCipher.from(secretObj)
+            const secret: SecretContainerCipher = SecretContainerCipher.from(secretObj)
             const plainSecret: SecretContainerPlain | undefined = await this.loadSecretById(secret.id)
             if (plainSecret) {
                 plainSecrets.push(plainSecret)
@@ -137,7 +137,7 @@ export class SecretController extends TransportController {
             this.log.warn(`More than one active secret has been found for secret name '${name}'.`)
         }
 
-        const secret: SecretContainerCipher = await SecretContainerCipher.from(secrets[0])
+        const secret: SecretContainerCipher = SecretContainerCipher.from(secrets[0])
         return secret
     }
 
@@ -156,7 +156,7 @@ export class SecretController extends TransportController {
     ): Promise<SecretContainerCipher> {
         const oldSecret = await this.secrets.findOne({ name: name, active: true })
         if (oldSecret) {
-            const updatedOldSecret = await SecretContainerCipher.from(oldSecret)
+            const updatedOldSecret = SecretContainerCipher.from(oldSecret)
             updatedOldSecret.validTo = CoreDate.utc()
             updatedOldSecret.active = false
             await this.secrets.update(oldSecret, updatedOldSecret)
@@ -173,9 +173,9 @@ export class SecretController extends TransportController {
         )
         const plainBuffer: CoreBuffer = await CoreCrypto.decrypt(secret.cipher, decryptionKey)
         const plainString: string = plainBuffer.toUtf8()
-        const decryptedSecret = await SerializableAsync.deserializeUnknown(plainString)
+        const decryptedSecret = Serializable.deserializeUnknown(plainString)
 
-        const plainSecret: SecretContainerPlain = await SecretContainerPlain.from({
+        const plainSecret: SecretContainerPlain = SecretContainerPlain.from({
             id: secret.id,
             createdAt: secret.createdAt,
             description: secret.description,
@@ -196,7 +196,7 @@ export class SecretController extends TransportController {
     public async loadSecretById(id: CoreId): Promise<SecretContainerPlain | undefined> {
         const secretObj = await this.secrets.findOne({ id: id.toString() })
         if (!secretObj) return
-        const secret: SecretContainerCipher = await SecretContainerCipher.from(secretObj)
+        const secret: SecretContainerCipher = SecretContainerCipher.from(secretObj)
 
         return await this.decryptSecret(secret)
     }

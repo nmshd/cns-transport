@@ -22,7 +22,7 @@ export class CertificateTimeConstraint extends CertificateConstraint {
     @serialize()
     public validTo: CoreDate
 
-    public static async from(value: ICertificateTimeConstraint): Promise<CertificateTimeConstraint> {
-        return await super.fromT(value, CertificateTimeConstraint)
+    public static override from(value: ICertificateTimeConstraint): CertificateTimeConstraint {
+        return this.fromAny(value)
     }
 }

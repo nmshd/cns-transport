@@ -17,20 +17,10 @@ export class CoreSerializableAsync extends SerializableAsync implements ISeriali
         return CoreBuffer.fromUtf8(this.serialize()).toBase64URL()
     }
 
-    public static async from(
-        value: ICoreSerializableAsync,
-        type: new () => CoreSerializableAsync
-    ): Promise<CoreSerializableAsync> {
-        return await (super.from(value, type) as Promise<CoreSerializableAsync>)
-    }
-
-    public static async fromT<T>(value: ICoreSerializableAsync, type: new () => T): Promise<T> {
-        return await super.fromT(value, type)
-    }
-
-    public static async fromBase64T<T>(value: string, type: new () => T): Promise<T> {
+    public static async fromBase64T<T>(value: string): Promise<T> {
         const serialized = CoreBuffer.fromBase64URL(value).toUtf8()
-        return await CoreSerializableAsync.deserializeT(serialized, type)
+        const deserializePromise = (this as any).deserialize(serialized) as Promise<T>
+        return await deserializePromise
     }
 
     public static async fromBase64Unknown(value: string): Promise<SerializableAsync> {

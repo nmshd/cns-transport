@@ -1,4 +1,4 @@
-import { serialize, serializeOnly, validate } from "@js-soft/ts-serval"
+import { serialize, serializeOnly, type, validate } from "@js-soft/ts-serval"
 import { Random, RandomCharacterRange } from "../../util/Random"
 import { CoreSerializable, ICoreSerializable } from "../CoreSerializable"
 import { TransportErrors } from "../TransportErrors"
@@ -10,13 +10,14 @@ export interface ICoreId extends ICoreSerializable {
 /**
  * A CoreId is any kind of identifier we have in the system.
  */
+@type("CoreId")
 @serializeOnly("id", "string")
 export class CoreId extends CoreSerializable implements ICoreId {
     @validate()
     @serialize()
     public id: string
 
-    public toString(): string {
+    public override toString(): string {
         return this.id
     }
 
@@ -34,18 +35,18 @@ export class CoreId extends CoreSerializable implements ICoreId {
     }
 
     public static from(value: ICoreId | string): CoreId {
-        if (typeof value === "string" || value instanceof String) {
-            return super.fromT({ id: value }, CoreId)
+        return this.fromAny(value)
+    }
+
+    protected static override preFrom(value: any): any {
+        if (typeof value === "string") {
+            return { id: value }
         }
 
-        return super.fromT(value, CoreId)
+        return value
     }
 
-    public static deserialize(value: string): CoreId {
-        return this.from(value)
-    }
-
-    public serialize(): string {
+    public override serialize(): string {
         return this.id
     }
 }

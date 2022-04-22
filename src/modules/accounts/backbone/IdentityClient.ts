@@ -22,7 +22,7 @@ export interface PlatformIdentityPostResponse {
 }
 
 export class IdentityClient extends RESTClient {
-    protected _logDirective = RESTClientLogDirective.LogResponse
+    protected override _logDirective = RESTClientLogDirective.LogResponse
 
     public async createIdentity(
         value: PlatformIdentityPostRequest

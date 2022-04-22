@@ -16,13 +16,16 @@ export interface IFile extends ICoreSynchronizable {
 
 @type("File")
 export class File extends CoreSynchronizable implements IFile {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<File>((r) => r.secretKey),
         nameof<File>((r) => r.isOwn)
     ]
-    public readonly metadataProperties = [nameof<File>((r) => r.metadata), nameof<File>((r) => r.metadataModifiedAt)]
+    public override readonly metadataProperties = [
+        nameof<File>((r) => r.metadata),
+        nameof<File>((r) => r.metadataModifiedAt)
+    ]
 
     @validate()
     @serialize()
@@ -48,16 +51,12 @@ export class File extends CoreSynchronizable implements IFile {
     @serialize()
     public metadataModifiedAt?: CoreDate
 
-    public static async from(value: IFile): Promise<File> {
-        return await super.fromT(value, File)
+    public static from(value: IFile): File {
+        return this.fromAny(value)
     }
 
-    public static async deserialize(value: string): Promise<File> {
-        return await super.deserializeT(value, File)
-    }
-
-    public async toFileReference(): Promise<FileReference> {
-        return await FileReference.from({
+    public toFileReference(): FileReference {
+        return FileReference.from({
             id: this.id,
             key: this.secretKey
         })

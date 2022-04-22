@@ -2,7 +2,6 @@ import { IDatabaseCollectionProvider } from "@js-soft/docdb-access-abstractions"
 import { ILogger } from "@js-soft/logging-abstractions"
 import { AccountController } from "../modules/accounts/AccountController"
 import { CoreSerializable } from "./CoreSerializable"
-import { CoreSerializableAsync } from "./CoreSerializableAsync"
 import { IConfig, Transport } from "./Transport"
 import { TransportErrors } from "./TransportErrors"
 import { TransportLoggerFactory } from "./TransportLoggerFactory"
@@ -92,31 +91,11 @@ export class TransportController {
         return Promise.resolve(this)
     }
 
-    protected async parseObject<T extends CoreSerializableAsync | CoreSerializable>(
-        value: Object,
+    protected async parseArray<T extends CoreSerializable | CoreSerializable>(
+        values: Object[],
         type: new () => T
-    ): Promise<T> {
-        return await CoreSerializableAsync.fromT(value, type)
-    }
-
-    protected async parseArray<T extends CoreSerializableAsync | CoreSerializable>(
-        value: Object[],
-        type: new () => T,
-        contentProperty?: string
     ): Promise<T[]> {
-        const parsePromises: Promise<T>[] = []
-        for (let i = 0, l = value.length; i < l; i++) {
-            if (contentProperty) {
-                const item: any = value[i]
-                if (item[contentProperty]) {
-                    parsePromises.push(this.parseObject(item[contentProperty], type))
-                } else {
-                    throw TransportErrors.controller.contentPropertyUndefined(contentProperty).logWith(this._log)
-                }
-            } else {
-                parsePromises.push(this.parseObject(value[i], type))
-            }
-        }
+        const parsePromises: Promise<T>[] = values.map((v) => (type as any).from(v))
         return await Promise.all(parsePromises)
     }
 }

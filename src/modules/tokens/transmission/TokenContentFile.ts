@@ -1,14 +1,14 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CryptoSecretKey, ICryptoSecretKey } from "@nmshd/crypto"
-import { CoreId, CoreSerializableAsync, ICoreId, ICoreSerializableAsync } from "../../../core"
+import { CoreId, CoreSerializable, ICoreId, ICoreSerializable } from "../../../core"
 
-export interface ITokenContentFile extends ICoreSerializableAsync {
+export interface ITokenContentFile extends ICoreSerializable {
     fileId: ICoreId
     secretKey: ICryptoSecretKey
 }
 
 @type("TokenContentFile")
-export class TokenContentFile extends CoreSerializableAsync implements ITokenContentFile {
+export class TokenContentFile extends CoreSerializable implements ITokenContentFile {
     @validate()
     @serialize()
     public fileId: CoreId
@@ -17,11 +17,7 @@ export class TokenContentFile extends CoreSerializableAsync implements ITokenCon
     @serialize()
     public secretKey: CryptoSecretKey
 
-    public static async from(value: ITokenContentFile): Promise<TokenContentFile> {
-        return await super.fromT(value, TokenContentFile)
-    }
-
-    public static async deserialize(value: string): Promise<TokenContentFile> {
-        return await super.deserializeT(value, TokenContentFile)
+    public static from(value: ITokenContentFile): TokenContentFile {
+        return this.fromAny(value)
     }
 }

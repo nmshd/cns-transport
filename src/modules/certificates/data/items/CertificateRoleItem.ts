@@ -19,7 +19,7 @@ export class CertificateRoleItem extends CertificateItem {
     @serialize()
     public role: string
 
-    public static async from(value: ICertificateRoleItem): Promise<CertificateRoleItem> {
-        return await super.fromT(value, CertificateRoleItem)
+    public static override from(value: ICertificateRoleItem): CertificateRoleItem {
+        return this.fromAny(value)
     }
 }

@@ -70,7 +70,7 @@ export class DeviceController extends TransportController {
         super(ControllerName.Device, parent)
     }
 
-    public async init(baseKey?: CryptoSecretKey, device?: Device): Promise<DeviceController> {
+    public override async init(baseKey?: CryptoSecretKey, device?: Device): Promise<DeviceController> {
         await super.init()
 
         if (!device) {

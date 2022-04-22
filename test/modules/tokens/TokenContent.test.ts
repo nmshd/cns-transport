@@ -1,4 +1,4 @@
-import { JSONWrapperAsync, SerializableAsync } from "@js-soft/ts-serval"
+import { JSONWrapper, Serializable } from "@js-soft/ts-serval"
 import { CryptoEncryption, CryptoSecretKey } from "@nmshd/crypto"
 import {
     AccountController,
@@ -39,8 +39,8 @@ export class TokenContentTest extends AbstractTest {
 
             describe("Any Content", function () {
                 it("should send the token", async function () {
-                    const value: any = await SerializableAsync.from({ any: "content", submitted: true })
-                    expect(value).instanceOf(JSONWrapperAsync)
+                    const value: any = Serializable.fromAny({ any: "content", submitted: true })
+                    expect(value).instanceOf(JSONWrapper)
 
                     await account.tokens.sendToken({
                         expiresAt: CoreDate.utc().add({ days: 5 }),
@@ -54,7 +54,7 @@ export class TokenContentTest extends AbstractTest {
                     expect(tokens).lengthOf(1)
                     const token = tokens[0]
                     const content = token.cache!.content as any
-                    expect(content).instanceOf(JSONWrapperAsync)
+                    expect(content).instanceOf(JSONWrapper)
                     expect(content.value.any).equals("content")
                     expect(content.value.submitted).equals(true)
                 })
@@ -72,11 +72,11 @@ export class TokenContentTest extends AbstractTest {
 
             describe("TokenContentRelationshipTemplate", function () {
                 it("should serialize and deserialize correctly (verbose)", async function () {
-                    const token = await TokenContentRelationshipTemplate.from({
+                    const token = TokenContentRelationshipTemplate.from({
                         secretKey: await CryptoEncryption.generateKey(),
                         templateId: await CoreId.generate()
                     })
-                    expect(token).instanceOf(SerializableAsync)
+                    expect(token).instanceOf(Serializable)
                     expect(token).instanceOf(TokenContentRelationshipTemplate)
                     expect(token.secretKey).instanceOf(CryptoSecretKey)
                     expect(token.templateId).instanceOf(CoreId)
@@ -87,8 +87,8 @@ export class TokenContentTest extends AbstractTest {
                             false
                         )},"templateId":"${token.templateId.toString()}"}`
                     )
-                    const deserialized = await TokenContentRelationshipTemplate.deserialize(serialized)
-                    expect(deserialized).instanceOf(SerializableAsync)
+                    const deserialized = TokenContentRelationshipTemplate.deserialize(serialized)
+                    expect(deserialized).instanceOf(Serializable)
                     expect(deserialized).instanceOf(TokenContentRelationshipTemplate)
                     expect(deserialized.secretKey).instanceOf(CryptoSecretKey)
                     expect(deserialized.templateId).instanceOf(CoreId)
@@ -97,18 +97,18 @@ export class TokenContentTest extends AbstractTest {
                 })
 
                 it("should serialize and deserialize correctly (no type information)", async function () {
-                    const token = await TokenContentRelationshipTemplate.from({
+                    const token = TokenContentRelationshipTemplate.from({
                         secretKey: await CryptoEncryption.generateKey(),
                         templateId: await CoreId.generate()
                     })
-                    expect(token).instanceOf(SerializableAsync)
+                    expect(token).instanceOf(Serializable)
                     expect(token).instanceOf(TokenContentRelationshipTemplate)
                     expect(token.secretKey).instanceOf(CryptoSecretKey)
                     expect(token.templateId).instanceOf(CoreId)
                     const serialized = token.serialize()
                     expect(serialized).to.be.a("string")
-                    const deserialized = await TokenContentRelationshipTemplate.deserialize(serialized)
-                    expect(deserialized).instanceOf(SerializableAsync)
+                    const deserialized = TokenContentRelationshipTemplate.deserialize(serialized)
+                    expect(deserialized).instanceOf(Serializable)
                     expect(deserialized).instanceOf(TokenContentRelationshipTemplate)
                     expect(deserialized.secretKey).instanceOf(CryptoSecretKey)
                     expect(deserialized.templateId).instanceOf(CoreId)
@@ -117,11 +117,11 @@ export class TokenContentTest extends AbstractTest {
                 })
 
                 it("should serialize and deserialize correctly (from unknown type)", async function () {
-                    const token = await TokenContentRelationshipTemplate.from({
+                    const token = TokenContentRelationshipTemplate.from({
                         secretKey: await CryptoEncryption.generateKey(),
                         templateId: await CoreId.generate()
                     })
-                    expect(token).instanceOf(SerializableAsync)
+                    expect(token).instanceOf(Serializable)
                     expect(token).instanceOf(TokenContentRelationshipTemplate)
                     expect(token.secretKey).instanceOf(CryptoSecretKey)
                     expect(token.templateId).instanceOf(CoreId)
@@ -132,10 +132,8 @@ export class TokenContentTest extends AbstractTest {
                             false
                         )},"templateId":"${token.templateId.toString()}"}`
                     )
-                    const deserialized = (await SerializableAsync.deserializeUnknown(
-                        serialized
-                    )) as TokenContentRelationshipTemplate
-                    expect(deserialized).instanceOf(SerializableAsync)
+                    const deserialized = Serializable.deserializeUnknown(serialized) as TokenContentRelationshipTemplate
+                    expect(deserialized).instanceOf(Serializable)
                     expect(deserialized).instanceOf(TokenContentRelationshipTemplate)
                     expect(deserialized.secretKey).instanceOf(CryptoSecretKey)
                     expect(deserialized.templateId).instanceOf(CoreId)
@@ -153,10 +151,10 @@ export class TokenContentTest extends AbstractTest {
                     })
                     await account.syncDatawallet()
                     const sharedSecret = await account.devices.getSharedSecret(device.id)
-                    const token = await TokenContentDeviceSharedSecret.from({
+                    const token = TokenContentDeviceSharedSecret.from({
                         sharedSecret: sharedSecret
                     })
-                    expect(token).instanceOf(SerializableAsync)
+                    expect(token).instanceOf(Serializable)
                     expect(token).instanceOf(TokenContentDeviceSharedSecret)
                     expect(token.sharedSecret).instanceOf(DeviceSharedSecret)
                     const serialized = token.serialize()
@@ -166,8 +164,8 @@ export class TokenContentTest extends AbstractTest {
                             false
                         )}}`
                     )
-                    const deserialized = await TokenContentDeviceSharedSecret.deserialize(serialized)
-                    expect(deserialized).instanceOf(SerializableAsync)
+                    const deserialized = TokenContentDeviceSharedSecret.deserialize(serialized)
+                    expect(deserialized).instanceOf(Serializable)
                     expect(deserialized).instanceOf(TokenContentDeviceSharedSecret)
                     expect(deserialized.sharedSecret).instanceOf(DeviceSharedSecret)
                     await TestUtil.onboardDevice(transport, deserialized.sharedSecret)
@@ -181,16 +179,16 @@ export class TokenContentTest extends AbstractTest {
                     })
                     await account.syncDatawallet()
                     const sharedSecret = await account.devices.getSharedSecret(device.id)
-                    const token = await TokenContentDeviceSharedSecret.from({
+                    const token = TokenContentDeviceSharedSecret.from({
                         sharedSecret: sharedSecret
                     })
-                    expect(token).instanceOf(SerializableAsync)
+                    expect(token).instanceOf(Serializable)
                     expect(token).instanceOf(TokenContentDeviceSharedSecret)
                     expect(token.sharedSecret).instanceOf(DeviceSharedSecret)
                     const serialized = token.serialize()
                     expect(serialized).to.be.a("string")
-                    const deserialized = await TokenContentDeviceSharedSecret.deserialize(serialized)
-                    expect(deserialized).instanceOf(SerializableAsync)
+                    const deserialized = TokenContentDeviceSharedSecret.deserialize(serialized)
+                    expect(deserialized).instanceOf(Serializable)
                     expect(deserialized).instanceOf(TokenContentDeviceSharedSecret)
                     expect(deserialized.sharedSecret).instanceOf(DeviceSharedSecret)
                     await TestUtil.onboardDevice(transport, deserialized.sharedSecret)
@@ -204,10 +202,10 @@ export class TokenContentTest extends AbstractTest {
                     })
                     await account.syncDatawallet()
                     const sharedSecret = await account.devices.getSharedSecret(device.id)
-                    const token = await TokenContentDeviceSharedSecret.from({
+                    const token = TokenContentDeviceSharedSecret.from({
                         sharedSecret: sharedSecret
                     })
-                    expect(token).instanceOf(SerializableAsync)
+                    expect(token).instanceOf(Serializable)
                     expect(token).instanceOf(TokenContentDeviceSharedSecret)
                     expect(token.sharedSecret).instanceOf(DeviceSharedSecret)
                     const serialized = token.serialize()
@@ -217,10 +215,8 @@ export class TokenContentTest extends AbstractTest {
                             false
                         )}}`
                     )
-                    const deserialized = (await SerializableAsync.deserializeUnknown(
-                        serialized
-                    )) as TokenContentDeviceSharedSecret
-                    expect(deserialized).instanceOf(SerializableAsync)
+                    const deserialized = Serializable.deserializeUnknown(serialized) as TokenContentDeviceSharedSecret
+                    expect(deserialized).instanceOf(Serializable)
                     expect(deserialized).instanceOf(TokenContentDeviceSharedSecret)
                     expect(deserialized.sharedSecret).instanceOf(DeviceSharedSecret)
                     await TestUtil.onboardDevice(transport, deserialized.sharedSecret)
@@ -229,11 +225,11 @@ export class TokenContentTest extends AbstractTest {
 
             describe("TokenContentFile", function () {
                 it("should serialize and deserialize correctly (verbose)", async function () {
-                    const token = await TokenContentFile.from({
+                    const token = TokenContentFile.from({
                         secretKey: await CryptoEncryption.generateKey(),
                         fileId: await CoreId.generate()
                     })
-                    expect(token).instanceOf(SerializableAsync)
+                    expect(token).instanceOf(Serializable)
                     expect(token).instanceOf(TokenContentFile)
                     expect(token.secretKey).instanceOf(CryptoSecretKey)
                     expect(token.fileId).instanceOf(CoreId)
@@ -244,8 +240,8 @@ export class TokenContentTest extends AbstractTest {
                             false
                         )}}`
                     )
-                    const deserialized = await TokenContentFile.deserialize(serialized)
-                    expect(deserialized).instanceOf(SerializableAsync)
+                    const deserialized = TokenContentFile.deserialize(serialized)
+                    expect(deserialized).instanceOf(Serializable)
                     expect(deserialized).instanceOf(TokenContentFile)
                     expect(deserialized.secretKey).instanceOf(CryptoSecretKey)
                     expect(deserialized.fileId).instanceOf(CoreId)
@@ -254,18 +250,18 @@ export class TokenContentTest extends AbstractTest {
                 })
 
                 it("should serialize and deserialize correctly (no type information)", async function () {
-                    const token = await TokenContentFile.from({
+                    const token = TokenContentFile.from({
                         secretKey: await CryptoEncryption.generateKey(),
                         fileId: await CoreId.generate()
                     })
-                    expect(token).instanceOf(SerializableAsync)
+                    expect(token).instanceOf(Serializable)
                     expect(token).instanceOf(TokenContentFile)
                     expect(token.secretKey).instanceOf(CryptoSecretKey)
                     expect(token.fileId).instanceOf(CoreId)
                     const serialized = token.serialize()
                     expect(serialized).to.be.a("string")
-                    const deserialized = await TokenContentFile.deserialize(serialized)
-                    expect(deserialized).instanceOf(SerializableAsync)
+                    const deserialized = TokenContentFile.deserialize(serialized)
+                    expect(deserialized).instanceOf(Serializable)
                     expect(deserialized).instanceOf(TokenContentFile)
                     expect(deserialized.secretKey).instanceOf(CryptoSecretKey)
                     expect(deserialized.fileId).instanceOf(CoreId)
@@ -274,11 +270,11 @@ export class TokenContentTest extends AbstractTest {
                 })
 
                 it("should serialize and deserialize correctly (from unknown type)", async function () {
-                    const token = await TokenContentFile.from({
+                    const token = TokenContentFile.from({
                         secretKey: await CryptoEncryption.generateKey(),
                         fileId: await CoreId.generate()
                     })
-                    expect(token).instanceOf(SerializableAsync)
+                    expect(token).instanceOf(Serializable)
                     expect(token).instanceOf(TokenContentFile)
                     expect(token.secretKey).instanceOf(CryptoSecretKey)
                     expect(token.fileId).instanceOf(CoreId)
@@ -289,8 +285,8 @@ export class TokenContentTest extends AbstractTest {
                             false
                         )}}`
                     )
-                    const deserialized = (await SerializableAsync.deserializeUnknown(serialized)) as TokenContentFile
-                    expect(deserialized).instanceOf(SerializableAsync)
+                    const deserialized = Serializable.deserializeUnknown(serialized) as TokenContentFile
+                    expect(deserialized).instanceOf(Serializable)
                     expect(deserialized).instanceOf(TokenContentFile)
                     expect(deserialized.secretKey).instanceOf(CryptoSecretKey)
                     expect(deserialized.fileId).instanceOf(CoreId)

@@ -7,10 +7,10 @@ import {
     ICryptoSignaturePrivateKey,
     ICryptoSignaturePublicKey
 } from "@nmshd/crypto"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { CoreSerializable, ICoreSerializable } from "../../../core"
 import { Realm } from "./Identity"
 
-export interface IIdentitySecretCredentials extends ICoreSerializableAsync {
+export interface IIdentitySecretCredentials extends ICoreSerializable {
     publicKey?: ICryptoSignaturePublicKey
     realm: Realm
     synchronizationKey: ICryptoSecretKey
@@ -18,7 +18,7 @@ export interface IIdentitySecretCredentials extends ICoreSerializableAsync {
 }
 
 @type("IdentitySecretCredentials")
-export class IdentitySecretCredentials extends CoreSerializableAsync implements IIdentitySecretCredentials {
+export class IdentitySecretCredentials extends CoreSerializable implements IIdentitySecretCredentials {
     @validate()
     @serialize()
     public realm: Realm
@@ -35,7 +35,7 @@ export class IdentitySecretCredentials extends CoreSerializableAsync implements 
     @serialize()
     public privateKey?: CryptoSignaturePrivateKey
 
-    public static async from(value: IIdentitySecretCredentials): Promise<IdentitySecretCredentials> {
-        return await super.fromT(value, IdentitySecretCredentials)
+    public static from(value: IIdentitySecretCredentials): IdentitySecretCredentials {
+        return this.fromAny(value)
     }
 }

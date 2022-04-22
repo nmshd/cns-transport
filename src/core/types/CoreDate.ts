@@ -1,4 +1,4 @@
-import { serialize, serializeOnly, validate } from "@js-soft/ts-serval"
+import { type } from "@js-soft/ts-serval"
 import { DateTime, DateTimeUnit, Duration, DurationLike, Interval } from "luxon"
 import { CoreSerializable, ICoreSerializable } from "../CoreSerializable"
 import { TransportErrors } from "../TransportErrors"
@@ -7,21 +7,20 @@ export interface ICoreDate extends ICoreSerializable {
     date: string
 }
 
-@serializeOnly("date", "string")
-export class CoreDate extends CoreSerializable implements ICoreDate {
+@type("CoreDate")
+export class CoreDate extends CoreSerializable {
     private readonly _dateTime: DateTime
     public get dateTime(): DateTime {
         return this._dateTime
     }
 
-    @validate()
-    @serialize()
-    public readonly date: string
+    public get date(): string {
+        return this.dateTime.toISODate()
+    }
 
     public constructor(dateTime: DateTime = DateTime.utc()) {
         super()
         this._dateTime = dateTime
-        this.date = dateTime.toISO()
     }
 
     public static utc(): CoreDate {
@@ -141,7 +140,7 @@ export class CoreDate extends CoreSerializable implements ICoreDate {
     /**
      * Creates an ISO String.
      */
-    public toString(): string {
+    public override toString(): string {
         return this.dateTime.toISO()
     }
 
@@ -149,40 +148,48 @@ export class CoreDate extends CoreSerializable implements ICoreDate {
         return this.dateTime.toISO()
     }
 
-    public toLocaleString(): string {
+    public override toLocaleString(): string {
         return this.dateTime.toLocaleString()
     }
 
-    public serialize(): string {
+    public override toJSON(): string {
         return this.dateTime.toISO()
     }
 
-    public static from(value: ICoreDate | string | number): CoreDate {
+    public override serialize(): string {
+        return this.dateTime.toISO()
+    }
+
+    protected static override preFrom(value: any): any {
         if (typeof value === "undefined") {
             throw TransportErrors.util.date.undefined()
         }
 
         if (typeof value === "object") {
             if (typeof value.date === "undefined") {
-                if (typeof (value as any).toISOString !== "function") {
+                if (typeof value.toISOString !== "function") {
                     throw TransportErrors.util.date.noIsoStringMethod()
                 }
 
-                const iso = (value as any).toISOString()
-                return new CoreDate(DateTime.fromISO(iso, { zone: "utc" }))
+                const iso = value.toISOString()
+                return DateTime.fromISO(iso, { zone: "utc" })
             }
 
-            return new CoreDate(DateTime.fromISO(value.date, { zone: "utc" }))
+            return DateTime.fromISO(value.date, { zone: "utc" })
         }
 
         if (typeof value === "number") {
-            return new CoreDate(DateTime.fromMillis(value))
+            return DateTime.fromMillis(value)
         }
 
-        return new CoreDate(DateTime.fromISO(value, { zone: "utc" }).toUTC())
+        if (typeof value === "string") {
+            return DateTime.fromISO(value, { zone: "utc" }).toUTC()
+        }
+
+        throw TransportErrors.util.date.invalid()
     }
 
-    public static deserialize(isoString: string): CoreDate {
-        return this.from(isoString)
+    public static from(value: ICoreDate | string | number): CoreDate {
+        return this.fromAny(value)
     }
 }

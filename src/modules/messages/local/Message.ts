@@ -16,7 +16,7 @@ export interface IMessage extends ICoreSynchronizable {
 
 @type("Message")
 export class Message extends CoreSynchronizable implements IMessage {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<Message>((r) => r.secretKey),
@@ -24,7 +24,7 @@ export class Message extends CoreSynchronizable implements IMessage {
         nameof<Message>((r) => r.relationshipIds)
     ]
 
-    public readonly metadataProperties = [
+    public override readonly metadataProperties = [
         nameof<Message>((r) => r.metadata),
         nameof<Message>((r) => r.metadataModifiedAt)
     ]
@@ -57,8 +57,8 @@ export class Message extends CoreSynchronizable implements IMessage {
     @serialize({ type: CoreId })
     public relationshipIds: CoreId[]
 
-    public static async from(value: IMessage): Promise<Message> {
-        return await super.fromT(value, Message)
+    public static from(value: IMessage): Message {
+        return this.fromAny(value)
     }
 
     public setCache(cache: CachedMessage): this {

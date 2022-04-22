@@ -5,16 +5,16 @@ import {
     ICryptoCipher,
     ICryptoRelationshipPublicResponse
 } from "@nmshd/crypto"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../../core"
+import { CoreSerializable, ICoreSerializable } from "../../../../core"
 
-export interface IRelationshipCreationChangeResponseCipher extends ICoreSerializableAsync {
+export interface IRelationshipCreationChangeResponseCipher extends ICoreSerializable {
     cipher: ICryptoCipher
     publicResponseCrypto?: ICryptoRelationshipPublicResponse
 }
 
 @type("RelationshipCreationChangeResponseCipher")
 export class RelationshipCreationChangeResponseCipher
-    extends CoreSerializableAsync
+    extends CoreSerializable
     implements IRelationshipCreationChangeResponseCipher
 {
     @validate()
@@ -25,17 +25,11 @@ export class RelationshipCreationChangeResponseCipher
     @serialize()
     public publicResponseCrypto?: CryptoRelationshipPublicResponse
 
-    public static async from(
-        value: IRelationshipCreationChangeResponseCipher
-    ): Promise<RelationshipCreationChangeResponseCipher> {
-        return await super.fromT(value, RelationshipCreationChangeResponseCipher)
+    public static from(value: IRelationshipCreationChangeResponseCipher): RelationshipCreationChangeResponseCipher {
+        return this.fromAny(value)
     }
 
-    public static async fromBase64(value: string): Promise<RelationshipCreationChangeResponseCipher> {
-        return await super.fromBase64T(value, RelationshipCreationChangeResponseCipher)
-    }
-
-    public static async deserialize(value: string): Promise<RelationshipCreationChangeResponseCipher> {
-        return await super.deserializeT(value, RelationshipCreationChangeResponseCipher)
+    public static fromBase64(value: string): RelationshipCreationChangeResponseCipher {
+        return super.fromBase64T(value)
     }
 }

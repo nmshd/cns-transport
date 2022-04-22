@@ -16,7 +16,7 @@ export class ChallengeController extends TransportController {
         super(ControllerName.Challenge, parent)
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.client = new ChallengeClient(this.config)
@@ -64,7 +64,7 @@ export class ChallengeController extends TransportController {
         signedChallenge: ChallengeSigned,
         requiredType?: ChallengeType
     ): Promise<{ isValid: boolean; correspondingRelationship?: Relationship }> {
-        const challenge = await Challenge.deserialize(signedChallenge.challenge)
+        const challenge = Challenge.deserialize(signedChallenge.challenge)
         if (requiredType && challenge.type !== requiredType) return { isValid: false }
         if (challenge.expiresAt.isExpired()) return { isValid: false }
 
@@ -85,7 +85,7 @@ export class ChallengeController extends TransportController {
 
     public async createAccountCreationChallenge(identity: CryptoSignatureKeypair): Promise<ChallengeSigned> {
         const backboneResponse = (await this.client.createChallenge()).value
-        const challenge = await Challenge.from({
+        const challenge = Challenge.from({
             id: CoreId.from(backboneResponse.id),
             expiresAt: CoreDate.from(backboneResponse.expiresAt),
             type: ChallengeType.Identity
@@ -93,7 +93,7 @@ export class ChallengeController extends TransportController {
         const serializedChallenge = challenge.serialize(false)
         const challengeBuffer = CoreBuffer.fromUtf8(serializedChallenge)
         const signature = await CoreCrypto.sign(challengeBuffer, identity.privateKey)
-        const signedChallenge = await ChallengeSigned.from({
+        const signedChallenge = ChallengeSigned.from({
             challenge: serializedChallenge,
             signature: signature
         })
@@ -108,7 +108,7 @@ export class ChallengeController extends TransportController {
             throw TransportErrors.challenges.challengeTypeRequiredRelationship().logWith(this._log)
         }
         const backboneResponse = (await this.authClient.createChallenge()).value
-        const challenge = await Challenge.from({
+        const challenge = Challenge.from({
             id: CoreId.from(backboneResponse.id),
             expiresAt: CoreDate.from(backboneResponse.expiresAt),
             createdBy: backboneResponse.createdBy ? CoreAddress.from(backboneResponse.createdBy) : undefined,
@@ -136,7 +136,7 @@ export class ChallengeController extends TransportController {
                 break
         }
 
-        const signedChallenge = await ChallengeSigned.from({
+        const signedChallenge = ChallengeSigned.from({
             challenge: serializedChallenge,
             signature: signature
         })

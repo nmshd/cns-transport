@@ -20,7 +20,7 @@ export class CertificateAuthorizationItem extends CertificateItem {
     @serialize()
     public authorization: string
 
-    public static async from(value: ICertificateAuthorizationItem): Promise<CertificateAuthorizationItem> {
-        return await super.fromT(value, CertificateAuthorizationItem)
+    public static override from(value: ICertificateAuthorizationItem): CertificateAuthorizationItem {
+        return this.fromAny(value)
     }
 }

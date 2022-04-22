@@ -1,27 +1,23 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreSerializable, ICoreSerializable } from "../../../core"
 import { IRelationshipTemplate, RelationshipTemplate } from "../../relationshipTemplates/local/RelationshipTemplate"
 
-export interface ISendRelationshipParameters extends ICoreSerializableAsync {
-    content: ISerializableAsync
+export interface ISendRelationshipParameters extends ICoreSerializable {
+    content: ISerializable
     template: IRelationshipTemplate
 }
 
 @type("SendRelationshipParameters")
-export class SendRelationshipParameters extends CoreSerializableAsync implements ISendRelationshipParameters {
+export class SendRelationshipParameters extends CoreSerializable implements ISendRelationshipParameters {
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
 
     @validate()
     @serialize()
     public template: RelationshipTemplate
 
-    public static async from(value: ISendRelationshipParameters): Promise<SendRelationshipParameters> {
-        return await super.fromT(value, SendRelationshipParameters)
-    }
-
-    public static async deserialize(value: string): Promise<SendRelationshipParameters> {
-        return await super.deserializeT(value, SendRelationshipParameters)
+    public static from(value: ISendRelationshipParameters): SendRelationshipParameters {
+        return this.fromAny(value)
     }
 }

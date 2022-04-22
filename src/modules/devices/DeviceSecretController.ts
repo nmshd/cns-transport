@@ -1,5 +1,5 @@
 import { IDatabaseMap } from "@js-soft/docdb-access-abstractions"
-import { SerializableAsync } from "@js-soft/ts-serval"
+import { Serializable } from "@js-soft/ts-serval"
 import {
     CoreBuffer,
     CryptoCipher,
@@ -48,7 +48,7 @@ export class DeviceSecretController extends TransportController {
         this.baseKey = baseKey
     }
 
-    public async init(): Promise<DeviceSecretController> {
+    public override async init(): Promise<DeviceSecretController> {
         await super.init()
 
         this.secrets = await this.db.getMap("DeviceSecrets")
@@ -85,7 +85,7 @@ export class DeviceSecretController extends TransportController {
             validFrom: date,
             active: true
         }
-        const container: SecretContainerCipher = await SecretContainerCipher.from(secretContainerInterface)
+        const container: SecretContainerCipher = SecretContainerCipher.from(secretContainerInterface)
 
         this.log.trace(
             `Created device secret id:${container.id} name:${container.name} on ${container.createdAt.toISOString()}.`
@@ -101,7 +101,7 @@ export class DeviceSecretController extends TransportController {
         if (!secretObj) return
 
         const baseKey: CryptoSecretKey = this.getBaseKey()
-        const secret: SecretContainerCipher = await SecretContainerCipher.from(secretObj)
+        const secret: SecretContainerCipher = SecretContainerCipher.from(secretObj)
         const decryptionKey: CryptoSecretKey = await CoreCrypto.deriveKeyFromBase(
             baseKey,
             1,
@@ -110,9 +110,9 @@ export class DeviceSecretController extends TransportController {
         const plainBuffer: ICoreBuffer = await CoreCrypto.decrypt(secret.cipher, decryptionKey)
         const plainString: string = plainBuffer.toUtf8()
 
-        const decryptedSecret = await SerializableAsync.deserializeUnknown(plainString)
+        const decryptedSecret = Serializable.deserializeUnknown(plainString)
 
-        const plainSecret: SecretContainerPlain = await SecretContainerPlain.from({
+        const plainSecret: SecretContainerPlain = SecretContainerPlain.from({
             id: secret.id,
             createdAt: secret.createdAt,
             name: secret.name,
@@ -162,7 +162,7 @@ export class DeviceSecretController extends TransportController {
             }
         }
 
-        const deviceSharedSecret = await DeviceSharedSecret.from({
+        const deviceSharedSecret = DeviceSharedSecret.from({
             id: device.id,
             createdAt: device.createdAt,
             createdByDevice: device.createdByDevice,
@@ -212,7 +212,7 @@ export class DeviceSecretController extends TransportController {
             return undefined
         }
 
-        const payloadCipher = await CryptoCipher.fromBase64(payloadCipherBase64)
+        const payloadCipher = CryptoCipher.fromBase64(payloadCipherBase64)
 
         const privSync = await this.loadSecret(DeviceSecretType.IdentitySynchronizationMaster)
         if (!privSync || !(privSync.secret instanceof CryptoSecretKey)) {

@@ -1,9 +1,9 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreDate, CoreSerializableAsync, ICoreDate, ICoreSerializableAsync } from "../../../core"
+import { CoreDate, CoreSerializable, ICoreDate, ICoreSerializable } from "../../../core"
 import { IRelationshipTemplate, RelationshipTemplate } from "../../relationshipTemplates/local/RelationshipTemplate"
 import { IRelationshipChange, RelationshipChange } from "../transmission/changes/RelationshipChange"
 
-export interface ICachedRelationship extends ICoreSerializableAsync {
+export interface ICachedRelationship extends ICoreSerializable {
     template: IRelationshipTemplate
     changes: IRelationshipChange[]
 
@@ -12,7 +12,7 @@ export interface ICachedRelationship extends ICoreSerializableAsync {
 }
 
 @type("CachedRelationship")
-export class CachedRelationship extends CoreSerializableAsync implements ICachedRelationship {
+export class CachedRelationship extends CoreSerializable implements ICachedRelationship {
     @validate()
     @serialize()
     public template: RelationshipTemplate
@@ -33,11 +33,7 @@ export class CachedRelationship extends CoreSerializableAsync implements ICached
         return this.changes[0]
     }
 
-    public static async from(value: ICachedRelationship): Promise<CachedRelationship> {
-        return await super.fromT(value, CachedRelationship)
-    }
-
-    public static async deserialize(value: string): Promise<CachedRelationship> {
-        return await super.deserializeT(value, CachedRelationship)
+    public static from(value: ICachedRelationship): CachedRelationship {
+        return this.fromAny(value)
     }
 }

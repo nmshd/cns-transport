@@ -17,7 +17,7 @@ export interface ISecretContainerCipher extends ICoreSynchronizable {
 
 @type("SecretContainerCipher")
 export class SecretContainerCipher extends CoreSynchronizable implements ISecretContainerCipher {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<SecretContainerCipher>((x) => x.name),
@@ -64,7 +64,7 @@ export class SecretContainerCipher extends CoreSynchronizable implements ISecret
     @validate()
     public cipher: CryptoCipher
 
-    public static async from(value: ISecretContainerCipher): Promise<SecretContainerCipher> {
-        return await super.fromT(value, SecretContainerCipher)
+    public static from(value: ISecretContainerCipher): SecretContainerCipher {
+        return this.fromAny(value)
     }
 }

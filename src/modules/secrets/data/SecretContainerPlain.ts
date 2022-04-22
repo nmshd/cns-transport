@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreDate, CoreId, CoreSerializableAsync, ICoreDate, ICoreId, ICoreSerializableAsync } from "../../../core"
+import { Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreDate, CoreId, CoreSerializable, ICoreDate, ICoreId, ICoreSerializable } from "../../../core"
 
-export interface ISecretContainerPlain extends ICoreSerializableAsync {
+export interface ISecretContainerPlain extends ICoreSerializable {
     id: ICoreId
     name: string
     description?: string
@@ -11,11 +11,11 @@ export interface ISecretContainerPlain extends ICoreSerializableAsync {
     validFrom: ICoreDate
     validTo?: ICoreDate
     active: boolean
-    secret: ICoreSerializableAsync
+    secret: ICoreSerializable
 }
 
 @type("SecretContainerPlain")
-export class SecretContainerPlain extends CoreSerializableAsync implements ISecretContainerPlain {
+export class SecretContainerPlain extends CoreSerializable implements ISecretContainerPlain {
     @serialize()
     @validate()
     public id: CoreId
@@ -50,9 +50,9 @@ export class SecretContainerPlain extends CoreSerializableAsync implements ISecr
 
     @serialize()
     @validate()
-    public secret: SerializableAsync
+    public secret: Serializable
 
-    public static async from(value: ISecretContainerPlain): Promise<SecretContainerPlain> {
-        return await super.fromT(value, SecretContainerPlain)
+    public static from(value: ISecretContainerPlain): SecretContainerPlain {
+        return this.fromAny(value)
     }
 }

@@ -1,31 +1,25 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreId, CoreSerializableAsync, ICoreId, ICoreSerializableAsync } from "../../../../core"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreId, CoreSerializable, ICoreId, ICoreSerializable } from "../../../../core"
 
-export interface IRelationshipCreationChangeResponseContent extends ICoreSerializableAsync {
-    content: ISerializableAsync
+export interface IRelationshipCreationChangeResponseContent extends ICoreSerializable {
+    content: ISerializable
     relationshipId: ICoreId
 }
 
 @type("RelationshipCreationChangeResponseContent")
 export class RelationshipCreationChangeResponseContent
-    extends CoreSerializableAsync
+    extends CoreSerializable
     implements IRelationshipCreationChangeResponseContent
 {
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
 
     @validate()
     @serialize()
     public relationshipId: CoreId
 
-    public static async from(
-        value: IRelationshipCreationChangeResponseContent
-    ): Promise<RelationshipCreationChangeResponseContent> {
-        return await super.fromT(value, RelationshipCreationChangeResponseContent)
-    }
-
-    public static async deserialize(value: string): Promise<RelationshipCreationChangeResponseContent> {
-        return await super.deserializeT(value, RelationshipCreationChangeResponseContent)
+    public static from(value: IRelationshipCreationChangeResponseContent): RelationshipCreationChangeResponseContent {
+        return this.fromAny(value)
     }
 }

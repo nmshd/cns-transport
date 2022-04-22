@@ -1,16 +1,16 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreSerializable, ICoreSerializable } from "../../../core"
 import { Identity, IIdentity } from "../../accounts/data/Identity"
 import { IRelationshipTemplatePublicKey, RelationshipTemplatePublicKey } from "./RelationshipTemplatePublicKey"
 
-export interface IRelationshipTemplateContent extends ICoreSerializableAsync {
+export interface IRelationshipTemplateContent extends ICoreSerializable {
     identity: IIdentity
     templateKey: IRelationshipTemplatePublicKey
-    content: ISerializableAsync
+    content: ISerializable
 }
 
 @type("RelationshipTemplateContent")
-export class RelationshipTemplateContent extends CoreSerializableAsync implements IRelationshipTemplateContent {
+export class RelationshipTemplateContent extends CoreSerializable implements IRelationshipTemplateContent {
     @validate()
     @serialize()
     public identity: Identity
@@ -21,13 +21,9 @@ export class RelationshipTemplateContent extends CoreSerializableAsync implement
 
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
 
-    public static async from(value: IRelationshipTemplateContent): Promise<RelationshipTemplateContent> {
-        return await super.fromT(value, RelationshipTemplateContent)
-    }
-
-    public static async deserialize(value: string): Promise<RelationshipTemplateContent> {
-        return await super.deserializeT(value, RelationshipTemplateContent)
+    public static from(value: IRelationshipTemplateContent): RelationshipTemplateContent {
+        return this.fromAny(value)
     }
 }

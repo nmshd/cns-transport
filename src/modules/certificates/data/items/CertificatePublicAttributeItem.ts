@@ -20,7 +20,7 @@ export class CertificatePublicAttributeItem extends CertificateItem {
     @serialize()
     public value: string
 
-    public static async from(value: ICertificatePublicAttributeItem): Promise<CertificatePublicAttributeItem> {
-        return await super.fromT(value, CertificatePublicAttributeItem)
+    public static override from(value: ICertificatePublicAttributeItem): CertificatePublicAttributeItem {
+        return this.fromAny(value)
     }
 }

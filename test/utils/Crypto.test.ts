@@ -24,7 +24,7 @@ export class CryptoTest extends AbstractUnitTest {
             it("signs correctly with a serialized keypair", async function () {
                 const keypair = await CoreCrypto.generateSignatureKeypair()
                 const serializedKeypair = keypair.toJSON()
-                const keypair2 = await CryptoSignatureKeypair.fromJSON(serializedKeypair)
+                const keypair2 = CryptoSignatureKeypair.fromJSON(serializedKeypair)
                 expect(keypair2.publicKey).to.exist
                 expect(keypair2.privateKey).to.exist
 

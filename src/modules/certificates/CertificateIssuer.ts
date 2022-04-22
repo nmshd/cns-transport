@@ -20,7 +20,7 @@ export class CertificateIssuer extends TransportController {
         super(ControllerName.CertificateIssuer, parent)
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.certificatesIssued = await this.db.getCollection(DbCollectionName.CertificatesIssued)
@@ -28,13 +28,13 @@ export class CertificateIssuer extends TransportController {
     }
 
     public async issueCertificate(value: CertificateContentParam | ICertificateContent): Promise<Certificate> {
-        const content = await CertificateContent.from(value)
+        const content = CertificateContent.from(value)
         const serializedContent = content.serialize()
         const contentBuffer: CoreBuffer = CoreBuffer.fromUtf8(serializedContent)
 
         const signature = await this.parent.identity.sign(contentBuffer)
 
-        const cert: Certificate = await Certificate.from({
+        const cert: Certificate = Certificate.from({
             content: serializedContent,
             signature: signature
         })

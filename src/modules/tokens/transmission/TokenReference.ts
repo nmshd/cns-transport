@@ -1,14 +1,14 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoSecretKey, ICryptoSecretKey } from "@nmshd/crypto"
-import { CoreId, CoreSerializableAsync, ICoreId, ICoreSerializableAsync, TransportErrors } from "../../../core"
+import { CoreId, CoreSerializable, ICoreId, ICoreSerializable, TransportErrors } from "../../../core"
 
-export interface ITokenReference extends ICoreSerializableAsync {
+export interface ITokenReference extends ICoreSerializable {
     id: ICoreId
     key: ICryptoSecretKey
 }
 
 @type("TokenReference")
-export class TokenReference extends CoreSerializableAsync implements ITokenReference {
+export class TokenReference extends CoreSerializable implements ITokenReference {
     @validate()
     @serialize()
     public id: CoreId
@@ -24,7 +24,7 @@ export class TokenReference extends CoreSerializableAsync implements ITokenRefer
         return truncatedReference.toBase64URL()
     }
 
-    public static async fromTruncated(value: string): Promise<TokenReference> {
+    public static fromTruncated(value: string): TokenReference {
         const truncatedBuffer = CoreBuffer.fromBase64URL(value)
         const splitted = truncatedBuffer.toUtf8().split("|")
 
@@ -35,12 +35,12 @@ export class TokenReference extends CoreSerializableAsync implements ITokenRefer
             const id = CoreId.from(splitted[0])
             const alg = parseInt(splitted[1])
             const key = splitted[2]
-            const secretKey = await CryptoSecretKey.from({
+            const secretKey = CryptoSecretKey.from({
                 algorithm: alg,
                 secretKey: CoreBuffer.fromBase64URL(key)
             })
 
-            return await TokenReference.from({
+            return TokenReference.from({
                 id: id,
                 key: secretKey
             })
@@ -49,15 +49,7 @@ export class TokenReference extends CoreSerializableAsync implements ITokenRefer
         }
     }
 
-    public static async from(value: ITokenReference | string): Promise<TokenReference> {
-        return await super.fromT(value, TokenReference)
-    }
-
-    public static async deserialize(value: string): Promise<TokenReference> {
-        try {
-            return await super.deserializeT(value, TokenReference)
-        } catch (e) {
-            return await this.from(value)
-        }
+    public static from(value: ITokenReference | string): TokenReference {
+        return this.fromAny(value)
     }
 }

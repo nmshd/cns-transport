@@ -1,4 +1,4 @@
-import { Serializable, SerializableAsync } from "@js-soft/ts-serval"
+import { Serializable } from "@js-soft/ts-serval"
 import {
     CoreBuffer,
     CryptoCipher,
@@ -69,7 +69,7 @@ export class RelationshipSecretController extends SecretController {
         )
         await this.storeSecret(secrets, relationshipSecretId.toString(), "")
 
-        const publicRequest = await secrets.toPublicRequest()
+        const publicRequest = secrets.toPublicRequest()
         return publicRequest
     }
 
@@ -108,7 +108,7 @@ export class RelationshipSecretController extends SecretController {
         if (!(secret.secret instanceof CryptoRelationshipSecrets)) {
             throw TransportErrors.secrets.wrongSecretType(secret.id.toString()).logWith(this._log)
         }
-        const publicResponse = await secret.secret.toPublicResponse()
+        const publicResponse = secret.secret.toPublicResponse()
         return publicResponse
     }
 
@@ -152,7 +152,7 @@ export class RelationshipSecretController extends SecretController {
 
     public async encryptRequest(
         relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string | CoreBuffer
+        content: Serializable | string | CoreBuffer
     ): Promise<CryptoCipher> {
         const buffer = CoreUtil.toBuffer(content)
         const secrets = await this.getSecret(relationshipSecretId)
@@ -164,10 +164,7 @@ export class RelationshipSecretController extends SecretController {
         return await secrets.encryptRequest(buffer)
     }
 
-    public async encrypt(
-        relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string
-    ): Promise<CryptoCipher> {
+    public async encrypt(relationshipSecretId: CoreId, content: Serializable | string): Promise<CryptoCipher> {
         const buffer = CoreUtil.toBuffer(content)
         const secrets = await this.getSecret(relationshipSecretId)
 
@@ -192,7 +189,11 @@ export class RelationshipSecretController extends SecretController {
         const templateKeyId = await TransportIds.relationshipTemplateKey.generate()
         const key = await this.createExchangeKey(`${templateKeyId.toString()}`)
         const publicKey = key[0]
-        return new RelationshipTemplatePublicKey(templateKeyId, publicKey.algorithm, publicKey.publicKey)
+        return RelationshipTemplatePublicKey.from({
+            id: templateKeyId,
+            algorithm: publicKey.algorithm,
+            publicKey: publicKey.publicKey
+        })
     }
 
     public async decryptPeer(
@@ -226,7 +227,7 @@ export class RelationshipSecretController extends SecretController {
 
     public async sign(
         relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string | CoreBuffer
+        content: Serializable | string | CoreBuffer
     ): Promise<CryptoSignature> {
         const bufferToSign = CoreUtil.toBuffer(content)
         const secrets = await this.getSecret(relationshipSecretId)
@@ -235,7 +236,7 @@ export class RelationshipSecretController extends SecretController {
 
     public async verifyOwn(
         relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string | CoreBuffer,
+        content: Serializable | string | CoreBuffer,
         signature: CryptoSignature
     ): Promise<boolean> {
         const bufferToVerify = CoreUtil.toBuffer(content)
@@ -245,7 +246,7 @@ export class RelationshipSecretController extends SecretController {
 
     public async verifyPeer(
         relationshipSecretId: CoreId,
-        content: SerializableAsync | Serializable | string | CoreBuffer,
+        content: Serializable | string | CoreBuffer,
         signature: CryptoSignature
     ): Promise<boolean> {
         const bufferToVerify = CoreUtil.toBuffer(content)

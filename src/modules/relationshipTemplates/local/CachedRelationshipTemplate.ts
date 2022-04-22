@@ -1,22 +1,15 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
 import { ICryptoExchangePublicKey } from "@nmshd/crypto"
-import {
-    CoreAddress,
-    CoreDate,
-    CoreSerializableAsync,
-    ICoreAddress,
-    ICoreDate,
-    ICoreSerializableAsync
-} from "../../../core"
+import { CoreAddress, CoreDate, CoreSerializable, ICoreAddress, ICoreDate, ICoreSerializable } from "../../../core"
 import { CoreId, ICoreId } from "../../../core/types/CoreId"
 import { Identity, IIdentity } from "../../accounts/data/Identity"
 import { RelationshipTemplatePublicKey } from "../transmission/RelationshipTemplatePublicKey"
 
-export interface ICachedRelationshipTemplate extends ICoreSerializableAsync {
+export interface ICachedRelationshipTemplate extends ICoreSerializable {
     identity: IIdentity
     createdBy: ICoreAddress
     createdByDevice: ICoreId
-    content: ISerializableAsync
+    content: ISerializable
     createdAt: ICoreDate
     expiresAt?: ICoreDate
     maxNumberOfRelationships?: number
@@ -24,7 +17,7 @@ export interface ICachedRelationshipTemplate extends ICoreSerializableAsync {
 }
 
 @type("CachedRelationshipTemplate")
-export class CachedRelationshipTemplate extends CoreSerializableAsync implements ICachedRelationshipTemplate {
+export class CachedRelationshipTemplate extends CoreSerializable implements ICachedRelationshipTemplate {
     @validate()
     @serialize()
     public identity: Identity
@@ -43,7 +36,7 @@ export class CachedRelationshipTemplate extends CoreSerializableAsync implements
 
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
 
     @validate()
     @serialize()
@@ -57,12 +50,8 @@ export class CachedRelationshipTemplate extends CoreSerializableAsync implements
     @serialize()
     public maxNumberOfRelationships?: number
 
-    public static async from(value: ICachedRelationshipTemplate): Promise<CachedRelationshipTemplate> {
-        return await super.fromT(value, CachedRelationshipTemplate)
-    }
-
-    public static async deserialize(value: string): Promise<CachedRelationshipTemplate> {
-        return await super.deserializeT(value, CachedRelationshipTemplate)
+    public static from(value: ICachedRelationshipTemplate): CachedRelationshipTemplate {
+        return this.fromAny(value)
     }
 
     public static validateMaxNumberOfRelationships(value?: number): string {

@@ -95,7 +95,7 @@ export class RandomTest extends AbstractUnitTest {
             })
 
             describe("String()", function () {
-                this.timeout(4000)
+                this.timeout(5000)
 
                 it("should return a string with a fixed length", async function () {
                     for (let i = 1; i < 20; i++) {

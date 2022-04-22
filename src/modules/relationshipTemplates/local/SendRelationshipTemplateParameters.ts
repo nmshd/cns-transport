@@ -1,21 +1,21 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreDate, CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreDate, CoreSerializable, ICoreSerializable } from "../../../core"
 import { CachedRelationshipTemplate } from "./CachedRelationshipTemplate"
 
-export interface ISendRelationshipTemplateParameters extends ICoreSerializableAsync {
-    content: ISerializableAsync
+export interface ISendRelationshipTemplateParameters extends ICoreSerializable {
+    content: ISerializable
     expiresAt: CoreDate
     maxNumberOfRelationships?: number
 }
 
 @type("SendRelationshipTemplateParameters")
 export class SendRelationshipTemplateParameters
-    extends CoreSerializableAsync
+    extends CoreSerializable
     implements ISendRelationshipTemplateParameters
 {
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
 
     @validate()
     @serialize()
@@ -25,11 +25,7 @@ export class SendRelationshipTemplateParameters
     @serialize()
     public maxNumberOfRelationships?: number
 
-    public static async from(value: ISendRelationshipTemplateParameters): Promise<SendRelationshipTemplateParameters> {
-        return await super.fromT(value, SendRelationshipTemplateParameters)
-    }
-
-    public static async deserialize(value: string): Promise<SendRelationshipTemplateParameters> {
-        return await super.deserializeT(value, SendRelationshipTemplateParameters)
+    public static from(value: ISendRelationshipTemplateParameters): SendRelationshipTemplateParameters {
+        return this.fromAny(value)
     }
 }

@@ -4,15 +4,15 @@ import {
     CoreAddress,
     CoreDate,
     CoreId,
-    CoreSerializableAsync,
+    CoreSerializable,
     ICoreAddress,
     ICoreDate,
     ICoreId,
-    ICoreSerializableAsync
+    ICoreSerializable
 } from "../../../core"
 import { IMessageEnvelopeRecipient, MessageEnvelopeRecipient } from "./MessageEnvelopeRecipient"
 
-export interface IMessageEnvelope extends ICoreSerializableAsync {
+export interface IMessageEnvelope extends ICoreSerializable {
     id: ICoreId
 
     createdAt: ICoreDate
@@ -26,7 +26,7 @@ export interface IMessageEnvelope extends ICoreSerializableAsync {
 }
 
 @type("MessageEnvelope")
-export class MessageEnvelope extends CoreSerializableAsync implements IMessageEnvelope {
+export class MessageEnvelope extends CoreSerializable implements IMessageEnvelope {
     @validate()
     @serialize()
     public id: CoreId
@@ -55,8 +55,8 @@ export class MessageEnvelope extends CoreSerializableAsync implements IMessageEn
     @serialize({ type: CoreId })
     public attachments: CoreId[]
 
-    public static async from(value: IMessageEnvelope): Promise<MessageEnvelope> {
-        return await super.fromT(value, MessageEnvelope)
+    public static from(value: IMessageEnvelope): MessageEnvelope {
+        return this.fromAny(value)
     }
 
     public static mapToJSON(value: Map<CoreAddress, CryptoCipher>): Object {
@@ -69,12 +69,12 @@ export class MessageEnvelope extends CoreSerializableAsync implements IMessageEn
         return obj
     }
 
-    public static async deserializeMap(value: any): Promise<Map<CoreAddress, CryptoCipher>> {
+    public static deserializeMap(value: any): Map<CoreAddress, CryptoCipher> {
         const obj: Map<CoreAddress, CryptoCipher> = new Map<CoreAddress, CryptoCipher>()
         for (const key in value) {
             const cipher: any = value[key]
             const serializedKey: CoreAddress = CoreAddress.deserialize(key)
-            const serializedValue: CryptoCipher = await CryptoCipher.deserialize(cipher)
+            const serializedValue: CryptoCipher = CryptoCipher.deserialize(cipher)
             obj.set(serializedKey, serializedValue)
         }
         return obj

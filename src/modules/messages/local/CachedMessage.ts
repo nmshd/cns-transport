@@ -1,17 +1,10 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import {
-    CoreAddress,
-    CoreId,
-    CoreSerializableAsync,
-    ICoreAddress,
-    ICoreId,
-    ICoreSerializableAsync
-} from "../../../core"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreAddress, CoreId, CoreSerializable, ICoreAddress, ICoreId, ICoreSerializable } from "../../../core"
 import { CoreDate, ICoreDate } from "../../../core/types/CoreDate"
 import { IMessageEnvelopeRecipient, MessageEnvelopeRecipient } from "../transmission/MessageEnvelopeRecipient"
 
-export interface ICachedMessage extends ICoreSerializableAsync {
+export interface ICachedMessage extends ICoreSerializable {
     createdBy: ICoreAddress
     createdByDevice: ICoreId
 
@@ -22,11 +15,11 @@ export interface ICachedMessage extends ICoreSerializableAsync {
     attachments?: ICoreId[]
     receivedByEveryone: boolean
 
-    content: ISerializableAsync
+    content: ISerializable
 }
 
 @type("CachedMessage")
-export class CachedMessage extends CoreSerializableAsync implements ICachedMessage {
+export class CachedMessage extends CoreSerializable implements ICachedMessage {
     @validate()
     @serialize()
     public createdBy: CoreAddress
@@ -53,9 +46,9 @@ export class CachedMessage extends CoreSerializableAsync implements ICachedMessa
 
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
 
-    public static async from(value: ICachedMessage): Promise<CachedMessage> {
-        return await super.fromT(value, CachedMessage)
+    public static from(value: ICachedMessage): CachedMessage {
+        return this.fromAny(value)
     }
 }

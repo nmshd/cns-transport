@@ -1,8 +1,8 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CryptoSecretKey, ICryptoSecretKey } from "@nmshd/crypto"
-import { CoreDate, CoreHash, CoreSerializableAsync, ICoreDate, ICoreHash, ICoreSerializableAsync } from "../../../core"
+import { CoreDate, CoreHash, CoreSerializable, ICoreDate, ICoreHash, ICoreSerializable } from "../../../core"
 
-export interface IFileMetadata extends ICoreSerializableAsync {
+export interface IFileMetadata extends ICoreSerializable {
     title?: string
     description?: string
     filename: string
@@ -16,7 +16,7 @@ export interface IFileMetadata extends ICoreSerializableAsync {
 }
 
 @type("FileMetadata")
-export class FileMetadata extends CoreSerializableAsync implements IFileMetadata {
+export class FileMetadata extends CoreSerializable implements IFileMetadata {
     @validate({ nullable: true })
     @serialize()
     public title?: string
@@ -49,11 +49,7 @@ export class FileMetadata extends CoreSerializableAsync implements IFileMetadata
     @serialize()
     public mimetype: string
 
-    public static async from(value: IFileMetadata): Promise<FileMetadata> {
-        return await super.fromT(value, FileMetadata)
-    }
-
-    public static async deserialize(value: string): Promise<FileMetadata> {
-        return await super.deserializeT(value, FileMetadata)
+    public static from(value: IFileMetadata): FileMetadata {
+        return this.fromAny(value)
     }
 }

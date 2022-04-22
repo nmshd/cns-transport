@@ -1,12 +1,12 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreSerializable, ICoreSerializable } from "../../../core"
 import { CoreAddress, ICoreAddress } from "../../../core/types/CoreAddress"
 import { CoreDate, ICoreDate } from "../../../core/types/CoreDate"
 import { FileReference, IFileReference } from "../../files/transmission/FileReference"
 
-export interface IMessagePlain extends ICoreSerializableAsync {
+export interface IMessagePlain extends ICoreSerializable {
     attachments?: IFileReference[]
-    content: ISerializableAsync
+    content: ISerializable
     createdAt?: ICoreDate
     recipients: ICoreAddress[]
 }
@@ -22,13 +22,13 @@ export interface IMessagePlain extends ICoreSerializableAsync {
  * ignored (as the whole message could have been forwarded by bad party to a wrong recipient).
  */
 @type("MessagePlain")
-export class MessagePlain extends CoreSerializableAsync implements IMessagePlain {
+export class MessagePlain extends CoreSerializable implements IMessagePlain {
     @validate()
     @serialize({ type: FileReference })
     public attachments: FileReference[] = []
     @validate()
     @serialize()
-    public content: SerializableAsync
+    public content: Serializable
     @validate()
     @serialize()
     public createdAt: CoreDate
@@ -36,14 +36,15 @@ export class MessagePlain extends CoreSerializableAsync implements IMessagePlain
     @serialize({ type: CoreAddress })
     public recipients: CoreAddress[]
 
-    public static async from(value: IMessagePlain): Promise<MessagePlain> {
+    protected static override preFrom(value: any): any {
         if (typeof value.attachments === "undefined") {
             value.attachments = []
         }
-        return await super.fromT(value, MessagePlain)
+
+        return value
     }
 
-    public static async deserialize(value: string): Promise<MessagePlain> {
-        return await super.deserializeT(value, MessagePlain)
+    public static from(value: IMessagePlain): MessagePlain {
+        return this.fromAny(value)
     }
 }

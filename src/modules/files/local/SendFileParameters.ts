@@ -1,9 +1,9 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CoreBuffer, ICoreBuffer } from "@nmshd/crypto"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { CoreSerializable, ICoreSerializable } from "../../../core"
 import { CoreDate, ICoreDate } from "../../../core/types/CoreDate"
 
-export interface ISendFileParameters extends ICoreSerializableAsync {
+export interface ISendFileParameters extends ICoreSerializable {
     title: string
     description: string
     filename: string
@@ -14,7 +14,7 @@ export interface ISendFileParameters extends ICoreSerializableAsync {
 }
 
 @type("SendFileParameters")
-export class SendFileParameters extends CoreSerializableAsync implements ISendFileParameters {
+export class SendFileParameters extends CoreSerializable implements ISendFileParameters {
     @validate()
     @serialize()
     public title: string
@@ -39,11 +39,7 @@ export class SendFileParameters extends CoreSerializableAsync implements ISendFi
     @serialize()
     public buffer: CoreBuffer
 
-    public static async from(value: ISendFileParameters): Promise<SendFileParameters> {
-        return await super.fromT(value, SendFileParameters)
-    }
-
-    public static async deserialize(value: string): Promise<SendFileParameters> {
-        return await super.deserializeT(value, SendFileParameters)
+    public static from(value: ISendFileParameters): SendFileParameters {
+        return this.fromAny(value)
     }
 }

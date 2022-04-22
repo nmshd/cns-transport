@@ -26,7 +26,7 @@ export class IdentityController extends TransportController {
         super(ControllerName.Identity, parent)
     }
 
-    public async init(identity?: Identity): Promise<IdentityController> {
+    public override async init(identity?: Identity): Promise<IdentityController> {
         await super.init()
 
         if (!identity) {

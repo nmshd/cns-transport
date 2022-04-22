@@ -18,7 +18,7 @@ export class DevicesController extends TransportController {
         super(ControllerName.Devices, parent)
     }
 
-    public async init(): Promise<DevicesController> {
+    public override async init(): Promise<DevicesController> {
         await super.init()
 
         this.client = new DeviceAuthClient(this.config, this.parent.authenticator)
@@ -32,7 +32,7 @@ export class DevicesController extends TransportController {
             return undefined
         }
 
-        return await Device.from(result)
+        return Device.from(result)
     }
 
     public async addExistingDevice(device: Device): Promise<void> {
@@ -56,7 +56,7 @@ export class DevicesController extends TransportController {
 
         this.log.trace(`Created device with id ${response.id}.`)
 
-        const device = await Device.from({
+        const device = Device.from({
             createdAt: CoreDate.from(response.createdAt),
             createdByDevice: CoreId.from(response.createdByDevice),
             id: CoreId.from(response.id),
@@ -72,7 +72,7 @@ export class DevicesController extends TransportController {
     }
 
     public async sendDevice(parameters: ISendDeviceParameters): Promise<Device> {
-        parameters = await SendDeviceParameters.from(parameters)
+        parameters = SendDeviceParameters.from(parameters)
 
         if (!parameters.name) {
             const devices = await this.parent.devices.list()
@@ -93,7 +93,7 @@ export class DevicesController extends TransportController {
         }
 
         const count = await this.devices.count()
-        const device = await Device.from(deviceDoc)
+        const device = Device.from(deviceDoc)
 
         if (!device.initialPassword || device.publicKey || device.lastLoginAt) {
             throw TransportErrors.device.alreadyOnboarded()

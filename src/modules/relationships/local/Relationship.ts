@@ -23,7 +23,7 @@ export interface IRelationship extends ICoreSynchronizable {
 
 @type("Relationship")
 export class Relationship extends CoreSynchronizable implements IRelationship {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<Relationship>((r) => r.relationshipSecretId),
@@ -31,7 +31,7 @@ export class Relationship extends CoreSynchronizable implements IRelationship {
         nameof<Relationship>((r) => r.status)
     ]
 
-    public readonly metadataProperties = [
+    public override readonly metadataProperties = [
         nameof<Relationship>((r) => r.metadata),
         nameof<Relationship>((r) => r.metadataModifiedAt)
     ]
@@ -64,18 +64,19 @@ export class Relationship extends CoreSynchronizable implements IRelationship {
     @serialize()
     public metadataModifiedAt?: CoreDate
 
-    public static async fromRequestSent(
+    public static fromRequestSent(
         id: CoreId,
         template: IRelationshipTemplate,
         peer: IIdentity,
         creationChange: IRelationshipChange,
         relationshipSecretId: CoreId
-    ): Promise<Relationship> {
-        const cache = await CachedRelationship.from({
+    ): Relationship {
+        const cache = CachedRelationship.from({
             changes: [creationChange],
             template: template
         })
-        return await Relationship.from({
+
+        return Relationship.from({
             id: id,
             peer: peer,
             status: RelationshipStatus.Pending,
@@ -85,18 +86,18 @@ export class Relationship extends CoreSynchronizable implements IRelationship {
         })
     }
 
-    public static async fromCreationChangeReceived(
+    public static fromCreationChangeReceived(
         response: BackboneGetRelationshipsResponse,
         template: IRelationshipTemplate,
         peer: IIdentity,
         creationChange: IRelationshipChange,
         relationshipSecretId: CoreId
-    ): Promise<Relationship> {
-        const cache = await CachedRelationship.from({
+    ): Relationship {
+        const cache = CachedRelationship.from({
             changes: [creationChange],
             template: template
         })
-        return await Relationship.from({
+        return Relationship.from({
             id: CoreId.from(response.id),
             relationshipSecretId: relationshipSecretId,
             peer: peer,
@@ -133,12 +134,8 @@ export class Relationship extends CoreSynchronizable implements IRelationship {
         this.status = RelationshipStatus.Revoked
     }
 
-    public static async from(value: IRelationship): Promise<Relationship> {
-        return await super.fromT(value, Relationship)
-    }
-
-    public static async deserialize(value: string): Promise<Relationship> {
-        return await super.deserializeT(value, Relationship)
+    public static from(value: IRelationship): Relationship {
+        return this.fromAny(value)
     }
 
     public setCache(cache: CachedRelationship): this {

@@ -1,14 +1,14 @@
 import { serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreSerializableAsync, ICoreSerializableAsync } from "../../../core"
+import { CoreSerializable, ICoreSerializable } from "../../../core"
 
-export interface ISendDeviceParameters extends ICoreSerializableAsync {
+export interface ISendDeviceParameters extends ICoreSerializable {
     name?: string
     description?: string
     isAdmin?: boolean
 }
 
 @type("SendDeviceParameters")
-export class SendDeviceParameters extends CoreSerializableAsync implements ISendDeviceParameters {
+export class SendDeviceParameters extends CoreSerializable implements ISendDeviceParameters {
     @validate({ nullable: true })
     @serialize()
     public name?: string
@@ -21,11 +21,7 @@ export class SendDeviceParameters extends CoreSerializableAsync implements ISend
     @serialize()
     public isAdmin?: boolean
 
-    public static async from(value: ISendDeviceParameters): Promise<SendDeviceParameters> {
-        return await super.fromT(value, SendDeviceParameters)
-    }
-
-    public static async deserialize(value: string): Promise<SendDeviceParameters> {
-        return await super.deserializeT(value, SendDeviceParameters)
+    public static from(value: ISendDeviceParameters): SendDeviceParameters {
+        return this.fromAny(value)
     }
 }

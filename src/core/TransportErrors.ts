@@ -106,6 +106,10 @@ class CoreDateErrors {
             "The provided object is undefined and cannot be deserialized."
         )
     }
+
+    public invalid() {
+        return new CoreError("error.transport.date.invalid", "The provided object is invalid cannot be deserialized.")
+    }
 }
 
 class Random {

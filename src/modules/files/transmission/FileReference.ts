@@ -1,14 +1,14 @@
-import { ISerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
+import { serialize, type, validate } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoSecretKey, ICryptoSecretKey } from "@nmshd/crypto"
-import { CoreId, CoreSerializableAsync, TransportErrors } from "../../../core"
+import { CoreId, CoreSerializable, ICoreSerializable, TransportErrors } from "../../../core"
 
-export interface IFileReference extends ISerializableAsync {
+export interface IFileReference extends ICoreSerializable {
     id: CoreId
     key: ICryptoSecretKey
 }
 
 @type("FileReference")
-export class FileReference extends CoreSerializableAsync implements IFileReference {
+export class FileReference extends CoreSerializable implements IFileReference {
     @validate()
     @serialize()
     public id: CoreId
@@ -24,7 +24,7 @@ export class FileReference extends CoreSerializableAsync implements IFileReferen
         return truncatedReference.toBase64URL()
     }
 
-    public static async fromTruncated(value: string): Promise<FileReference> {
+    public static fromTruncated(value: string): FileReference {
         const truncatedBuffer = CoreBuffer.fromBase64URL(value)
         const splitted = truncatedBuffer.toUtf8().split("|")
 
@@ -36,12 +36,12 @@ export class FileReference extends CoreSerializableAsync implements IFileReferen
             const id = CoreId.from(splitted[0])
             const alg = parseInt(splitted[1])
             const key = splitted[2]
-            const secretKey = await CryptoSecretKey.from({
+            const secretKey = CryptoSecretKey.from({
                 algorithm: alg,
                 secretKey: CoreBuffer.fromBase64URL(key)
             })
 
-            return await FileReference.from({
+            return FileReference.from({
                 id: CoreId.from(id),
                 key: secretKey
             })
@@ -50,11 +50,7 @@ export class FileReference extends CoreSerializableAsync implements IFileReferen
         }
     }
 
-    public static async from(value: IFileReference | string): Promise<FileReference> {
-        return await super.fromT(value, FileReference)
-    }
-
-    public static async deserialize(value: string): Promise<FileReference> {
-        return await super.deserializeT(value, FileReference)
+    public static from(value: IFileReference | string): FileReference {
+        return this.fromAny(value)
     }
 }

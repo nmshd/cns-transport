@@ -36,7 +36,7 @@ export class RequestError extends ApplicationError {
         return this
     }
 
-    public toString(): string {
+    public override toString(): string {
         return `${this.name}\n${stringify(this.object)}\n${this.stack}`
     }
     /**

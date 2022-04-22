@@ -21,7 +21,7 @@ export class CertificatePrivateAttributeItem extends CertificateItem {
     @serialize()
     public hash: CoreHash
 
-    public static async from(value: ICertificatePrivateAttributeItem): Promise<CertificatePrivateAttributeItem> {
-        return await super.fromT(value, CertificatePrivateAttributeItem)
+    public static override from(value: ICertificatePrivateAttributeItem): CertificatePrivateAttributeItem {
+        return this.fromAny(value)
     }
 }

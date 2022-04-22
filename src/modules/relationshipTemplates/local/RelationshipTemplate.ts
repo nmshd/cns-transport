@@ -16,14 +16,14 @@ export interface IRelationshipTemplate extends ICoreSynchronizable {
 
 @type("RelationshipTemplate")
 export class RelationshipTemplate extends CoreSynchronizable implements IRelationshipTemplate {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<RelationshipTemplate>((r) => r.secretKey),
         nameof<RelationshipTemplate>((r) => r.isOwn)
     ]
 
-    public readonly metadataProperties = [
+    public override readonly metadataProperties = [
         nameof<RelationshipTemplate>((r) => r.metadata),
         nameof<RelationshipTemplate>((r) => r.metadataModifiedAt)
     ]
@@ -52,12 +52,8 @@ export class RelationshipTemplate extends CoreSynchronizable implements IRelatio
     @serialize()
     public metadataModifiedAt?: CoreDate
 
-    public static async from(value: IRelationshipTemplate): Promise<RelationshipTemplate> {
-        return await super.fromT(value, RelationshipTemplate)
-    }
-
-    public static async deserialize(value: string): Promise<RelationshipTemplate> {
-        return await super.deserializeT(value, RelationshipTemplate)
+    public static from(value: IRelationshipTemplate): RelationshipTemplate {
+        return this.fromAny(value)
     }
 
     public setCache(cache: CachedRelationshipTemplate): this {

@@ -1,7 +1,6 @@
 import { ISerialized, serialize, type, validate } from "@js-soft/ts-serval"
 import {
     CoreBuffer,
-    CryptoExchangeAlgorithm,
     CryptoExchangePublicKey,
     ICryptoExchangePublicKey,
     ICryptoExchangePublicKeySerialized
@@ -17,51 +16,39 @@ export interface IRelationshipTemplatePublicKeySerialized extends ICryptoExchang
 
 @type("RelationshipTemplatePublicKey")
 export class RelationshipTemplatePublicKey extends CryptoExchangePublicKey implements IRelationshipTemplatePublicKey {
-    @serialize({ enforceString: true })
+    @serialize()
     @validate()
     public id: CoreId
 
-    public constructor(id: CoreId, algorithm: CryptoExchangeAlgorithm, publicKey: CoreBuffer) {
-        super(algorithm, publicKey)
-        this.id = id
-    }
-
-    public toJSON(verbose = true): IRelationshipTemplatePublicKeySerialized {
-        const obj: IRelationshipTemplatePublicKeySerialized = {
+    public override toJSON(verbose = true): IRelationshipTemplatePublicKeySerialized {
+        return {
             id: this.id.toString(),
             pub: this.publicKey.toBase64URL(),
-            alg: this.algorithm
+            alg: this.algorithm,
+            "@type": verbose ? "RelationshipTemplatePublicKey" : undefined
         }
-        if (verbose) {
-            obj["@type"] = "RelationshipTemplatePublicKey"
-        }
-        return obj
     }
 
-    public toBase64(): string {
+    public override toBase64(): string {
         return CoreBuffer.utf8_base64(this.serialize())
     }
 
-    public serialize(verbose = true): string {
+    public override serialize(verbose = true): string {
         return JSON.stringify(this.toJSON(verbose))
     }
 
-    public static async fromJSON(
-        value: IRelationshipTemplatePublicKeySerialized
-    ): Promise<RelationshipTemplatePublicKey> {
-        const key = await CryptoExchangePublicKey.fromJSON(value)
+    protected static override preFrom(value: any): any {
+        const newValue = super.preFrom(value)
+        newValue.id = value.id
 
-        return new RelationshipTemplatePublicKey(CoreId.from(value.id), key.algorithm, key.publicKey)
+        return newValue
     }
 
-    public static from(value: IRelationshipTemplatePublicKey): Promise<RelationshipTemplatePublicKey> {
-        return Promise.resolve(
-            new RelationshipTemplatePublicKey(CoreId.from(value.id), value.algorithm, value.publicKey)
-        )
+    public static override fromJSON(value: IRelationshipTemplatePublicKeySerialized): RelationshipTemplatePublicKey {
+        return this.fromAny(value)
     }
 
-    public static async deserialize(value: string): Promise<RelationshipTemplatePublicKey> {
-        const obj = JSON.parse(value)
-        return await this.fromJSON(obj)
+    public static override from(value: IRelationshipTemplatePublicKey): RelationshipTemplatePublicKey {
+        return this.fromAny(value)
     }
 }

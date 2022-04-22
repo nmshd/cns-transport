@@ -36,7 +36,7 @@ export interface IDevice extends ICoreSynchronizable {
 
 @type("Device")
 export class Device extends CoreSynchronizable implements IDevice {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<Device>((d) => d.isAdmin),
@@ -52,7 +52,7 @@ export class Device extends CoreSynchronizable implements IDevice {
         nameof<Device>((d) => d.datawalletVersion)
     ]
 
-    public readonly userdataProperties = [nameof<Device>((d) => d.name), nameof<Device>((d) => d.description)]
+    public override readonly userdataProperties = [nameof<Device>((d) => d.name), nameof<Device>((d) => d.description)]
 
     @validate({ nullable: true })
     @serialize()
@@ -106,7 +106,7 @@ export class Device extends CoreSynchronizable implements IDevice {
     @serialize()
     public datawalletVersion?: number
 
-    public static async from(value: IDevice): Promise<Device> {
-        return await super.fromT(value, Device)
+    public static from(value: IDevice): Device {
+        return this.fromAny(value)
     }
 }

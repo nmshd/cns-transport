@@ -1,18 +1,18 @@
-import { ISerializableAsync, SerializableAsync, serialize, type, validate } from "@js-soft/ts-serval"
-import { CoreAddress, CoreDate, CoreSerializableAsync, ICoreAddress, ICoreSerializableAsync } from "../../../../core"
+import { ISerializable, Serializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreAddress, CoreDate, CoreSerializable, ICoreAddress, ICoreSerializable } from "../../../../core"
 import { ICoreDate } from "../../../../core/types/CoreDate"
 import { CoreId, ICoreId } from "../../../../core/types/CoreId"
 import { BackboneGetRelationshipsChangesSingleChangeResponse } from "../../backbone/BackboneGetRelationshipsChanges"
 
-export interface IRelationshipChangeResponse extends ICoreSerializableAsync {
+export interface IRelationshipChangeResponse extends ICoreSerializable {
     createdBy: ICoreAddress
     createdByDevice: ICoreId
     createdAt: ICoreDate
-    content?: ISerializableAsync
+    content?: ISerializable
 }
 
 @type("RelationshipChangeResponse")
-export class RelationshipChangeResponse extends CoreSerializableAsync implements IRelationshipChangeResponse {
+export class RelationshipChangeResponse extends CoreSerializable implements IRelationshipChangeResponse {
     @validate()
     @serialize()
     public createdBy: CoreAddress
@@ -27,13 +27,13 @@ export class RelationshipChangeResponse extends CoreSerializableAsync implements
 
     @validate({ nullable: true })
     @serialize()
-    public content?: SerializableAsync
+    public content?: Serializable
 
-    public static async fromBackbone(
+    public static fromBackbone(
         backboneChange: BackboneGetRelationshipsChangesSingleChangeResponse,
-        content?: ISerializableAsync
-    ): Promise<RelationshipChangeResponse> {
-        return await this.from({
+        content?: ISerializable
+    ): RelationshipChangeResponse {
+        return this.from({
             createdBy: CoreAddress.from(backboneChange.createdBy),
             createdByDevice: CoreId.from(backboneChange.createdByDevice),
             createdAt: CoreDate.from(backboneChange.createdAt),
@@ -41,11 +41,7 @@ export class RelationshipChangeResponse extends CoreSerializableAsync implements
         })
     }
 
-    public static async from(value: IRelationshipChangeResponse): Promise<RelationshipChangeResponse> {
-        return await super.fromT(value, RelationshipChangeResponse)
-    }
-
-    public static async deserialize(value: string): Promise<RelationshipChangeResponse> {
-        return await super.deserializeT(value, RelationshipChangeResponse)
+    public static from(value: IRelationshipChangeResponse): RelationshipChangeResponse {
+        return this.fromAny(value)
     }
 }
