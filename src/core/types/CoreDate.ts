@@ -1,4 +1,4 @@
-import { schema } from "@js-soft/ts-serval"
+import { type } from "@js-soft/ts-serval"
 import { DateTime, DateTimeUnit, Duration, DurationLike, Interval } from "luxon"
 import { CoreSerializable, ICoreSerializable } from "../CoreSerializable"
 import { TransportErrors } from "../TransportErrors"
@@ -7,7 +7,7 @@ export interface ICoreDate extends ICoreSerializable {
     date: string
 }
 
-@schema("CoreDate")
+@type("CoreDate")
 export class CoreDate extends CoreSerializable {
     private readonly _dateTime: DateTime
     public get dateTime(): DateTime {
