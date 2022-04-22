@@ -1,4 +1,4 @@
-import { Serializable } from "@js-soft/ts-serval"
+import {Serializable} from "@js-soft/ts-serval"
 import {
     CoreBuffer,
     CryptoCipher,
@@ -30,6 +30,9 @@ import {
     MessagePlain,
     MessageSigned,
     Relationship,
+    RelationshipChange,
+    RelationshipChangeRequest,
+    RelationshipChangeResponse,
     RelationshipCreationChangeRequestCipher,
     RelationshipCreationChangeRequestContent,
     RelationshipCreationChangeRequestSigned,
@@ -43,8 +46,8 @@ import {
     Token,
     TokenContentRelationshipTemplate
 } from "@nmshd/transport"
-import { expect } from "chai"
-import { AbstractUnitTest } from "../testHelpers"
+import {expect} from "chai"
+import {AbstractUnitTest} from "../testHelpers"
 
 export class ReflectionTest extends AbstractUnitTest {
     public static cryptoClassNames: string[] = [
@@ -82,6 +85,9 @@ export class ReflectionTest extends AbstractUnitTest {
         `${Message.name}@1`,
         `${CachedRelationshipTemplate.name}@1`,
         `${Relationship.name}@1`,
+        `${RelationshipChange.name}@1`,
+        `${RelationshipChangeRequest.name}@1`,
+        `${RelationshipChangeResponse.name}@1`,
         `${RelationshipTemplate.name}@1`,
         `${RelationshipCreationChangeRequestCipher.name}@1`,
         `${RelationshipCreationChangeRequestContent.name}@1`,

@@ -1,8 +1,8 @@
-import { ISerializable, Serializable, serialize, validate } from "@js-soft/ts-serval"
-import { CoreAddress, CoreDate, CoreSerializable, ICoreAddress } from "../../../../core"
-import { ICoreDate } from "../../../../core/types/CoreDate"
-import { CoreId, ICoreId } from "../../../../core/types/CoreId"
-import { BackboneGetRelationshipsChangesSingleChangeResponse } from "../../backbone/BackboneGetRelationshipsChanges"
+import {ISerializable, Serializable, serialize, type, validate} from "@js-soft/ts-serval"
+import {CoreAddress, CoreDate, CoreSerializable, ICoreAddress} from "../../../../core"
+import {ICoreDate} from "../../../../core/types/CoreDate"
+import {CoreId, ICoreId} from "../../../../core/types/CoreId"
+import {BackboneGetRelationshipsChangesSingleChangeResponse} from "../../backbone/BackboneGetRelationshipsChanges"
 
 export interface IRelationshipChangeRequest {
     createdBy: ICoreAddress
@@ -11,6 +11,7 @@ export interface IRelationshipChangeRequest {
     content?: ISerializable
 }
 
+@type("RelationshipChangeRequest")
 export class RelationshipChangeRequest extends CoreSerializable implements IRelationshipChangeRequest {
     @validate()
     @serialize()
