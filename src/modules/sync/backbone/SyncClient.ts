@@ -1,8 +1,8 @@
-import {IConfig, Paginator, PaginatorPercentageCallback, RESTClientAuthenticate} from "../../../core"
-import {Authenticator} from "../../../core/backbone/Authenticator"
-import {ClientResult} from "../../../core/backbone/ClientResult"
-import {BackboneDatawalletModification} from "./BackboneDatawalletModification"
-import {BackboneExternalEvent} from "./BackboneExternalEvent"
+import { IConfig, Paginator, PaginatorPercentageCallback, RESTClientAuthenticate } from "../../../core"
+import { Authenticator } from "../../../core/backbone/Authenticator"
+import { ClientResult } from "../../../core/backbone/ClientResult"
+import { BackboneDatawalletModification } from "./BackboneDatawalletModification"
+import { BackboneExternalEvent } from "./BackboneExternalEvent"
 import {
     CreateDatawalletModificationsRequest,
     CreateDatawalletModificationsResponse
@@ -13,9 +13,9 @@ import {
     FinalizeExternalEventSyncRequest,
     FinalizeExternalEventSyncResponse
 } from "./FinalizeSyncRun"
-import {GetDatawalletResponse} from "./GetDatawallet"
-import {GetDatawalletModificationsRequest} from "./GetDatawalletModifications"
-import {StartSyncRunRequest, StartSyncRunResponse} from "./StartSyncRun"
+import { GetDatawalletResponse } from "./GetDatawallet"
+import { GetDatawalletModificationsRequest } from "./GetDatawalletModifications"
+import { StartSyncRunRequest, StartSyncRunResponse } from "./StartSyncRun"
 
 export interface ISyncClient {
     startSyncRun(request?: StartSyncRunRequest): Promise<ClientResult<StartSyncRunResponse>>

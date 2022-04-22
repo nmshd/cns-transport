@@ -1,4 +1,4 @@
-import {Serializable} from "@js-soft/ts-serval"
+import { Serializable } from "@js-soft/ts-serval"
 import {
     CoreBuffer,
     CryptoCipher,
@@ -46,8 +46,8 @@ import {
     Token,
     TokenContentRelationshipTemplate
 } from "@nmshd/transport"
-import {expect} from "chai"
-import {AbstractUnitTest} from "../testHelpers"
+import { expect } from "chai"
+import { AbstractUnitTest } from "../testHelpers"
 
 export class ReflectionTest extends AbstractUnitTest {
     public static cryptoClassNames: string[] = [

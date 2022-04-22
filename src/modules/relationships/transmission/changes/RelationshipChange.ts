@@ -1,11 +1,11 @@
-import {ISerializable, serialize, type, validate} from "@js-soft/ts-serval"
-import {CoreSerializable, ICoreSerializable} from "../../../../core"
-import {CoreId, ICoreId} from "../../../../core/types/CoreId"
-import {BackboneGetRelationshipsChangesResponse} from "../../backbone/BackboneGetRelationshipsChanges"
-import {IRelationshipChangeRequest, RelationshipChangeRequest} from "./RelationshipChangeRequest"
-import {IRelationshipChangeResponse, RelationshipChangeResponse} from "./RelationshipChangeResponse"
-import {RelationshipChangeStatus} from "./RelationshipChangeStatus"
-import {RelationshipChangeType} from "./RelationshipChangeType"
+import { ISerializable, serialize, type, validate } from "@js-soft/ts-serval"
+import { CoreSerializable, ICoreSerializable } from "../../../../core"
+import { CoreId, ICoreId } from "../../../../core/types/CoreId"
+import { BackboneGetRelationshipsChangesResponse } from "../../backbone/BackboneGetRelationshipsChanges"
+import { IRelationshipChangeRequest, RelationshipChangeRequest } from "./RelationshipChangeRequest"
+import { IRelationshipChangeResponse, RelationshipChangeResponse } from "./RelationshipChangeResponse"
+import { RelationshipChangeStatus } from "./RelationshipChangeStatus"
+import { RelationshipChangeType } from "./RelationshipChangeType"
 
 export interface IRelationshipChange extends ICoreSerializable {
     id: ICoreId
