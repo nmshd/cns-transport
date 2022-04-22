@@ -23,11 +23,9 @@ export class ACacheableSynchronizedCollectionItem
     extends CoreSynchronizable
     implements IACacheableSynchronizedCollectionItem
 {
-    public readonly technicalProperties = [nameof<ACacheableSynchronizedCollectionItem>((r) => r.someTechnicalProperty)]
-
-    @serialize()
-    @validate()
-    public id: CoreId
+    public override readonly technicalProperties = [
+        nameof<ACacheableSynchronizedCollectionItem>((r) => r.someTechnicalProperty)
+    ]
 
     @validate({ nullable: true })
     @serialize()

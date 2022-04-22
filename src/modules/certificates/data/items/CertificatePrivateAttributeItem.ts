@@ -21,7 +21,7 @@ export class CertificatePrivateAttributeItem extends CertificateItem {
     @serialize()
     public hash: CoreHash
 
-    public static from(value: ICertificatePrivateAttributeItem): CertificatePrivateAttributeItem {
+    public static override from(value: ICertificatePrivateAttributeItem): CertificatePrivateAttributeItem {
         return this.fromAny(value)
     }
 }

@@ -19,7 +19,7 @@ export class CertificateRoleItem extends CertificateItem {
     @serialize()
     public role: string
 
-    public static from(value: ICertificateRoleItem): CertificateRoleItem {
+    public static override from(value: ICertificateRoleItem): CertificateRoleItem {
         return this.fromAny(value)
     }
 }

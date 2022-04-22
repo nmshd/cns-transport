@@ -16,14 +16,14 @@ export interface IRelationshipTemplate extends ICoreSynchronizable {
 
 @type("RelationshipTemplate")
 export class RelationshipTemplate extends CoreSynchronizable implements IRelationshipTemplate {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<RelationshipTemplate>((r) => r.secretKey),
         nameof<RelationshipTemplate>((r) => r.isOwn)
     ]
 
-    public readonly metadataProperties = [
+    public override readonly metadataProperties = [
         nameof<RelationshipTemplate>((r) => r.metadata),
         nameof<RelationshipTemplate>((r) => r.metadataModifiedAt)
     ]

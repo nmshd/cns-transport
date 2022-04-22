@@ -17,7 +17,7 @@ export interface ISecretContainerCipher extends ICoreSynchronizable {
 
 @type("SecretContainerCipher")
 export class SecretContainerCipher extends CoreSynchronizable implements ISecretContainerCipher {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<SecretContainerCipher>((x) => x.name),

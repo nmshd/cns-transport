@@ -36,7 +36,7 @@ export class MessageController extends TransportController {
         this.relationships = parent.relationships
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.secrets = new RelationshipSecretController(this.parent)

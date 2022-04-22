@@ -16,7 +16,7 @@ export class ChallengeController extends TransportController {
         super(ControllerName.Challenge, parent)
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.client = new ChallengeClient(this.config)

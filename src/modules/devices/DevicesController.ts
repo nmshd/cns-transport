@@ -18,7 +18,7 @@ export class DevicesController extends TransportController {
         super(ControllerName.Devices, parent)
     }
 
-    public async init(): Promise<DevicesController> {
+    public override async init(): Promise<DevicesController> {
         await super.init()
 
         this.client = new DeviceAuthClient(this.config, this.parent.authenticator)

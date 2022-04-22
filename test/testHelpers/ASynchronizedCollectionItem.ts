@@ -19,27 +19,23 @@ export interface IASynchronizedCollectionItem extends ICoreSerializable {
 }
 
 export class ASynchronizedCollectionItem extends CoreSynchronizable implements IASynchronizedCollectionItem {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         nameof<ASynchronizedCollectionItem>((r) => r.someTechnicalStringProperty),
         nameof<ASynchronizedCollectionItem>((r) => r.someTechnicalNumberProperty),
         nameof<ASynchronizedCollectionItem>((r) => r.someTechnicalBooleanProperty)
     ]
 
-    public readonly userdataProperties = [
+    public override readonly userdataProperties = [
         nameof<ASynchronizedCollectionItem>((r) => r.someUserdataStringProperty),
         nameof<ASynchronizedCollectionItem>((r) => r.someUserdataNumberProperty),
         nameof<ASynchronizedCollectionItem>((r) => r.someUserdataBooleanProperty)
     ]
 
-    public readonly metadataProperties = [
+    public override readonly metadataProperties = [
         nameof<ASynchronizedCollectionItem>((r) => r.someMetadataStringProperty),
         nameof<ASynchronizedCollectionItem>((r) => r.someMetadataNumberProperty),
         nameof<ASynchronizedCollectionItem>((r) => r.someMetadataBooleanProperty)
     ]
-
-    @serialize()
-    @validate()
-    public id: CoreId
 
     @serialize()
     @validate({ nullable: true })

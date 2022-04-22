@@ -140,7 +140,7 @@ export class CoreDate extends CoreSerializable {
     /**
      * Creates an ISO String.
      */
-    public toString(): string {
+    public override toString(): string {
         return this.dateTime.toISO()
     }
 
@@ -148,15 +148,15 @@ export class CoreDate extends CoreSerializable {
         return this.dateTime.toISO()
     }
 
-    public toLocaleString(): string {
+    public override toLocaleString(): string {
         return this.dateTime.toLocaleString()
     }
 
-    public toJSON(): string {
+    public override toJSON(): string {
         return this.dateTime.toISO()
     }
 
-    public serialize(): string {
+    public override serialize(): string {
         return this.dateTime.toISO()
     }
 

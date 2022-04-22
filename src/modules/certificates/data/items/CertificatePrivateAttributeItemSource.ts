@@ -37,7 +37,7 @@ export class CertificatePrivateAttributeItemSource extends CertificateItem {
         return await CoreHash.hash(`${this.nonce}|${this.name}|${this.value}`)
     }
 
-    public static from(value: ICertificatePrivateAttributeItemSource): CertificatePrivateAttributeItemSource {
+    public static override from(value: ICertificatePrivateAttributeItemSource): CertificatePrivateAttributeItemSource {
         return this.fromAny(value)
     }
 }

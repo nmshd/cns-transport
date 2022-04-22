@@ -40,13 +40,17 @@ export class RESTClientAuthenticate extends RESTClient {
         return ClientResult.fail<T>(result.error)
     }
 
-    public async get<T>(path: string, params: any = "", config: AxiosRequestConfig = {}): Promise<ClientResult<T>> {
+    public override async get<T>(
+        path: string,
+        params: any = "",
+        config: AxiosRequestConfig = {}
+    ): Promise<ClientResult<T>> {
         return await this.runAuthenticated(async (token) => {
             return await super.get<T>(path, params, this.buildAuthenticatedConfig(token, config))
         })
     }
 
-    public async getPaged<T>(
+    public override async getPaged<T>(
         path: string,
         params: any = {},
         config: AxiosRequestConfig = {},
@@ -57,7 +61,7 @@ export class RESTClientAuthenticate extends RESTClient {
         })
     }
 
-    public async post<T>(
+    public override async post<T>(
         path: string,
         data: any,
         params: any = {},
@@ -68,25 +72,29 @@ export class RESTClientAuthenticate extends RESTClient {
         })
     }
 
-    public async postMultipart<T>(path: string, data: any, config: AxiosRequestConfig = {}): Promise<ClientResult<T>> {
+    public override async postMultipart<T>(
+        path: string,
+        data: any,
+        config: AxiosRequestConfig = {}
+    ): Promise<ClientResult<T>> {
         return await this.runAuthenticated(async (token) => {
             return await super.postMultipart<T>(path, data, this.buildAuthenticatedConfig(token, config))
         })
     }
 
-    public async put<T>(path: string, data: any, config: AxiosRequestConfig = {}): Promise<ClientResult<T>> {
+    public override async put<T>(path: string, data: any, config: AxiosRequestConfig = {}): Promise<ClientResult<T>> {
         return await this.runAuthenticated(async (token) => {
             return await super.put<T>(path, data, this.buildAuthenticatedConfig(token, config))
         })
     }
 
-    public async delete<T>(path: string, config: AxiosRequestConfig = {}): Promise<ClientResult<T>> {
+    public override async delete<T>(path: string, config: AxiosRequestConfig = {}): Promise<ClientResult<T>> {
         return await this.runAuthenticated(async (token) => {
             return await super.delete<T>(path, this.buildAuthenticatedConfig(token, config))
         })
     }
 
-    public async download<T>(path: string, config: AxiosRequestConfig = {}): Promise<ClientResult<T>> {
+    public override async download<T>(path: string, config: AxiosRequestConfig = {}): Promise<ClientResult<T>> {
         return await this.runAuthenticated(async (token) => {
             return await super.download<T>(path, this.buildAuthenticatedConfig(token, config))
         })

@@ -18,6 +18,7 @@
         "strictNullChecks": true,
         "strictPropertyInitialization": false,
         "downlevelIteration": true,
+        "noImplicitOverride": true,
         "lib": ["es2019", "dom"],
         "baseUrl": "./test",
         "paths": {

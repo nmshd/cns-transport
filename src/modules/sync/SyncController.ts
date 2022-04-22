@@ -61,7 +61,7 @@ export class SyncController extends TransportController {
         this.deviceMigrations = new DeviceMigrations(this.parent)
     }
 
-    public async init(): Promise<SyncController> {
+    public override async init(): Promise<SyncController> {
         await super.init()
 
         this.syncInfo = await this.db.getMap("SyncInfo")

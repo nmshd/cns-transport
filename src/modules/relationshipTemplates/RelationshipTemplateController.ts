@@ -32,7 +32,7 @@ export class RelationshipTemplateController extends TransportController {
         this.client = new RelationshipTemplateClient(this.config, this.parent.authenticator)
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.templates = await this.parent.getSynchronizedCollection(DbCollectionName.RelationshipTemplates)

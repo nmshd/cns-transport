@@ -16,7 +16,7 @@ export interface IMessage extends ICoreSynchronizable {
 
 @type("Message")
 export class Message extends CoreSynchronizable implements IMessage {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<Message>((r) => r.secretKey),
@@ -24,7 +24,7 @@ export class Message extends CoreSynchronizable implements IMessage {
         nameof<Message>((r) => r.relationshipIds)
     ]
 
-    public readonly metadataProperties = [
+    public override readonly metadataProperties = [
         nameof<Message>((r) => r.metadata),
         nameof<Message>((r) => r.metadataModifiedAt)
     ]

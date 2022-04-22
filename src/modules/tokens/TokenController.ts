@@ -20,7 +20,7 @@ export class TokenController extends TransportController {
         super(ControllerName.Token, parent)
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.client = new TokenClient(this.config, this.parent.authenticator)

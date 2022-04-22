@@ -16,13 +16,16 @@ export interface IFile extends ICoreSynchronizable {
 
 @type("File")
 export class File extends CoreSynchronizable implements IFile {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<File>((r) => r.secretKey),
         nameof<File>((r) => r.isOwn)
     ]
-    public readonly metadataProperties = [nameof<File>((r) => r.metadata), nameof<File>((r) => r.metadataModifiedAt)]
+    public override readonly metadataProperties = [
+        nameof<File>((r) => r.metadata),
+        nameof<File>((r) => r.metadataModifiedAt)
+    ]
 
     @validate()
     @serialize()

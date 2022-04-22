@@ -15,7 +15,7 @@ export class CoreHash extends CoreSerializable {
     @serialize()
     public hash: string
 
-    public toString(): string {
+    public override toString(): string {
         return this.hash
     }
 
@@ -69,11 +69,11 @@ export class CoreHash extends CoreSerializable {
         return this.fromAny(value)
     }
 
-    public serialize(): string {
+    public override serialize(): string {
         return this.hash
     }
 
-    public toBase64(): string {
+    public override toBase64(): string {
         return this.hash
     }
 }

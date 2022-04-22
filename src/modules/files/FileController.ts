@@ -30,7 +30,7 @@ export class FileController extends TransportController {
         super(ControllerName.File, parent)
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.client = new FileClient(this.config, this.parent.authenticator)

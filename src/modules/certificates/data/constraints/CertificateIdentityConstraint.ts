@@ -12,7 +12,7 @@ export class CertificateIdentityConstraint extends CertificateConstraint {
     @serialize()
     public identity: CoreAddress
 
-    public static from(value: ICertificateIdentityConstraint): CertificateIdentityConstraint {
+    public static override from(value: ICertificateIdentityConstraint): CertificateIdentityConstraint {
         return this.fromAny(value)
     }
 }

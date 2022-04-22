@@ -20,7 +20,7 @@ export class CertificateIssuer extends TransportController {
         super(ControllerName.CertificateIssuer, parent)
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.certificatesIssued = await this.db.getCollection(DbCollectionName.CertificatesIssued)

@@ -58,7 +58,7 @@ export class Identity extends CoreSerializable implements IIdentity {
     @serialize()
     public type: string
 
-    protected static postFrom(value: any): any {
+    protected static override postFrom(value: any): any {
         // TODO: Remove these default values once we're sure that nobody is accessing the deprecated properties anymore
 
         value.name = ""

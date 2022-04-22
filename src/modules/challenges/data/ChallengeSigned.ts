@@ -32,7 +32,7 @@ export class ChallengeSigned extends CoreSerializable implements IChallengeSigne
         return this.from({ signature: signature, challenge: value.challenge })
     }
 
-    public toJSON(verbose = true): IChallengeSignedSerialized {
+    public override toJSON(verbose = true): IChallengeSignedSerialized {
         const obj: IChallengeSignedSerialized = {
             challenge: this.challenge,
             signature: this.signature.toBase64()

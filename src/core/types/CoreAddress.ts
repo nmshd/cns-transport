@@ -33,11 +33,11 @@ export class CoreAddress extends CoreSerializable {
         return this.address === address.toString()
     }
 
-    public toString(): string {
+    public override toString(): string {
         return this.address
     }
 
-    public serialize(): string {
+    public override serialize(): string {
         return this.address
     }
 }

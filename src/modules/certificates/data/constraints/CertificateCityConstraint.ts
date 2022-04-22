@@ -40,7 +40,7 @@ export class CertificateCityConstraint extends CertificateConstraint {
     @serialize()
     public zipCode: string
 
-    public static from(value: ICertificateCityConstraint): CertificateCityConstraint {
+    public static override from(value: ICertificateCityConstraint): CertificateCityConstraint {
         return this.fromAny(value)
     }
 }

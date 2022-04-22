@@ -11,7 +11,7 @@ export class PartialObjectMatcher<T extends Serializable> extends Matcher {
         super()
     }
 
-    public match(actual: T): boolean {
+    public override match(actual: T): boolean {
         const actualAsJson = this.objectToJson(actual)
 
         const comparisonObject = { ...actualAsJson, ...this.expected }
@@ -27,7 +27,7 @@ export class PartialObjectMatcher<T extends Serializable> extends Matcher {
         return JSON.parse(JSON.stringify(obj))
     }
 
-    public toString(): string {
+    public override toString(): string {
         return `${JSON.stringify(this.expected)}`
     }
 }

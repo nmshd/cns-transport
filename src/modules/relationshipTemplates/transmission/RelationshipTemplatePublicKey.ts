@@ -20,7 +20,7 @@ export class RelationshipTemplatePublicKey extends CryptoExchangePublicKey imple
     @validate()
     public id: CoreId
 
-    public toJSON(verbose = true): IRelationshipTemplatePublicKeySerialized {
+    public override toJSON(verbose = true): IRelationshipTemplatePublicKeySerialized {
         return {
             id: this.id.toString(),
             pub: this.publicKey.toBase64URL(),
@@ -29,11 +29,11 @@ export class RelationshipTemplatePublicKey extends CryptoExchangePublicKey imple
         }
     }
 
-    public toBase64(): string {
+    public override toBase64(): string {
         return CoreBuffer.utf8_base64(this.serialize())
     }
 
-    public serialize(verbose = true): string {
+    public override serialize(verbose = true): string {
         return JSON.stringify(this.toJSON(verbose))
     }
 
@@ -44,11 +44,11 @@ export class RelationshipTemplatePublicKey extends CryptoExchangePublicKey imple
         return newValue
     }
 
-    public static fromJSON(value: IRelationshipTemplatePublicKeySerialized): RelationshipTemplatePublicKey {
+    public static override fromJSON(value: IRelationshipTemplatePublicKeySerialized): RelationshipTemplatePublicKey {
         return this.fromAny(value)
     }
 
-    public static from(value: IRelationshipTemplatePublicKey): RelationshipTemplatePublicKey {
+    public static override from(value: IRelationshipTemplatePublicKey): RelationshipTemplatePublicKey {
         return this.fromAny(value)
     }
 }

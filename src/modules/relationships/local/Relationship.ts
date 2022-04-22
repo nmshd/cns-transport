@@ -23,7 +23,7 @@ export interface IRelationship extends ICoreSynchronizable {
 
 @type("Relationship")
 export class Relationship extends CoreSynchronizable implements IRelationship {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<Relationship>((r) => r.relationshipSecretId),
@@ -31,7 +31,7 @@ export class Relationship extends CoreSynchronizable implements IRelationship {
         nameof<Relationship>((r) => r.status)
     ]
 
-    public readonly metadataProperties = [
+    public override readonly metadataProperties = [
         nameof<Relationship>((r) => r.metadata),
         nameof<Relationship>((r) => r.metadataModifiedAt)
     ]

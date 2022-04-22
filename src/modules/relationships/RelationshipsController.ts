@@ -50,7 +50,7 @@ export class RelationshipsController extends TransportController {
         this.secrets = secrets
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.client = new RelationshipClient(this.config, this.parent.authenticator)

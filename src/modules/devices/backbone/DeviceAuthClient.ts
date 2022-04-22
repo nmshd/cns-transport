@@ -14,7 +14,7 @@ export interface BackbonePutDevicesPushNotificationRequest {
 }
 
 export class DeviceAuthClient extends RESTClientAuthenticate {
-    protected _logDirective = RESTClientLogDirective.LogResponse
+    protected override _logDirective = RESTClientLogDirective.LogResponse
 
     public async changeDevicePassword(input: BackbonePutDevicesPasswordRequest): Promise<ClientResult<void>> {
         return await this.put<void>("/api/v1/Devices/Self/Password", input, {})

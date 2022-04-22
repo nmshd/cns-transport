@@ -48,7 +48,7 @@ export class DeviceSecretController extends TransportController {
         this.baseKey = baseKey
     }
 
-    public async init(): Promise<DeviceSecretController> {
+    public override async init(): Promise<DeviceSecretController> {
         await super.init()
 
         this.secrets = await this.db.getMap("DeviceSecrets")

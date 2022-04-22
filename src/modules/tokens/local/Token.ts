@@ -16,14 +16,17 @@ export interface IToken extends ICoreSynchronizable {
 
 @type("Token")
 export class Token extends CoreSynchronizable implements IToken {
-    public readonly technicalProperties = [
+    public override readonly technicalProperties = [
         "@type",
         "@context",
         nameof<Token>((r) => r.secretKey),
         nameof<Token>((r) => r.isOwn)
     ]
 
-    public readonly metadataProperties = [nameof<Token>((r) => r.metadata), nameof<Token>((r) => r.metadataModifiedAt)]
+    public override readonly metadataProperties = [
+        nameof<Token>((r) => r.metadata),
+        nameof<Token>((r) => r.metadataModifiedAt)
+    ]
 
     @validate()
     @serialize()

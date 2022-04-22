@@ -24,7 +24,7 @@ export class CertificateDelegateItem extends CertificateItem {
     @serialize()
     public content: string
 
-    public static from(value: ICertificateDelegateItem): CertificateDelegateItem {
+    public static override from(value: ICertificateDelegateItem): CertificateDelegateItem {
         return this.fromAny(value)
     }
 }

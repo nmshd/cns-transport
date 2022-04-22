@@ -17,7 +17,7 @@ export class CoreId extends CoreSerializable implements ICoreId {
     @serialize()
     public id: string
 
-    public toString(): string {
+    public override toString(): string {
         return this.id
     }
 
@@ -46,7 +46,7 @@ export class CoreId extends CoreSerializable implements ICoreId {
         return value
     }
 
-    public serialize(): string {
+    public override serialize(): string {
         return this.id
     }
 }

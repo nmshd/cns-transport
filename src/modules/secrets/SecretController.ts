@@ -49,7 +49,7 @@ export class SecretController extends TransportController {
         super(name, parent)
     }
 
-    public async init(): Promise<this> {
+    public override async init(): Promise<this> {
         await super.init()
 
         this.secrets = await this.parent.getSynchronizedCollection(DbCollectionName.Secrets)

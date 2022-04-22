@@ -20,7 +20,7 @@ export class CertificatePublicAttributeItem extends CertificateItem {
     @serialize()
     public value: string
 
-    public static from(value: ICertificatePublicAttributeItem): CertificatePublicAttributeItem {
+    public static override from(value: ICertificatePublicAttributeItem): CertificatePublicAttributeItem {
         return this.fromAny(value)
     }
 }

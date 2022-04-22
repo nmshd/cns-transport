@@ -38,7 +38,7 @@ export class CertificateBorderConstraint extends CertificateConstraint {
     @serialize()
     public state: string
 
-    public static from(value: ICertificateBorderConstraint): CertificateBorderConstraint {
+    public static override from(value: ICertificateBorderConstraint): CertificateBorderConstraint {
         return this.fromAny(value)
     }
 }
