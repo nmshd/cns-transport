@@ -40,6 +40,8 @@ export class MessagePlain extends CoreSerializable implements IMessagePlain {
         if (typeof value.attachments === "undefined") {
             value.attachments = []
         }
+
+        return value
     }
 
     public static from(value: IMessagePlain): MessagePlain {
