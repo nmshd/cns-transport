@@ -1,7 +1,7 @@
 import { ISerializable, Serializable, serialize, type, validate, ValidationError } from "@js-soft/ts-serval"
 import { nameof } from "ts-simple-nameof"
 import { CoreDate, CoreSerializable, ICoreSerializable } from "../../../core"
-import { CachedRelationshipTemplate } from "./CachedRelationshipTemplate"
+import { validateMaxNumberOfAllocations, validateMaxNumberOfRelationships } from "./CachedRelationshipTemplate"
 
 export interface ISendRelationshipTemplateParameters extends ICoreSerializable {
     content: ISerializable
@@ -28,7 +28,7 @@ export class SendRelationshipTemplateParameters
     @serialize()
     public expiresAt: CoreDate
 
-    @validate({ nullable: true, customValidator: CachedRelationshipTemplate.validateMaxNumberOfAllocations })
+    @validate({ nullable: true, customValidator: validateMaxNumberOfAllocations })
     @serialize()
     public maxNumberOfAllocations?: number
 
@@ -36,7 +36,7 @@ export class SendRelationshipTemplateParameters
      * @deprecated use `maxNumberOfAllocations` instead
      * @see maxNumberOfAllocations
      */
-    @validate({ nullable: true, customValidator: CachedRelationshipTemplate.validateMaxNumberOfRelationships })
+    @validate({ nullable: true, customValidator: validateMaxNumberOfRelationships })
     @serialize()
     public maxNumberOfRelationships?: number
 
