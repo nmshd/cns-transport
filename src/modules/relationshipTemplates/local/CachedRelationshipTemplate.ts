@@ -75,7 +75,7 @@ export class CachedRelationshipTemplate extends CoreSerializable implements ICac
             return "maxNumberOfRelationships must be greater than 0"
         }
 
-        return ""
+        return
     }
 
     public static validateMaxNumberOfAllocations(value?: number): string | undefined {
