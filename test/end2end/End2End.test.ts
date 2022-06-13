@@ -68,7 +68,7 @@ export class End2EndTest extends AbstractTest {
                         mycontent: "template"
                     },
                     expiresAt: CoreDate.utc().add({ minutes: 5 }),
-                    maxNumberOfRelationships: 1
+                    maxNumberOfAllocations: 1
                 })
 
                 const templateToken = TokenContentRelationshipTemplate.from({
@@ -212,7 +212,7 @@ export class End2EndTest extends AbstractTest {
                         mycontent: "template"
                     },
                     expiresAt: CoreDate.utc().add({ minutes: 5 }),
-                    maxNumberOfRelationships: 1
+                    maxNumberOfAllocations: 1
                 })
 
                 const templateToken = TokenContentRelationshipTemplate.from({
@@ -355,7 +355,7 @@ export class End2EndTest extends AbstractTest {
                         mycontent: "template"
                     },
                     expiresAt: CoreDate.utc().add({ minutes: 5 }),
-                    maxNumberOfRelationships: 1
+                    maxNumberOfAllocations: 1
                 })
 
                 const templateToken = TokenContentRelationshipTemplate.from({
@@ -466,7 +466,7 @@ export class End2EndTest extends AbstractTest {
                         mycontent: "template"
                     },
                     expiresAt: CoreDate.utc().add({ minutes: 5 }),
-                    maxNumberOfRelationships: 1
+                    maxNumberOfAllocations: 1
                 })
 
                 const templateToken = TokenContentRelationshipTemplate.from({

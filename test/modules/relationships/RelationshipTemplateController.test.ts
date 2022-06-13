@@ -143,6 +143,31 @@ export class RelationshipTemplateControllerTest extends AbstractTest {
                 }, /SendRelationshipTemplateParameters.maxNumberOfRelationships/)
             }).timeout(15000)
 
+            it("should create templates with maxNumberOfAllocations=undefined", async function () {
+                const ownTemplate = await sender.relationshipTemplates.sendRelationshipTemplate({
+                    content: { a: "A" },
+                    expiresAt: CoreDate.utc().add({ minutes: 1 }),
+                    maxNumberOfAllocations: undefined
+                })
+                expect(ownTemplate).to.exist
+
+                const peerTemplate = await recipient.relationshipTemplates.loadPeerRelationshipTemplate(
+                    ownTemplate.id,
+                    ownTemplate.secretKey
+                )
+                expect(peerTemplate).to.exist
+            }).timeout(15000)
+
+            it("should throw an error with maxNumberOfAllocations=0", async function () {
+                await TestUtil.expectThrowsAsync(async () => {
+                    await sender.relationshipTemplates.sendRelationshipTemplate({
+                        content: { a: "A" },
+                        expiresAt: CoreDate.utc().add({ minutes: 1 }),
+                        maxNumberOfAllocations: 0
+                    })
+                }, /SendRelationshipTemplateParameters.maxNumberOfAllocations/)
+            }).timeout(15000)
+
             after(async function () {
                 await sender.close()
                 await recipient.close()
