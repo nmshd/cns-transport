@@ -9,11 +9,17 @@ export interface ICachedRelationshipTemplate extends ICoreSerializable {
     identity: IIdentity
     createdBy: ICoreAddress
     createdByDevice: ICoreId
+    templateKey: ICryptoExchangePublicKey
     content: ISerializable
     createdAt: ICoreDate
     expiresAt?: ICoreDate
+    maxNumberOfAllocations?: number
+
+    /**
+     * @deprecated use `maxNumberOfAllocations` instead
+     * @see maxNumberOfAllocations
+     */
     maxNumberOfRelationships?: number
-    templateKey: ICryptoExchangePublicKey
 }
 
 @type("CachedRelationshipTemplate")
@@ -46,6 +52,14 @@ export class CachedRelationshipTemplate extends CoreSerializable implements ICac
     @serialize()
     public expiresAt?: CoreDate
 
+    @validate({ nullable: true, customValidator: CachedRelationshipTemplate.validateMaxNumberOfAllocations })
+    @serialize()
+    public maxNumberOfAllocations?: number
+
+    /**
+     * @deprecated use `maxNumberOfAllocations` instead
+     * @see maxNumberOfAllocations
+     */
     @validate({ nullable: true, customValidator: CachedRelationshipTemplate.validateMaxNumberOfRelationships })
     @serialize()
     public maxNumberOfRelationships?: number
@@ -54,15 +68,23 @@ export class CachedRelationshipTemplate extends CoreSerializable implements ICac
         return this.fromAny(value)
     }
 
-    public static validateMaxNumberOfRelationships(value?: number): string {
-        if (value === undefined) {
-            return ""
-        }
+    public static validateMaxNumberOfRelationships(value?: number): string | undefined {
+        if (value === undefined) return
 
         if (value <= 0) {
             return "maxNumberOfRelationships must be greater than 0"
         }
 
         return ""
+    }
+
+    public static validateMaxNumberOfAllocations(value?: number): string | undefined {
+        if (value === undefined) return
+
+        if (value <= 0) {
+            return "maxNumberOfAllocations must be greater than 0"
+        }
+
+        return
     }
 }

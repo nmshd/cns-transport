@@ -44,6 +44,13 @@ export class RelationshipTemplateController extends TransportController {
         parameters: ISendRelationshipTemplateParameters
     ): Promise<RelationshipTemplate> {
         parameters = SendRelationshipTemplateParameters.from(parameters)
+
+        if (parameters.maxNumberOfRelationships) {
+            this.log.warn(
+                "`maxNumberOfRelationships` is deprecated and will be removed in the future. Please use `maxNumberOfAllocations` instead."
+            )
+        }
+
         const templateKey = await this.secrets.createTemplateKey()
 
         const templateContent = RelationshipTemplateContent.from({
@@ -68,6 +75,7 @@ export class RelationshipTemplateController extends TransportController {
         const backboneResponse = (
             await this.client.createRelationshipTemplate({
                 expiresAt: parameters.expiresAt.toString(),
+                maxNumberOfAllocations: parameters.maxNumberOfAllocations,
                 maxNumberOfRelationships: parameters.maxNumberOfRelationships,
                 content: cipher.toBase64()
             })
@@ -80,7 +88,8 @@ export class RelationshipTemplateController extends TransportController {
             createdByDevice: this.parent.activeDevice.id,
             expiresAt: parameters.expiresAt,
             identity: this.parent.identity.identity,
-            maxNumberOfRelationships: parameters.maxNumberOfRelationships ?? undefined,
+            maxNumberOfAllocations: parameters.maxNumberOfAllocations,
+            maxNumberOfRelationships: parameters.maxNumberOfRelationships,
             templateKey: templateKey
         })
 
@@ -194,6 +203,7 @@ export class RelationshipTemplateController extends TransportController {
             createdAt: CoreDate.from(response.createdAt),
             expiresAt: response.expiresAt ? CoreDate.from(response.expiresAt) : undefined,
             identity: templateContent.identity,
+            maxNumberOfAllocations: response.maxNumberOfAllocations ?? undefined,
             maxNumberOfRelationships: response.maxNumberOfRelationships ?? undefined,
             templateKey: templateContent.templateKey
         })
