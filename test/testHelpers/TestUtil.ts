@@ -254,7 +254,7 @@ export class TestUtil {
                 mycontent: "template"
             },
             expiresAt: CoreDate.utc().add({ minutes: 5 }),
-            maxNumberOfRelationships: 1
+            maxNumberOfAllocations: 1
         })
 
         const templateTo = await to.relationshipTemplates.loadPeerRelationshipTemplate(
@@ -294,7 +294,7 @@ export class TestUtil {
                 mycontent: "template"
             },
             expiresAt: CoreDate.utc().add({ minutes: 5 }),
-            maxNumberOfRelationships: 1
+            maxNumberOfAllocations: 1
         })
 
         const templateTo = await to.relationshipTemplates.loadPeerRelationshipTemplate(
@@ -420,7 +420,7 @@ export class TestUtil {
         return await from.relationshipTemplates.sendRelationshipTemplate({
             content: body,
             expiresAt: CoreDate.utc().add({ minutes: 5 }),
-            maxNumberOfRelationships: 1
+            maxNumberOfAllocations: 1
         })
     }
 
@@ -436,7 +436,7 @@ export class TestUtil {
         const template = await account.relationshipTemplates.sendRelationshipTemplate({
             content: body,
             expiresAt: CoreDate.utc().add({ minutes: 5 }),
-            maxNumberOfRelationships: 1
+            maxNumberOfAllocations: 1
         })
         const templateToken = TokenContentRelationshipTemplate.from({
             templateId: template.id,

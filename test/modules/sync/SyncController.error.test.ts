@@ -29,7 +29,7 @@ export class SyncControllerErrorTest extends AbstractTest {
                     {
                         content: { someTemplateContent: "someTemplateContent" },
                         expiresAt: CoreDate.utc().add({ minutes: 5 }),
-                        maxNumberOfRelationships: 1
+                        maxNumberOfAllocations: 1
                     }
                 )
                 // The templatorDevice1 doesn't sync the datawallet after creating the template.

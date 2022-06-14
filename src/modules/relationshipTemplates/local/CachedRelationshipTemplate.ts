@@ -9,11 +9,17 @@ export interface ICachedRelationshipTemplate extends ICoreSerializable {
     identity: IIdentity
     createdBy: ICoreAddress
     createdByDevice: ICoreId
+    templateKey: ICryptoExchangePublicKey
     content: ISerializable
     createdAt: ICoreDate
     expiresAt?: ICoreDate
+    maxNumberOfAllocations?: number
+
+    /**
+     * @deprecated use `maxNumberOfAllocations` instead
+     * @see maxNumberOfAllocations
+     */
     maxNumberOfRelationships?: number
-    templateKey: ICryptoExchangePublicKey
 }
 
 @type("CachedRelationshipTemplate")
@@ -46,23 +52,39 @@ export class CachedRelationshipTemplate extends CoreSerializable implements ICac
     @serialize()
     public expiresAt?: CoreDate
 
-    @validate({ nullable: true, customValidator: CachedRelationshipTemplate.validateMaxNumberOfRelationships })
+    @validate({ nullable: true, customValidator: validateMaxNumberOfAllocations })
+    @serialize()
+    public maxNumberOfAllocations?: number
+
+    /**
+     * @deprecated use `maxNumberOfAllocations` instead
+     * @see maxNumberOfAllocations
+     */
+    @validate({ nullable: true, customValidator: validateMaxNumberOfRelationships })
     @serialize()
     public maxNumberOfRelationships?: number
 
     public static from(value: ICachedRelationshipTemplate): CachedRelationshipTemplate {
         return this.fromAny(value)
     }
+}
 
-    public static validateMaxNumberOfRelationships(value?: number): string {
-        if (value === undefined) {
-            return ""
-        }
+export function validateMaxNumberOfRelationships(value?: number): string | undefined {
+    if (value === undefined) return
 
-        if (value <= 0) {
-            return "maxNumberOfRelationships must be greater than 0"
-        }
-
-        return ""
+    if (value <= 0) {
+        return "maxNumberOfRelationships must be greater than 0"
     }
+
+    return
+}
+
+export function validateMaxNumberOfAllocations(value?: number): string | undefined {
+    if (value === undefined) return
+
+    if (value <= 0) {
+        return "maxNumberOfAllocations must be greater than 0"
+    }
+
+    return
 }

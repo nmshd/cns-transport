@@ -31,7 +31,7 @@ export class RelationshipSyncTest extends AbstractTest {
                 const templateOnTemplatorDevice = await templatorDevice.relationshipTemplates.sendRelationshipTemplate({
                     content: { someTemplateContent: "someTemplateContent" },
                     expiresAt: CoreDate.utc().add({ minutes: 5 }),
-                    maxNumberOfRelationships: 1
+                    maxNumberOfAllocations: 1
                 })
 
                 const templateOnRequestorDevice1 =
@@ -107,7 +107,7 @@ export class RelationshipSyncTest extends AbstractTest {
                 const templateOnTemplatorDevice = await templatorDevice.relationshipTemplates.sendRelationshipTemplate({
                     content: { someTemplateContent: "someTemplateContent" },
                     expiresAt: CoreDate.utc().add({ minutes: 5 }),
-                    maxNumberOfRelationships: 1
+                    maxNumberOfAllocations: 1
                 })
 
                 const templateOnRequestorDevice1 =
@@ -170,7 +170,7 @@ export class RelationshipSyncTest extends AbstractTest {
                     {
                         content: { someTemplateContent: "someTemplateContent" },
                         expiresAt: CoreDate.utc().add({ minutes: 5 }),
-                        maxNumberOfRelationships: 1
+                        maxNumberOfAllocations: 1
                     }
                 )
                 await templatorDevice1.syncDatawallet()

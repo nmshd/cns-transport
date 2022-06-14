@@ -1,7 +1,13 @@
 export interface BackbonePostRelationshipTemplatesRequest {
     expiresAt?: string
-    maxNumberOfRelationships?: number
+    maxNumberOfAllocations?: number
     content: string
+
+    /**
+     * @deprecated use `maxNumberOfAllocations` instead
+     * @see maxNumberOfAllocations
+     */
+    maxNumberOfRelationships?: number
 }
 
 export interface BackbonePostRelationshipTemplatesResponse {

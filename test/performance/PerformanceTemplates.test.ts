@@ -9,7 +9,7 @@ export class PerformanceTemplates extends AbstractTest {
                 mycontent: "template"
             },
             expiresAt: CoreDate.utc().add({ hours: 12 }),
-            maxNumberOfRelationships: 1
+            maxNumberOfAllocations: 1
         })
         return templateFrom
     }
