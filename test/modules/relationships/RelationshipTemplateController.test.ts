@@ -168,6 +168,17 @@ export class RelationshipTemplateControllerTest extends AbstractTest {
                 }, /SendRelationshipTemplateParameters.maxNumberOfAllocations/)
             }).timeout(15000)
 
+            it("should throw an error with maxNumberOfAllocations and maxNumberOfRelationships set", async function () {
+                await TestUtil.expectThrowsAsync(async () => {
+                    await sender.relationshipTemplates.sendRelationshipTemplate({
+                        content: { a: "A" },
+                        expiresAt: CoreDate.utc().add({ minutes: 1 }),
+                        maxNumberOfAllocations: 1,
+                        maxNumberOfRelationships: 1
+                    })
+                }, /SendRelationshipTemplateParameters.maxNumberOfAllocations/)
+            }).timeout(15000)
+
             after(async function () {
                 await sender.close()
                 await recipient.close()
