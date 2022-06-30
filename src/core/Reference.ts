@@ -41,7 +41,7 @@ export class Reference extends Serializable implements IReference {
                 secretKey: CoreBuffer.fromBase64URL(key)
             })
 
-            return Reference.from({
+            return this.from({
                 id: CoreId.from(id),
                 key: secretKey
             })

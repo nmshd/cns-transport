@@ -1,5 +1,6 @@
+import { Serializable } from "@js-soft/ts-serval"
 import { CryptoEncryption, CryptoSecretKey } from "@nmshd/crypto"
-import { CoreId, CoreSerializable, RelationshipTemplateReference } from "@nmshd/transport"
+import { CoreId, RelationshipTemplateReference } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../testHelpers"
 
@@ -12,7 +13,7 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
                     key: await CryptoEncryption.generateKey(),
                     id: await CoreId.generate()
                 })
-                expect(reference).instanceOf(CoreSerializable)
+                expect(reference).instanceOf(Serializable)
                 expect(reference).instanceOf(RelationshipTemplateReference)
                 expect(reference.key).instanceOf(CryptoSecretKey)
                 expect(reference.id).instanceOf(CoreId)
@@ -24,7 +25,7 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
                     )}}`
                 )
                 const deserialized = RelationshipTemplateReference.deserialize(serialized)
-                expect(deserialized).instanceOf(CoreSerializable)
+                expect(deserialized).instanceOf(Serializable)
                 expect(deserialized).instanceOf(RelationshipTemplateReference)
                 expect(deserialized.key).instanceOf(CryptoSecretKey)
                 expect(deserialized.id).instanceOf(CoreId)
@@ -37,14 +38,14 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
                     key: await CryptoEncryption.generateKey(),
                     id: await CoreId.generate()
                 })
-                expect(reference).instanceOf(CoreSerializable)
+                expect(reference).instanceOf(Serializable)
                 expect(reference).instanceOf(RelationshipTemplateReference)
                 expect(reference.key).instanceOf(CryptoSecretKey)
                 expect(reference.id).instanceOf(CoreId)
                 const serialized = reference.serialize()
                 expect(serialized).to.be.a("string")
                 const deserialized = RelationshipTemplateReference.deserialize(serialized)
-                expect(deserialized).instanceOf(CoreSerializable)
+                expect(deserialized).instanceOf(Serializable)
                 expect(deserialized).instanceOf(RelationshipTemplateReference)
                 expect(deserialized.key).instanceOf(CryptoSecretKey)
                 expect(deserialized.id).instanceOf(CoreId)
@@ -57,7 +58,7 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
                     key: await CryptoEncryption.generateKey(),
                     id: await CoreId.generate()
                 })
-                expect(reference).instanceOf(CoreSerializable)
+                expect(reference).instanceOf(Serializable)
                 expect(reference).instanceOf(RelationshipTemplateReference)
                 expect(reference.key).instanceOf(CryptoSecretKey)
                 expect(reference.id).instanceOf(CoreId)
@@ -68,8 +69,8 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
                         false
                     )}}`
                 )
-                const deserialized = CoreSerializable.deserializeUnknown(serialized) as RelationshipTemplateReference
-                expect(deserialized).instanceOf(CoreSerializable)
+                const deserialized = Serializable.deserializeUnknown(serialized) as RelationshipTemplateReference
+                expect(deserialized).instanceOf(Serializable)
                 expect(deserialized).instanceOf(RelationshipTemplateReference)
                 expect(deserialized.key).instanceOf(CryptoSecretKey)
                 expect(deserialized.id).instanceOf(CoreId)
@@ -85,7 +86,7 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
                 const truncated = reference.truncate()
                 expect(truncated.length).lessThan(115).above(80)
                 const deserialized = RelationshipTemplateReference.fromTruncated(truncated)
-                expect(deserialized).instanceOf(CoreSerializable)
+                expect(deserialized).instanceOf(Serializable)
                 expect(deserialized).instanceOf(RelationshipTemplateReference)
                 expect(deserialized.key).instanceOf(CryptoSecretKey)
                 expect(deserialized.id).instanceOf(CoreId)
