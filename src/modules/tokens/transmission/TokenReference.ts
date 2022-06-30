@@ -1,12 +1,12 @@
 import { type, ValidationError } from "@js-soft/ts-serval"
-import { BackboneIds, IReference, Reference } from "../../../core"
+import { BackboneIds, CoreId, IReference, Reference } from "../../../core"
 
 export interface ITokenReference extends IReference {}
 
 @type("TokenReference")
 export class TokenReference extends Reference implements ITokenReference {
     protected static override preFrom(value: any): any {
-        if (value?.id && BackboneIds.token.validate(value.id)) {
+        if (value?.id && BackboneIds.token.validate(value.id instanceof CoreId ? value.id.toString() : value.id)) {
             throw new ValidationError(TokenReference.name, "id", "id must start with `TOK`")
         }
 
