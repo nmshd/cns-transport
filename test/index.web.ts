@@ -27,4 +27,4 @@ if (Transport.context === TransportContext.Web) {
 const loggerFactory = new WebLoggerFactory()
 
 Test.runUnitTests(loggerFactory)
-Test.runIntegrationTests(config, new LokiJsConnection("./db"), loggerFactory)
+Test.runIntegrationTests(config, LokiJsConnection.inMemory(), loggerFactory)
