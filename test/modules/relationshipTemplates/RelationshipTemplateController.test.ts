@@ -179,6 +179,30 @@ export class RelationshipTemplateControllerTest extends AbstractTest {
                 }, /SendRelationshipTemplateParameters.maxNumberOfAllocations/)
             }).timeout(15000)
 
+            it("should send and receive a RelationshipTemplate using a RelationshipTemplateReference", async function () {
+                tempDate = CoreDate.utc().subtract(that.tempDateThreshold)
+                const sentRelationshipTemplate = await TestUtil.sendRelationshipTemplate(sender)
+
+                const receivedRelationshipTemplate =
+                    await recipient.relationshipTemplates.loadPeerRelationshipTemplateByReference(
+                        sentRelationshipTemplate.toRelationshipTemplateReference()
+                    )
+
+                expectValidRelationshipTemplates(sentRelationshipTemplate, receivedRelationshipTemplate, tempDate)
+            }).timeout(15000)
+
+            it("should send and receive a RelationshipTemplate using a truncated RelationshipTemplateReference", async function () {
+                tempDate = CoreDate.utc().subtract(that.tempDateThreshold)
+                const sentRelationshipTemplate = await TestUtil.sendRelationshipTemplate(sender)
+
+                const receivedRelationshipTemplate =
+                    await recipient.relationshipTemplates.loadPeerRelationshipTemplateByTruncated(
+                        sentRelationshipTemplate.truncate()
+                    )
+
+                expectValidRelationshipTemplates(sentRelationshipTemplate, receivedRelationshipTemplate, tempDate)
+            }).timeout(15000)
+
             after(async function () {
                 await sender.close()
                 await recipient.close()

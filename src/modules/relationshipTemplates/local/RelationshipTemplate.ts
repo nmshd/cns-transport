@@ -3,6 +3,7 @@ import { CryptoSecretKey, ICryptoSecretKey } from "@nmshd/crypto"
 import { nameof } from "ts-simple-nameof"
 import { CoreSynchronizable, ICoreSynchronizable } from "../../../core"
 import { CoreDate, ICoreDate } from "../../../core/types/CoreDate"
+import { RelationshipTemplateReference } from "../transmission/RelationshipTemplateReference"
 import { CachedRelationshipTemplate, ICachedRelationshipTemplate } from "./CachedRelationshipTemplate"
 
 export interface IRelationshipTemplate extends ICoreSynchronizable {
@@ -54,6 +55,15 @@ export class RelationshipTemplate extends CoreSynchronizable implements IRelatio
 
     public static from(value: IRelationshipTemplate): RelationshipTemplate {
         return this.fromAny(value)
+    }
+
+    public toRelationshipTemplateReference(): RelationshipTemplateReference {
+        return RelationshipTemplateReference.from({ id: this.id, key: this.secretKey })
+    }
+
+    public truncate(): string {
+        const reference = this.toRelationshipTemplateReference()
+        return reference.truncate()
     }
 
     public setCache(cache: CachedRelationshipTemplate): this {

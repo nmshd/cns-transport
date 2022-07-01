@@ -66,5 +66,5 @@ export function runOnMongoDb(): void {
 }
 
 export function runOnLokiJs(): void {
-    Test.runIntegrationTests(Test.config, new LokiJsConnection("./db"), loggerFactory)
+    Test.runIntegrationTests(Test.config, LokiJsConnection.inMemory(), loggerFactory)
 }

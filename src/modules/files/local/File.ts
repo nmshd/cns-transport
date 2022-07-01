@@ -56,10 +56,12 @@ export class File extends CoreSynchronizable implements IFile {
     }
 
     public toFileReference(): FileReference {
-        return FileReference.from({
-            id: this.id,
-            key: this.secretKey
-        })
+        return FileReference.from({ id: this.id, key: this.secretKey })
+    }
+
+    public truncate(): string {
+        const reference = this.toFileReference()
+        return reference.truncate()
     }
 
     public setCache(cache: CachedFile): this {

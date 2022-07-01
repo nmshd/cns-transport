@@ -22,6 +22,7 @@ import {
     RelationshipsCustomContentTest,
     RelationshipSyncTest,
     RelationshipTemplateControllerTest,
+    RelationshipTemplateReferenceTest,
     SecretControllerTest,
     SyncControllerCallbackTest,
     SyncControllerTest,
@@ -80,6 +81,7 @@ export class Test {
         new FileReferenceTest(config, databaseConnection, loggerFactory).run()
         new TokenContentTest(config, databaseConnection, loggerFactory).run()
         new TokenReferenceTest(config, databaseConnection, loggerFactory).run()
+        new RelationshipTemplateReferenceTest(config, databaseConnection, loggerFactory).run()
         new RelationshipsControllerTest(config, databaseConnection, loggerFactory).run()
         new RelationshipTemplateControllerTest(config, databaseConnection, loggerFactory).run()
         new MessageControllerTest(config, databaseConnection, loggerFactory).run()
