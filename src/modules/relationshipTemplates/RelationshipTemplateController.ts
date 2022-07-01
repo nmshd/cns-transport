@@ -15,6 +15,7 @@ import {
     SendRelationshipTemplateParameters
 } from "./local/SendRelationshipTemplateParameters"
 import { RelationshipTemplateContent } from "./transmission/RelationshipTemplateContent"
+import { RelationshipTemplateReference } from "./transmission/RelationshipTemplateReference"
 import { RelationshipTemplateSigned } from "./transmission/RelationshipTemplateSigned"
 
 export class RelationshipTemplateController extends TransportController {
@@ -234,6 +235,20 @@ export class RelationshipTemplateController extends TransportController {
         await this.templates.update(templateDoc, template)
 
         return template
+    }
+
+    public async loadPeerRelationshipTemplateByTruncated(truncated: string): Promise<RelationshipTemplate> {
+        const reference = RelationshipTemplateReference.fromTruncated(truncated)
+        return await this.loadPeerRelationshipTemplateByReference(reference)
+    }
+
+    public async loadPeerRelationshipTemplateByReference(
+        relationshipTemplateReference: RelationshipTemplateReference
+    ): Promise<RelationshipTemplate> {
+        return await this.loadPeerRelationshipTemplate(
+            relationshipTemplateReference.id,
+            relationshipTemplateReference.key
+        )
     }
 
     public async loadPeerRelationshipTemplate(id: CoreId, secretKey: CryptoSecretKey): Promise<RelationshipTemplate> {

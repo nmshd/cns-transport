@@ -1,5 +1,6 @@
-import { ISerializable, Serializable, serialize, validate } from "@js-soft/ts-serval"
+import { ISerializable, Serializable, serialize, validate, ValidationError } from "@js-soft/ts-serval"
 import { CoreBuffer, CryptoSecretKey, ICryptoSecretKey } from "@nmshd/crypto"
+import { CoreIdHelper } from "./CoreIdHelper"
 import { TransportErrors } from "./TransportErrors"
 import { CoreId, ICoreId } from "./types/CoreId"
 
@@ -47,6 +48,15 @@ export class Reference extends Serializable implements IReference {
             })
         } catch (e) {
             throw TransportErrors.files.invalidTruncatedReference()
+        }
+    }
+
+    protected static validateId(value: any, helper: CoreIdHelper): void {
+        if (!value?.id) return
+
+        const idAsString = value.id instanceof CoreId ? value.id.toString() : value.id
+        if (!helper.validate(idAsString)) {
+            throw new ValidationError(this.name, "id", `id must start with '${helper.prefix}' but is '${idAsString}'`)
         }
     }
 
