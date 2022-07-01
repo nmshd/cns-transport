@@ -54,9 +54,8 @@ export class Reference extends Serializable implements IReference {
     protected static validateId(value: any, helper: CoreIdHelper): void {
         if (!value?.id) return
 
-        const idAsString = value.id instanceof CoreId ? value.id.toString() : value.id
-        if (!helper.validate(idAsString)) {
-            throw new ValidationError(this.name, "id", `id must start with '${helper.prefix}' but is '${idAsString}'`)
+        if (!helper.validate(value.id)) {
+            throw new ValidationError(this.name, "id", `id must start with '${helper.prefix}' but is '${value.id}'`)
         }
     }
 
