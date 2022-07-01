@@ -57,6 +57,15 @@ export class RelationshipTemplate extends CoreSynchronizable implements IRelatio
         return this.fromAny(value)
     }
 
+    public toRelationshipTemplateReference(): RelationshipTemplateReference {
+        return RelationshipTemplateReference.from({ id: this.id, key: this.secretKey })
+    }
+
+    public truncate(): string {
+        const reference = this.toRelationshipTemplateReference()
+        return reference.truncate()
+    }
+
     public setCache(cache: CachedRelationshipTemplate): this {
         this.cache = cache
         this.cachedAt = CoreDate.utc()
@@ -67,9 +76,5 @@ export class RelationshipTemplate extends CoreSynchronizable implements IRelatio
         this.metadata = metadata
         this.metadataModifiedAt = CoreDate.utc()
         return this
-    }
-
-    public toReference(): RelationshipTemplateReference {
-        return RelationshipTemplateReference.from({ id: this.id, key: this.secretKey })
     }
 }
