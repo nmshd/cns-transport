@@ -16,6 +16,10 @@ export class CoreIdHelper {
         return await CoreId.generate(this.prefix)
     }
 
+    public async generateUnsafe(): Promise<CoreId> {
+        return await CoreId.generate(this.prefix)
+    }
+
     public validate(id: string | CoreId): boolean {
         if (id instanceof CoreId) id = id.toString()
 

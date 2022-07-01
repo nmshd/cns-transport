@@ -64,6 +64,30 @@ export class RelationshipTemplateControllerTest extends AbstractTest {
                 expectValidRelationshipTemplates(sentRelationshipTemplate, receivedRelationshipTemplate, tempDate)
             }).timeout(15000)
 
+            it("should send and receive a RelationshipTemplate using a RelationshipTemplateReference", async function () {
+                tempDate = CoreDate.utc().subtract(that.tempDateThreshold)
+                const sentRelationshipTemplate = await TestUtil.sendRelationshipTemplate(sender)
+
+                const receivedRelationshipTemplate =
+                    await recipient.relationshipTemplates.loadPeerRelationshipTemplateByReference(
+                        sentRelationshipTemplate.toRelationshipTemplateReference()
+                    )
+
+                expectValidRelationshipTemplates(sentRelationshipTemplate, receivedRelationshipTemplate, tempDate)
+            }).timeout(15000)
+
+            it("should send and receive a RelationshipTemplate using a truncated RelationshipTemplateReference", async function () {
+                tempDate = CoreDate.utc().subtract(that.tempDateThreshold)
+                const sentRelationshipTemplate = await TestUtil.sendRelationshipTemplate(sender)
+
+                const receivedRelationshipTemplate =
+                    await recipient.relationshipTemplates.loadPeerRelationshipTemplateByTruncated(
+                        sentRelationshipTemplate.truncate()
+                    )
+
+                expectValidRelationshipTemplates(sentRelationshipTemplate, receivedRelationshipTemplate, tempDate)
+            }).timeout(15000)
+
             it("should get the cached RelationshipTemplate", async function () {
                 const sentRelationshipTemplate = await sender.relationshipTemplates.getRelationshipTemplate(tempId1)
                 const receivedRelationshipTemplate = await recipient.relationshipTemplates.getRelationshipTemplate(
@@ -102,8 +126,8 @@ export class RelationshipTemplateControllerTest extends AbstractTest {
             it("should get the cached relationshipTemplates", async function () {
                 const sentRelationshipTemplates = await sender.relationshipTemplates.getRelationshipTemplates()
                 const receivedRelationshipTemplates = await recipient.relationshipTemplates.getRelationshipTemplates()
-                expect(sentRelationshipTemplates).to.be.of.length(3)
-                expect(receivedRelationshipTemplates).to.be.of.length(3)
+                expect(sentRelationshipTemplates).to.be.of.length(5)
+                expect(receivedRelationshipTemplates).to.be.of.length(5)
                 expect(sentRelationshipTemplates[0].id.toString()).equals(tempId1.toString())
                 expect(sentRelationshipTemplates[1].id.toString()).equals(tempId2.toString())
                 expectValidRelationshipTemplates(

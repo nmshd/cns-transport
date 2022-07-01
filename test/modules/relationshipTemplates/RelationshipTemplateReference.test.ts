@@ -1,6 +1,6 @@
 import { Serializable } from "@js-soft/ts-serval"
 import { CryptoEncryption, CryptoSecretKey } from "@nmshd/crypto"
-import { CoreId, RelationshipTemplateReference } from "@nmshd/transport"
+import { BackboneIds, CoreId, RelationshipTemplateReference } from "@nmshd/transport"
 import { expect } from "chai"
 import { AbstractTest } from "../../testHelpers"
 
@@ -11,7 +11,7 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
             it("should serialize and deserialize correctly (verbose)", async function () {
                 const reference = RelationshipTemplateReference.from({
                     key: await CryptoEncryption.generateKey(),
-                    id: await CoreId.generate()
+                    id: await BackboneIds.relationshipTemplate.generateUnsafe()
                 })
                 expect(reference).instanceOf(Serializable)
                 expect(reference).instanceOf(RelationshipTemplateReference)
@@ -36,7 +36,7 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
             it("should serialize and deserialize correctly (no type information)", async function () {
                 const reference = RelationshipTemplateReference.from({
                     key: await CryptoEncryption.generateKey(),
-                    id: await CoreId.generate()
+                    id: await BackboneIds.relationshipTemplate.generateUnsafe()
                 })
                 expect(reference).instanceOf(Serializable)
                 expect(reference).instanceOf(RelationshipTemplateReference)
@@ -56,7 +56,7 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
             it("should serialize and deserialize correctly (from unknown type)", async function () {
                 const reference = RelationshipTemplateReference.from({
                     key: await CryptoEncryption.generateKey(),
-                    id: await CoreId.generate()
+                    id: await BackboneIds.relationshipTemplate.generateUnsafe()
                 })
                 expect(reference).instanceOf(Serializable)
                 expect(reference).instanceOf(RelationshipTemplateReference)
@@ -81,7 +81,7 @@ export class RelationshipTemplateReferenceTest extends AbstractTest {
             it("should truncate and read in correctly", async function () {
                 const reference = RelationshipTemplateReference.from({
                     key: await CryptoEncryption.generateKey(),
-                    id: await CoreId.generate()
+                    id: await BackboneIds.relationshipTemplate.generateUnsafe()
                 })
                 const truncated = reference.truncate()
                 expect(truncated.length).lessThan(115).above(80)
