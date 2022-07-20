@@ -1,11 +1,13 @@
 import { IDatabaseConnection } from "@js-soft/docdb-access-abstractions"
 import { ILogger, ILoggerFactory } from "@js-soft/logging-abstractions"
+import { EventBus, EventEmitter2EventBus } from "@js-soft/ts-utils"
 import { AccountController, IConfigOverwrite, Transport } from "@nmshd/transport"
 import { DurationLike } from "luxon"
 import { TestUtil } from "../testHelpers"
 
 export abstract class AbstractTest {
     protected logger: ILogger
+    protected eventBus: EventBus
 
     public readonly tempDateThreshold: DurationLike = { seconds: 30 }
 
@@ -15,6 +17,7 @@ export abstract class AbstractTest {
         protected loggerFactory: ILoggerFactory
     ) {
         this.logger = this.loggerFactory.getLogger(this.constructor.name)
+        this.eventBus = new EventEmitter2EventBus()
     }
 
     public abstract run(): void
@@ -23,7 +26,7 @@ export abstract class AbstractTest {
         accountPrefix: string
     ): Promise<{ device1: AccountController; device2: AccountController }> {
         // Create Device1 Controller
-        const transport: Transport = new Transport(this.connection, this.config, this.loggerFactory)
+        const transport: Transport = new Transport(this.connection, this.config, this.eventBus, this.loggerFactory)
         await transport.init()
         const device1Account = await TestUtil.createAccount(transport, accountPrefix)
 
@@ -42,14 +45,14 @@ export abstract class AbstractTest {
     }
 
     protected async createIdentityWithOneDevice(accountPrefix: string): Promise<AccountController> {
-        const transport: Transport = new Transport(this.connection, this.config, this.loggerFactory)
+        const transport: Transport = new Transport(this.connection, this.config, this.eventBus, this.loggerFactory)
         await transport.init()
         const deviceAccount = await TestUtil.createAccount(transport, accountPrefix)
         return deviceAccount
     }
 
     protected async createIdentityWithNDevices(accountPrefix: string, n: number): Promise<AccountController[]> {
-        const transport: Transport = new Transport(this.connection, this.config, this.loggerFactory)
+        const transport: Transport = new Transport(this.connection, this.config, this.eventBus, this.loggerFactory)
         await transport.init()
         const device1Account = await TestUtil.createAccount(transport, accountPrefix)
 

@@ -1,6 +1,7 @@
 import { IDatabaseCollectionProvider, IDatabaseConnection } from "@js-soft/docdb-access-abstractions"
 import { ILogger, ILoggerFactory } from "@js-soft/logging-abstractions"
 import { SimpleLoggerFactory } from "@js-soft/simple-logger"
+import { EventBus } from "@js-soft/ts-utils"
 import { SodiumWrapper } from "@nmshd/crypto"
 import { AgentOptions } from "http"
 import { AgentOptions as HTTPSAgentOptions } from "https"
@@ -77,6 +78,7 @@ export class Transport {
     public constructor(
         databaseConnection: IDatabaseConnection,
         customConfig: IConfigOverwrite,
+        public readonly eventBus: EventBus,
         loggerFactory: ILoggerFactory = new SimpleLoggerFactory()
     ) {
         this.databaseConnection = databaseConnection

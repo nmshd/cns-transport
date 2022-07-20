@@ -24,7 +24,7 @@ export class PaginatorTest extends AbstractTest {
                 this.timeout(150000)
 
                 before(async function () {
-                    transport = new Transport(that.connection, that.config, that.loggerFactory)
+                    transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
 
                     await TestUtil.clearAccounts(that.connection)
 

@@ -177,7 +177,7 @@ export class PublicAPITest extends AbstractTest {
             nameof<AnonymousTokenController>((r) => r.loadPeerTokenByTruncated)
         ]
 
-        const transport: Transport = new Transport(that.connection, that.config, that.loggerFactory)
+        const transport: Transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
         let account: AccountController
         const controllers: any = {}
 

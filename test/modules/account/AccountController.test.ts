@@ -13,7 +13,7 @@ export class AccountControllerTest extends AbstractTest {
             this.timeout(15000)
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
                 await TestUtil.clearAccounts(that.connection)
 
                 await transport.init()
@@ -25,7 +25,7 @@ export class AccountControllerTest extends AbstractTest {
             // eslint-disable-next-line jest/expect-expect
             it("should init a second time", async function () {
                 await account.init()
-            }).timeout(15000)
+            })
 
             it("should return default values for empty identity properties", function () {
                 const id = account.identity.identity.toJSON() as any

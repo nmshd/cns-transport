@@ -44,7 +44,7 @@ export class MessageControllerTest extends AbstractTest {
             }
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
@@ -127,7 +127,7 @@ export class MessageControllerTest extends AbstractTest {
                 expect(message.cache?.recipients[0].receivedAt?.isWithin({ seconds: 5 })).to.be.true
                 expect(message.cache?.recipients[0].receivedByDevice?.toString()).equals(deviceId)
                 */
-            }).timeout(15000)
+            })
 
             it("should get the cached messages", async function () {
                 const sentMessages = await sender.messages.getMessages()

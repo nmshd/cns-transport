@@ -13,7 +13,7 @@ export class RESTClientTest extends AbstractTest {
             this.timeout(150000)
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
 
                 await TestUtil.clearAccounts(that.connection)
 
@@ -26,7 +26,7 @@ export class RESTClientTest extends AbstractTest {
             // eslint-disable-next-line jest/expect-expect
             it("should parse request params correctly", async function () {
                 // TODO: JSSNMSHDD-2488 (test serializing of request params)
-            }).timeout(60000)
+            })
 
             after(async function () {
                 await testAccount.close()
