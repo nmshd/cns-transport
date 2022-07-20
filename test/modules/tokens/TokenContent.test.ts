@@ -26,6 +26,7 @@ export class TokenContentTest extends AbstractTest {
                 transport = new Transport(
                     that.connection,
                     { ...that.config, datawalletEnabled: true },
+                    that.eventBus,
                     that.loggerFactory
                 )
                 await TestUtil.clearAccounts(that.connection)

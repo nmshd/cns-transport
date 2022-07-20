@@ -1,5 +1,7 @@
 import { ILogger } from "@js-soft/logging-abstractions"
+import { EventBus } from "@js-soft/ts-utils"
 import { CoreId, TransportLoggerFactory } from "../../core"
+import { MessageDeliveredEvent, MessageReceivedEvent, RelationshipChangedEvent } from "../../events"
 import { MessageController } from "../messages/MessageController"
 import { RelationshipsController } from "../relationships/RelationshipsController"
 import { BackboneExternalEvent } from "./backbone/BackboneExternalEvent"
@@ -17,7 +19,9 @@ export class ExternalEventsProcessor {
         private readonly messagesController: MessageController,
         private readonly relationshipsController: RelationshipsController,
         private readonly externalEvents: BackboneExternalEvent[],
-        reporter: SyncProgressReporter
+        reporter: SyncProgressReporter,
+        private readonly eventBus: EventBus,
+        private readonly ownAddress: string
     ) {
         this.log = TransportLoggerFactory.getLogger(ExternalEventsProcessor)
         this.syncStep = reporter.createStep(SyncStep.ExternalEventsProcessing, externalEvents.length)
@@ -73,6 +77,7 @@ export class ExternalEventsProcessor {
         const relationship = await this.relationshipsController.applyChangeById(payload.changeId)
 
         if (relationship) {
+            this.eventBus.publish(new RelationshipChangedEvent(this.ownAddress, relationship))
             this.changedItems.addRelationship(relationship)
         }
     }
@@ -82,6 +87,7 @@ export class ExternalEventsProcessor {
         const relationship = await this.relationshipsController.applyChangeById(payload.changeId)
 
         if (relationship) {
+            this.eventBus.publish(new RelationshipChangedEvent(this.ownAddress, relationship))
             this.changedItems.addRelationship(relationship)
         }
     }
@@ -90,12 +96,17 @@ export class ExternalEventsProcessor {
         const messageReceivedPayload = externalEvent.payload as { id: string }
         const updatedMessages = await this.messagesController.updateCache([messageReceivedPayload.id])
 
-        this.changedItems.addMessage(updatedMessages[0])
+        const deliveredMessage = updatedMessages[0]
+
+        this.eventBus.publish(new MessageDeliveredEvent(this.ownAddress, deliveredMessage))
+        this.changedItems.addMessage(deliveredMessage)
     }
 
     private async applyMessageReceivedEvent(externalEvent: BackboneExternalEvent) {
         const newMessagePayload = externalEvent.payload as { id: string }
         const newMessage = await this.messagesController.loadPeerMessage(CoreId.from(newMessagePayload.id))
+
+        this.eventBus.publish(new MessageReceivedEvent(this.ownAddress, newMessage))
         this.changedItems.addMessage(newMessage)
     }
 }

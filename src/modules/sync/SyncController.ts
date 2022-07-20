@@ -303,7 +303,7 @@ export class SyncController extends TransportController {
         const datawalletModificationsProcessor = new DatawalletModificationsProcessor(
             incomingModifications,
             this.cacheFetcher,
-            this._db,
+            this.db,
             TransportLoggerFactory.getLogger(DatawalletModificationsProcessor),
             reporter
         )
@@ -458,7 +458,9 @@ export class SyncController extends TransportController {
             this.parent.messages,
             this.parent.relationships,
             externalEvents,
-            reporter
+            reporter,
+            this.eventBus,
+            this.parent.identity.address.toString()
         )
         await externalEventProcessor.execute()
 

@@ -7,7 +7,7 @@ export class SecretControllerTest extends AbstractTest {
     public run(): void {
         const that = this
 
-        const transport = new Transport(that.connection, that.config, that.loggerFactory)
+        const transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
         let account: AccountController
         let subject: AccountController
         let secretKey: CryptoSecretKey

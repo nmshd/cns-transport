@@ -14,6 +14,7 @@ import { CoreUtil } from "../../core/CoreUtil"
 import { DbCollectionName } from "../../core/DbCollectionName"
 import { TransportErrors } from "../../core/TransportErrors"
 import { TransportIds } from "../../core/TransportIds"
+import { RelationshipChangedEvent } from "../../events"
 import { AccountController } from "../accounts/AccountController"
 import { Identity } from "../accounts/data/Identity"
 import { RelationshipTemplate } from "../relationshipTemplates/local/RelationshipTemplate"
@@ -185,6 +186,9 @@ export class RelationshipsController extends TransportController {
         )
 
         await this.relationships.create(newRelationship)
+
+        this.eventBus.publish(new RelationshipChangedEvent(this.parent.identity.address.toString(), newRelationship))
+
         return newRelationship
     }
 
@@ -667,6 +671,9 @@ export class RelationshipsController extends TransportController {
         relationship.status = backboneResponse.status
 
         await this.relationships.update(relationshipDoc, relationship)
+
+        this.eventBus.publish(new RelationshipChangedEvent(this.parent.identity.address.toString(), relationship))
+
         return relationship
     }
 

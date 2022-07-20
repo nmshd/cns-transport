@@ -1,4 +1,5 @@
 import { ILogger } from "@js-soft/logging-abstractions"
+import { EventEmitter2EventBus } from "@js-soft/ts-utils"
 import { AccountController, DeviceSharedSecret, Transport } from "@nmshd/transport"
 import { TestUtil } from "."
 import { DeviceTestParameters } from "./DeviceTestParameters"
@@ -16,6 +17,7 @@ export class AppDeviceTest {
         this.transport = new Transport(
             this.parameters.connection,
             this.parameters.config,
+            new EventEmitter2EventBus(),
             this.parameters.loggerFactory
         )
     }

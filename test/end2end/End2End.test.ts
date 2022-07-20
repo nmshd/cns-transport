@@ -24,13 +24,12 @@ export class End2EndTest extends AbstractTest {
             let transport: Transport
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
                 await transport.init()
                 await TestUtil.clearAccounts(that.connection)
             })
 
-            // eslint-disable-next-line jest/expect-expect
             it("should close an account", async function () {
                 const account = await TestUtil.createAccount(transport, End2EndTest.name)
                 await account.close()
@@ -49,7 +48,7 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
@@ -194,7 +193,7 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
                 await TestUtil.clearAccounts(that.connection)
@@ -336,7 +335,7 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             beforeEach(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
@@ -547,7 +546,7 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
@@ -589,7 +588,7 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 
@@ -629,7 +628,7 @@ export class End2EndTest extends AbstractTest {
             this.timeout(End2EndTest.maxTimeoutTest)
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
 
                 that.logger.info(`Test Start ${this.currentTest?.fullTitle()}`)
 

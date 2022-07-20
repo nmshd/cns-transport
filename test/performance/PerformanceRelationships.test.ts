@@ -15,7 +15,7 @@ export class PerformanceRelationships extends AbstractTest {
             this.timeout(200000)
 
             before(async function () {
-                transport = new Transport(that.connection, that.config, that.loggerFactory)
+                transport = new Transport(that.connection, that.config, that.eventBus, that.loggerFactory)
                 await TestUtil.clearAccounts(that.connection)
 
                 await transport.init()

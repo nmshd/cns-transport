@@ -1,4 +1,5 @@
 import { ILogger } from "@js-soft/logging-abstractions"
+import { EventEmitter2EventBus } from "@js-soft/ts-utils"
 import { Realm, Transport } from "@nmshd/transport"
 import { TestUtil } from "../testHelpers"
 import { DeviceTestParameters } from "./DeviceTestParameters"
@@ -17,6 +18,7 @@ export class ConnectorDeviceTest {
         this.transport = new Transport(
             this.parameters.connection,
             this.parameters.config,
+            new EventEmitter2EventBus(),
             this.parameters.loggerFactory
         )
         this.logger = parameters.loggerFactory.getLogger(`CoreTest.${this.name}.`)

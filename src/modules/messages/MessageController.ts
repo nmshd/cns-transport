@@ -4,6 +4,7 @@ import { nameof } from "ts-simple-nameof"
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, ICoreAddress, TransportErrors } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
+import { MessageSentEvent } from "../../events"
 import { AccountController } from "../accounts/AccountController"
 import { File } from "../files/local/File"
 import { FileReference } from "../files/transmission/FileReference"
@@ -313,6 +314,8 @@ export class MessageController extends TransportController {
         })
 
         await this.messages.create(message)
+
+        this.eventBus.publish(new MessageSentEvent(this.parent.identity.address.toString(), message))
 
         return message
     }
