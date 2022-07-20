@@ -458,7 +458,9 @@ export class SyncController extends TransportController {
             this.parent.messages,
             this.parent.relationships,
             externalEvents,
-            reporter
+            reporter,
+            this.eventBus,
+            this.parent.identity.address.toString()
         )
         await externalEventProcessor.execute()
 
