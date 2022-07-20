@@ -3,6 +3,7 @@ import { CoreBuffer, CryptoCipher, CryptoSecretKey, CryptoSignature } from "@nms
 import { CoreAddress, CoreCrypto, CoreDate, CoreId, TransportErrors } from "../../core"
 import { DbCollectionName } from "../../core/DbCollectionName"
 import { ControllerName, TransportController } from "../../core/TransportController"
+import { PeerRelationshipTemplateLoadedEvent } from "../../events"
 import { AccountController } from "../accounts/AccountController"
 import { RelationshipSecretController } from "../relationships/RelationshipSecretController"
 import { SynchronizedCollection } from "../sync/SynchronizedCollection"
@@ -265,6 +266,10 @@ export class RelationshipTemplateController extends TransportController {
         await this.updateCacheOfTemplate(relationshipTemplate)
 
         await this.templates.create(relationshipTemplate)
+
+        this.eventBus.publish(
+            new PeerRelationshipTemplateLoadedEvent(this.parent.identity.address.toString(), relationshipTemplate)
+        )
 
         return relationshipTemplate
     }

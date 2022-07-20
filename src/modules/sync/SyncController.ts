@@ -303,7 +303,7 @@ export class SyncController extends TransportController {
         const datawalletModificationsProcessor = new DatawalletModificationsProcessor(
             incomingModifications,
             this.cacheFetcher,
-            this._db,
+            this.db,
             TransportLoggerFactory.getLogger(DatawalletModificationsProcessor),
             reporter
         )

@@ -7,6 +7,7 @@ import { CoreCrypto } from "../../core/CoreCrypto"
 import { DbCollectionName } from "../../core/DbCollectionName"
 import { DependencyOverrides } from "../../core/DependencyOverrides"
 import { TransportLoggerFactory } from "../../core/TransportLoggerFactory"
+import { MessageReceivedEvent, RelationshipChangedEvent } from "../../events"
 import { PasswordGenerator } from "../../util"
 import { CertificateController } from "../certificates/CertificateController"
 import { CertificateIssuer } from "../certificates/CertificateIssuer"
@@ -233,7 +234,19 @@ export class AccountController {
 
     public async syncEverything(syncProgressCallback?: SyncProgressCallback): Promise<ChangedItems> {
         const reporter = SyncProgressReporter.fromCallback(syncProgressCallback)
-        return await this.synchronization.sync("Everything", reporter)
+        const result = await this.synchronization.sync("Everything", reporter)
+
+        const ownAddress = this.identity.address.toString()
+
+        for (const message of result.messages) {
+            this.transport.eventBus.publish(new MessageReceivedEvent(ownAddress, message))
+        }
+
+        for (const relationship of result.relationships) {
+            this.transport.eventBus.publish(new RelationshipChangedEvent(ownAddress, relationship))
+        }
+
+        return result
     }
 
     public async getLastCompletedSyncTime(): Promise<CoreDate | undefined> {
