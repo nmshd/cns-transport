@@ -1,6 +1,6 @@
 import { DataEvent } from "@js-soft/ts-utils"
 
-export class TransportDataEvent<T> extends DataEvent<T> {
+export abstract class TransportDataEvent<T> extends DataEvent<T> {
     public constructor(namespace: string, public readonly eventTargetAddress: string, data: T) {
         super(namespace, data)
     }

@@ -6,7 +6,6 @@ import { SodiumWrapper } from "@nmshd/crypto"
 import { AgentOptions } from "http"
 import { AgentOptions as HTTPSAgentOptions } from "https"
 import _ from "lodash"
-import { TransportLibraryInitializedEvent, TransportLibraryInitializingEvent } from "../events"
 import { Realm } from "../modules/accounts/data/Identity"
 import { TransportContext } from "./TransportContext"
 import { TransportErrors } from "./TransportErrors"
@@ -106,15 +105,11 @@ export class Transport {
     }
 
     public async init(): Promise<Transport> {
-        this.eventBus.publish(new TransportLibraryInitializingEvent())
-
         log.trace("Initializing Libsodium...")
         await SodiumWrapper.ready()
         log.trace("Libsodium initialized")
 
         log.info("Transport initialized")
-
-        this.eventBus.publish(new TransportLibraryInitializedEvent())
 
         return this
     }
