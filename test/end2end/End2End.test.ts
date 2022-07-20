@@ -30,7 +30,6 @@ export class End2EndTest extends AbstractTest {
                 await TestUtil.clearAccounts(that.connection)
             })
 
-            // eslint-disable-next-line jest/expect-expect
             it("should close an account", async function () {
                 const account = await TestUtil.createAccount(transport, End2EndTest.name)
                 await account.close()
